@@ -9,6 +9,14 @@ import weasyprint
 import os
 from werkzeug.utils import secure_filename
 
+# Configure upload settings
+UPLOAD_FOLDER = 'static/uploads/slides'
+ALLOWED_EXTENSIONS = {'pdf', 'pptx'}
+MAX_FILE_SIZE = 50 * 1024 * 1024  # 50MB
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 app.register_blueprint(make_replit_blueprint(), url_prefix="/auth")
 
 # Make session permanent
@@ -152,6 +160,34 @@ def create_course():
         course.course_status = course_status
         course.teacher_id = current_user.id
         
+        # Handle file upload
+        if 'slide_file' in request.files:
+            file = request.files['slide_file']
+            if file and file.filename and allowed_file(file.filename):
+                try:
+                    # Create upload directory if it doesn't exist
+                    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+                    
+                    # Generate secure filename
+                    filename = secure_filename(file.filename)
+                    timestamp = int(datetime.now().timestamp())
+                    file_extension = filename.rsplit('.', 1)[1].lower()
+                    secure_name = f"course_{timestamp}_{filename}"
+                    file_path = os.path.join(UPLOAD_FOLDER, secure_name)
+                    
+                    # Save file
+                    file.save(file_path)
+                    
+                    # Update course with file info
+                    course.uploaded_file_path = file_path
+                    course.uploaded_file_type = file_extension
+                    course.uploaded_file_name = filename
+                    
+                    flash(f'Course slide file "{filename}" uploaded successfully!', 'success')
+                    
+                except Exception as e:
+                    flash(f'Error uploading file: {str(e)}', 'error')
+        
         db.session.add(course)
         db.session.commit()
         
@@ -186,11 +222,66 @@ def edit_course(course_id):
         course.course_status = request.form.get('course_status', 'draft')
         course.updated_at = datetime.now()
         
+        # Handle file upload
+        if 'slide_file' in request.files:
+            file = request.files['slide_file']
+            if file and file.filename and allowed_file(file.filename):
+                try:
+                    # Remove old file if exists
+                    if course.uploaded_file_path and os.path.exists(course.uploaded_file_path):
+                        os.remove(course.uploaded_file_path)
+                    
+                    # Create upload directory if it doesn't exist
+                    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+                    
+                    # Generate secure filename
+                    filename = secure_filename(file.filename)
+                    timestamp = int(datetime.now().timestamp())
+                    file_extension = filename.rsplit('.', 1)[1].lower()
+                    secure_name = f"course_{course_id}_{timestamp}_{filename}"
+                    file_path = os.path.join(UPLOAD_FOLDER, secure_name)
+                    
+                    # Save file
+                    file.save(file_path)
+                    
+                    # Update course with file info
+                    course.uploaded_file_path = file_path
+                    course.uploaded_file_type = file_extension
+                    course.uploaded_file_name = filename
+                    
+                    flash(f'Course slide file "{filename}" uploaded successfully!', 'success')
+                    
+                except Exception as e:
+                    flash(f'Error uploading file: {str(e)}', 'error')
+        
         db.session.commit()
         flash('Course updated successfully!', 'success')
         return redirect(url_for('view_course', course_id=course.id))
     
     return render_template('teacher_edit_course.html', course=course)
+
+@app.route('/course/<int:course_id>/download-slides')
+@require_login
+def download_course_slides(course_id):
+    # Check access permissions
+    if current_user.role == 'teacher':
+        course = Course.query.filter_by(id=course_id, teacher_id=current_user.id).first_or_404()
+    else:
+        # Student access - check enrollment
+        enrollment = Enrollment.query.filter_by(course_id=course_id, student_id=current_user.id).first()
+        if not enrollment:
+            flash('You are not enrolled in this course.', 'error')
+            return redirect(url_for('student_dashboard'))
+        course = Course.query.get_or_404(course_id)
+    
+    if not course.uploaded_file_path or not os.path.exists(course.uploaded_file_path):
+        flash('No slide file available for this course.', 'error')
+        if current_user.role == 'teacher':
+            return redirect(url_for('view_course', course_id=course.id))
+        else:
+            return redirect(url_for('student_dashboard'))
+    
+    return send_file(course.uploaded_file_path, as_attachment=True, download_name=course.uploaded_file_name)
 
 @app.route('/teacher/course/<int:course_id>/generate-pdf', methods=['POST'])
 @require_role('teacher')

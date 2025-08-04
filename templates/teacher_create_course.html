@@ -13,7 +13,7 @@
                     </h4>
                 </div>
                 <div class="card-body">
-                    <form method="POST">
+                    <form method="POST" enctype="multipart/form-data">
                         <div class="row">
                             <!-- Basic Information -->
                             <div class="col-md-6">
@@ -92,6 +92,28 @@
                             </div>
                         </div>
                         
+                        <!-- File Upload Section -->
+                        <div class="mt-4">
+                            <h5 class="border-bottom pb-2 mb-3">Course Slides Upload</h5>
+                            <div class="mb-3">
+                                <label for="slide_file" class="form-label">Upload Course Slides (PDF or PPTX)</label>
+                                <input type="file" class="form-control" name="slide_file" id="slide_file" 
+                                       accept=".pdf,.pptx" onchange="displayFileInfo()">
+                                <div class="form-text">
+                                    <small>
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Upload your course presentation slides. Supported formats: PDF, PowerPoint (PPTX). Max size: 50MB.
+                                    </small>
+                                </div>
+                                <div id="file-info" class="mt-2" style="display: none;">
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-file me-1"></i>
+                                        <span id="file-details"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Course Content Editor -->
                         <div class="mt-4">
                             <h5 class="border-bottom pb-2 mb-3">Course Content (Markdown)</h5>
@@ -320,6 +342,29 @@ contentTextarea.addEventListener('keydown', function(e) {
         }
     }
 });
+
+// File upload feedback
+function displayFileInfo() {
+    const fileInput = document.getElementById('slide_file');
+    const fileInfo = document.getElementById('file-info');
+    const fileDetails = document.getElementById('file-details');
+    
+    if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const fileSize = (file.size / (1024 * 1024)).toFixed(2); // Size in MB
+        const fileType = file.name.split('.').pop().toUpperCase();
+        
+        fileDetails.textContent = `Selected: ${file.name} (${fileType}, ${fileSize} MB)`;
+        fileInfo.style.display = 'block';
+        
+        // Check file size
+        if (file.size > 50 * 1024 * 1024) { // 50MB limit
+            fileInfo.innerHTML = '<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-1"></i>File size exceeds 50MB limit. Please choose a smaller file.</div>';
+        }
+    } else {
+        fileInfo.style.display = 'none';
+    }
+}
 
 // Initialize highlight.js
 hljs.highlightAll();

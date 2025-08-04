@@ -70,6 +70,12 @@ class Course(db.Model):
     course_status = db.Column(db.String(20), default='draft')  # draft, published, archived
     pdf_generated = db.Column(db.Boolean, default=False)
     pdf_path = db.Column(db.String(255), nullable=True)  # Path to generated PDF
+    
+    # File upload fields
+    uploaded_file_path = db.Column(db.String(255), nullable=True)  # Path to uploaded slide file
+    uploaded_file_type = db.Column(db.String(10), nullable=True)  # 'pdf' or 'pptx'
+    uploaded_file_name = db.Column(db.String(255), nullable=True)  # Original filename
+    
     teacher_id = db.Column(db.String, db.ForeignKey(User.id), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
