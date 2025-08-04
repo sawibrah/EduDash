@@ -7,8 +7,8 @@ EduPortal is a comprehensive Learning Management System (LMS) built with Flask t
 **Enhanced Programming Course Features:**
 - Markdown-based content editor with live preview for course materials
 - Reveal.js slide presentation system for engaging course delivery  
-- PDF generation from course content using WeasyPrint
-- Programming language and difficulty level categorization
+- PDF generation from course content using WeasyPrint for students
+- Programming language and difficulty level categorization (now includes Scala)
 - Estimated completion hours and prerequisite tracking
 
 ## User Preferences
