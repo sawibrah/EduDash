@@ -285,6 +285,30 @@ def download_course_slides(course_id):
     
     return send_file(course.uploaded_file_path, as_attachment=True, download_name=course.uploaded_file_name)
 
+@app.route('/course/<int:course_id>/view-file')
+@require_login
+def view_course_file(course_id):
+    # Check access permissions
+    if current_user.role == 'teacher':
+        course = Course.query.filter_by(id=course_id, teacher_id=current_user.id).first_or_404()
+    else:
+        # Student access - check enrollment
+        enrollment = Enrollment.query.filter_by(course_id=course_id, student_id=current_user.id).first()
+        if not enrollment:
+            flash('You are not enrolled in this course.', 'error')
+            return redirect(url_for('student_dashboard'))
+        course = Course.query.get_or_404(course_id)
+    
+    if not course.uploaded_file_path or not os.path.exists(course.uploaded_file_path):
+        flash('No slide file available for this course.', 'error')
+        if current_user.role == 'teacher':
+            return redirect(url_for('view_course', course_id=course.id))
+        else:
+            return redirect(url_for('student_dashboard'))
+    
+    # Return file for inline viewing (not as attachment)
+    return send_file(course.uploaded_file_path, as_attachment=False)
+
 @app.route('/teacher/course/<int:course_id>/generate-pdf', methods=['POST'])
 @require_role('teacher')
 def generate_course_pdf(course_id):
