@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ course.title }} - Slides</title>
+    
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.3.1/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.3.1/dist/theme/white.css" id="theme">
+    
+    <!-- Highlight.js for code syntax highlighting -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.3.1/plugin/highlight/monokai.css">
+    
+    <!-- Custom styles for programming courses -->
+    <style>
+        .reveal .slides section {
+            text-align: left;
+        }
+        
+        .reveal h1, .reveal h2, .reveal h3 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 1em;
+        }
+        
+        .reveal h1 {
+            font-size: 2.5em;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 0.3em;
+        }
+        
+        .reveal h2 {
+            font-size: 2em;
+            color: #3498db;
+        }
+        
+        .reveal h3 {
+            font-size: 1.5em;
+            color: #27ae60;
+        }
+        
+        .reveal pre {
+            width: 100%;
+            margin: 1em 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        
+        .reveal code {
+            font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+        
+        .reveal pre code {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 1em;
+            line-height: 1.4;
+        }
+        
+        .reveal .progress {
+            color: #3498db;
+        }
+        
+        .reveal .controls {
+            color: #3498db;
+        }
+        
+        .course-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2em;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 1em;
+        }
+        
+        .course-info {
+            display: flex;
+            justify-content: center;
+            gap: 2em;
+            margin-top: 1em;
+            flex-wrap: wrap;
+        }
+        
+        .info-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 0.5em 1em;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+        
+        .slide-navigation {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 0.8em;
+        }
+        
+        .navigation-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.9em;
+        }
+        
+        .reveal blockquote {
+            background: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 1em;
+            margin: 1em 0;
+            font-style: italic;
+        }
+        
+        .reveal ul, .reveal ol {
+            margin-left: 1em;
+        }
+        
+        .reveal li {
+            margin-bottom: 0.5em;
+        }
+        
+        /* Dark theme toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        
+        .theme-toggle:hover {
+            background: #2980b9;
+        }
+        
+        .back-link {
+            position: fixed;
+            top: 70px;
+            left: 20px;
+            z-index: 1000;
+            background: #27ae60;
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+        
+        .back-link:hover {
+            background: #229954;
+            color: white;
+            text-decoration: none;
+        }
+        
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .course-info {
+                flex-direction: column;
+                gap: 0.5em;
+            }
+            
+            .info-badge {
+                text-align: center;
+            }
+            
+            .reveal h1 {
+                font-size: 2em;
+            }
+            
+            .reveal h2 {
+                font-size: 1.5em;
+            }
+            
+            .theme-toggle, .back-link {
+                position: relative;
+                top: auto;
+                left: auto;
+                margin: 10px;
+                display: inline-block;
+            }
+            
+            .slide-navigation, .navigation-controls {
+                position: relative;
+                top: auto;
+                left: auto;
+                transform: none;
+                margin: 10px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Controls -->
+    <button class="theme-toggle" onclick="toggleTheme()">🌙 Dark</button>
+    <a href="{{ url_for('view_course', course_id=course.id) if current_user.role == 'teacher' else url_for('student_dashboard') }}" class="back-link">
+        ← Back
+    </a>
+    <div class="slide-navigation">
+        Use arrow keys or click to navigate
+    </div>
+    
+    <div class="reveal">
+        <div class="slides" id="slides-container">
+            <!-- Course title slide -->
+            <section>
+                <div class="course-header">
+                    <h1>{{ course.title }}</h1>
+                    <p>{{ course.description or 'Interactive Programming Course' }}</p>
+                    <div class="course-info">
+                        {% if course.programming_language %}
+                            <span class="info-badge">
+                                💻 {{ course.programming_language }}
+                            </span>
+                        {% endif %}
+                        {% if course.difficulty_level %}
+                            <span class="info-badge">
+                                📊 {{ course.difficulty_level }}
+                            </span>
+                        {% endif %}
+                        {% if course.estimated_hours %}
+                            <span class="info-badge">
+                                ⏱️ {{ course.estimated_hours }} hours
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 2em;">
+                    <p><em>Press → to start the course</em></p>
+                </div>
+            </section>
+            
+            <!-- Dynamic slides will be loaded here -->
+        </div>
+    </div>
+    
+    <div class="navigation-controls">
+        ESC: Overview | F: Fullscreen | S: Speaker Notes
+    </div>
+
+    <!-- Reveal.js JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.3.1/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.3.1/plugin/notes/notes.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.3.1/plugin/markdown/markdown.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.3.1/plugin/highlight/highlight.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.3.1/plugin/search/search.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.3.1/plugin/zoom/zoom.js"></script>
+
+    <script>
+        // Initialize Reveal.js
+        Reveal.initialize({
+            hash: true,
+            controls: true,
+            progress: true,
+            center: true,
+            transition: 'slide',
+            backgroundTransition: 'fade',
+            
+            // More config
+            width: 1200,
+            height: 800,
+            margin: 0.1,
+            minScale: 0.2,
+            maxScale: 2.0,
+            
+            // Plugins
+            plugins: [
+                RevealMarkdown,
+                RevealHighlight,
+                RevealNotes,
+                RevealSearch,
+                RevealZoom
+            ],
+            
+            // Highlight.js config
+            highlight: {
+                highlightOnLoad: true,
+                escapeHTML: false
+            },
+            
+            // Keyboard shortcuts
+            keyboard: {
+                82: function() { location.reload(); }, // R key to reload
+                84: function() { toggleTheme(); }       // T key to toggle theme
+            }
+        });
+
+        // Load course content
+        async function loadCourseContent() {
+            try {
+                const response = await fetch(`/course/{{ course.id }}/slides/data`);
+                const data = await response.json();
+                
+                if (data.error) {
+                    document.getElementById('slides-container').innerHTML = `
+                        <section>
+                            <h1>Access Denied</h1>
+                            <p>You don't have permission to view this course.</p>
+                        </section>
+                    `;
+                    return;
+                }
+                
+                // Add the course content slides
+                const slidesContainer = document.getElementById('slides-container');
+                slidesContainer.innerHTML += data.content;
+                
+                // Reinitialize Reveal.js to recognize new slides
+                Reveal.sync();
+                
+                // Highlight code blocks
+                Reveal.getPlugin('highlight').hljs.highlightAll();
+                
+            } catch (error) {
+                console.error('Error loading course content:', error);
+                document.getElementById('slides-container').innerHTML += `
+                    <section>
+                        <h1>Error Loading Content</h1>
+                        <p>Unable to load course slides. Please try again.</p>
+                    </section>
+                `;
+            }
+        }
+
+        // Theme toggle functionality
+        let isDarkTheme = false;
+        function toggleTheme() {
+            const themeLink = document.getElementById('theme');
+            const toggleButton = document.querySelector('.theme-toggle');
+            
+            if (isDarkTheme) {
+                themeLink.href = 'https://cdn.jsdelivr.net/npm/reveal.js@4.3.1/dist/theme/white.css';
+                toggleButton.innerHTML = '🌙 Dark';
+                isDarkTheme = false;
+            } else {
+                themeLink.href = 'https://cdn.jsdelivr.net/npm/reveal.js@4.3.1/dist/theme/black.css';
+                toggleButton.innerHTML = '☀️ Light';
+                isDarkTheme = true;
+            }
+        }
+
+        // Auto-advance slides (optional)
+        function startAutoAdvance() {
+            Reveal.configure({
+                autoSlide: 10000, // 10 seconds
+                autoSlideStoppable: true
+            });
+        }
+
+        // Load content when Reveal.js is ready
+        Reveal.addEventListener('ready', function() {
+            loadCourseContent();
+        });
+
+        // Track slide progress
+        Reveal.addEventListener('slidechanged', function(event) {
+            const slideNumber = event.indexh + 1;
+            const totalSlides = Reveal.getTotalSlides();
+            console.log(`Slide ${slideNumber} of ${totalSlides}`);
+        });
+
+        // Handle keyboard shortcuts
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                Reveal.toggleOverview();
+            }
+        });
+    </script>
+</body>
+</html>

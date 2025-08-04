@@ -104,9 +104,33 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
-                                    <label class="form-label">Live Preview</label>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <label class="form-label">Live Preview</label>
+                                        <div class="btn-group btn-group-sm">
+                                            <button type="button" class="btn btn-outline-primary active" id="preview-tab" onclick="showPreview('preview')">
+                                                <i class="fas fa-eye me-1"></i>Preview
+                                            </button>
+                                            <button type="button" class="btn btn-outline-info" id="slides-tab" onclick="showPreview('slides')">
+                                                <i class="fas fa-play me-1"></i>Slides
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Markdown Preview -->
                                     <div class="border p-3 bg-light" style="height: 400px; overflow-y: auto;" id="markdown-preview">
                                         <em class="text-muted">Loading preview...</em>
+                                    </div>
+                                    
+                                    <!-- Slides Preview -->
+                                    <div class="border p-3 bg-dark text-white" style="height: 400px; overflow-y: auto; display: none;" id="slides-preview">
+                                        <div class="text-center">
+                                            <i class="fas fa-play fa-2x mb-3"></i>
+                                            <h6>Slides Preview</h6>
+                                            <p class="small">Shows how content will appear as presentation slides</p>
+                                            <div id="slides-content" class="text-start mt-3">
+                                                <em class="text-muted">Content will show slide breakdown here...</em>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -170,8 +194,87 @@ function updatePreview() {
     }
 }
 
+// Preview mode switching
+function showPreview(mode) {
+    const previewTab = document.getElementById('preview-tab');
+    const slidesTab = document.getElementById('slides-tab');
+    const markdownPreview = document.getElementById('markdown-preview');
+    const slidesPreview = document.getElementById('slides-preview');
+    
+    if (mode === 'preview') {
+        previewTab.classList.add('active');
+        slidesTab.classList.remove('active');
+        markdownPreview.style.display = 'block';
+        slidesPreview.style.display = 'none';
+    } else if (mode === 'slides') {
+        previewTab.classList.remove('active');
+        slidesTab.classList.add('active');
+        markdownPreview.style.display = 'none';
+        slidesPreview.style.display = 'block';
+        updateSlidesPreview();
+    }
+}
+
+// Update slides preview
+function updateSlidesPreview() {
+    const markdown = contentTextarea.value;
+    const slidesContent = document.getElementById('slides-content');
+    
+    if (!markdown.trim()) {
+        slidesContent.innerHTML = '<em class="text-muted">Content will show slide breakdown here...</em>';
+        return;
+    }
+    
+    // Split by main headings to show slide structure
+    const lines = markdown.split('\n');
+    let slides = [];
+    let currentSlide = [];
+    
+    for (let line of lines) {
+        if (line.startsWith('# ') || line.startsWith('## ')) {
+            if (currentSlide.length > 0) {
+                slides.push(currentSlide.join('\n'));
+                currentSlide = [];
+            }
+            currentSlide.push(line);
+        } else {
+            currentSlide.push(line);
+        }
+    }
+    
+    if (currentSlide.length > 0) {
+        slides.push(currentSlide.join('\n'));
+    }
+    
+    // Display slide breakdown
+    let slidesHtml = `<div class="small mb-3">📊 <strong>${slides.length} slides</strong> will be generated</div>`;
+    
+    slides.forEach((slide, index) => {
+        const firstLine = slide.split('\n')[0];
+        const title = firstLine.replace(/^#+\s*/, '') || `Slide ${index + 1}`;
+        const lineCount = slide.split('\n').filter(line => line.trim()).length;
+        
+        slidesHtml += `
+            <div class="border border-secondary rounded p-2 mb-2">
+                <div class="d-flex justify-content-between align-items-center">
+                    <strong>🎯 ${title}</strong>
+                    <small class="text-muted">${lineCount} lines</small>
+                </div>
+            </div>
+        `;
+    });
+    
+    slidesContent.innerHTML = slidesHtml;
+}
+
 // Update preview on input
-contentTextarea.addEventListener('input', updatePreview);
+contentTextarea.addEventListener('input', function() {
+    updatePreview();
+    // Also update slides preview if it's active
+    if (document.getElementById('slides-tab').classList.contains('active')) {
+        updateSlidesPreview();
+    }
+});
 
 // Tab support in textarea
 contentTextarea.addEventListener('keydown', function(e) {
@@ -186,8 +289,11 @@ contentTextarea.addEventListener('keydown', function(e) {
         // Move cursor
         this.selectionStart = this.selectionEnd = start + 4;
         
-        // Update preview
+        // Update previews
         updatePreview();
+        if (document.getElementById('slides-tab').classList.contains('active')) {
+            updateSlidesPreview();
+        }
     }
 });
 

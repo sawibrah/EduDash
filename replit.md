@@ -4,6 +4,13 @@
 
 EduPortal is a comprehensive Learning Management System (LMS) built with Flask that facilitates educational interactions between students and teachers. The application provides role-based access control, course management, assignment tracking, and user authentication through Replit's OAuth system. It features separate dashboards for students and teachers, allowing for tailored experiences based on user roles.
 
+**Enhanced Programming Course Features:**
+- Markdown-based content editor with live preview for course materials
+- Reveal.js slide presentation system for engaging course delivery  
+- PDF generation from course content using WeasyPrint
+- Programming language and difficulty level categorization
+- Estimated completion hours and prerequisite tracking
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.

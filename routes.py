@@ -146,7 +146,7 @@ def create_course():
         course.content = content
         course.difficulty_level = difficulty_level
         course.programming_language = programming_language
-        course.estimated_hours = int(estimated_hours) if estimated_hours else None
+        course.estimated_hours = int(estimated_hours) if estimated_hours and estimated_hours.strip() else None
         course.prerequisites = prerequisites
         course.learning_objectives = learning_objectives
         course.course_status = course_status
@@ -179,7 +179,8 @@ def edit_course(course_id):
         course.content = request.form.get('content', '')
         course.difficulty_level = request.form.get('difficulty_level')
         course.programming_language = request.form.get('programming_language')
-        course.estimated_hours = int(request.form.get('estimated_hours')) if request.form.get('estimated_hours') else None
+        estimated_hours_str = request.form.get('estimated_hours')
+        course.estimated_hours = int(estimated_hours_str) if estimated_hours_str and estimated_hours_str.strip() else None
         course.prerequisites = request.form.get('prerequisites', '')
         course.learning_objectives = request.form.get('learning_objectives', '')
         course.course_status = request.form.get('course_status', 'draft')
@@ -268,6 +269,84 @@ def download_course_pdf(course_id):
     
     pdf_filename = f"course_{course_id}_{secure_filename(course.title)}.pdf"
     return send_file(course.pdf_path, as_attachment=True, download_name=pdf_filename)
+
+@app.route('/course/<int:course_id>/slides')
+@require_login
+def view_course_slides(course_id):
+    # Check if user is enrolled or is the teacher
+    if current_user.role == 'teacher':
+        course = Course.query.filter_by(id=course_id, teacher_id=current_user.id).first_or_404()
+    else:
+        # Student access - check enrollment
+        enrollment = Enrollment.query.filter_by(course_id=course_id, student_id=current_user.id).first()
+        if not enrollment:
+            flash('You are not enrolled in this course.', 'error')
+            return redirect(url_for('index'))
+        course = Course.query.get_or_404(course_id)
+    
+    return render_template('course_slides.html', course=course)
+
+@app.route('/course/<int:course_id>/slides/data')
+@require_login  
+def get_course_slides_data(course_id):
+    # Check access permissions
+    if current_user.role == 'teacher':
+        course = Course.query.filter_by(id=course_id, teacher_id=current_user.id).first_or_404()
+    else:
+        enrollment = Enrollment.query.filter_by(course_id=course_id, student_id=current_user.id).first()
+        if not enrollment:
+            return {'error': 'Access denied'}, 403
+        course = Course.query.get_or_404(course_id)
+    
+    # Convert markdown to reveal.js compatible format
+    slides_content = convert_markdown_to_slides(course.content or '')
+    
+    return {
+        'title': course.title,
+        'content': slides_content,
+        'programming_language': course.programming_language,
+        'difficulty_level': course.difficulty_level
+    }
+
+def convert_markdown_to_slides(markdown_content):
+    """Convert markdown content to reveal.js slide format"""
+    if not markdown_content:
+        return "<section><h1>No content available</h1></section>"
+    
+    # Split content by major headings (# and ##)
+    lines = markdown_content.split('\n')
+    slides = []
+    current_slide = []
+    
+    for line in lines:
+        # New slide on # heading
+        if line.startswith('# '):
+            if current_slide:
+                slides.append('\n'.join(current_slide))
+                current_slide = []
+            current_slide.append(line)
+        # New vertical slide on ## heading  
+        elif line.startswith('## '):
+            if current_slide:
+                slides.append('\n'.join(current_slide))
+                current_slide = []
+            current_slide.append(line)
+        else:
+            current_slide.append(line)
+    
+    # Add the last slide
+    if current_slide:
+        slides.append('\n'.join(current_slide))
+    
+    # Convert each slide markdown to HTML
+    html_slides = []
+    for slide_md in slides:
+        if slide_md.strip():
+            # Convert markdown to HTML
+            slide_html = markdown.markdown(slide_md, extensions=['codehilite', 'fenced_code'])
+            html_slides.append(f'<section>{slide_html}</section>')
+    
+    return '\n'.join(html_slides) if html_slides else "<section><h1>No content available</h1></section>"
 
 @app.route('/teacher/create-assignment', methods=['POST'])
 @require_role('teacher')
