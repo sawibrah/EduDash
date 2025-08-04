@@ -158,6 +158,7 @@ def create_course():
         course.prerequisites = prerequisites
         course.learning_objectives = learning_objectives
         course.course_status = course_status
+        course.content_display_type = request.form.get('content_display_type', 'markdown')
         course.teacher_id = current_user.id
         
         # Handle file upload
@@ -220,6 +221,7 @@ def edit_course(course_id):
         course.prerequisites = request.form.get('prerequisites', '')
         course.learning_objectives = request.form.get('learning_objectives', '')
         course.course_status = request.form.get('course_status', 'draft')
+        course.content_display_type = request.form.get('content_display_type', 'markdown')
         course.updated_at = datetime.now()
         
         # Handle file upload

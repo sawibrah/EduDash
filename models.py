@@ -75,6 +75,7 @@ class Course(db.Model):
     uploaded_file_path = db.Column(db.String(255), nullable=True)  # Path to uploaded slide file
     uploaded_file_type = db.Column(db.String(10), nullable=True)  # 'pdf' or 'pptx'
     uploaded_file_name = db.Column(db.String(255), nullable=True)  # Original filename
+    content_display_type = db.Column(db.String(20), default='markdown', nullable=False)  # 'markdown' or 'uploaded_file'
     
     teacher_id = db.Column(db.String, db.ForeignKey(User.id), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now)
