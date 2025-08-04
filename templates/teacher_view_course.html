@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+
+{% block title %}{{ course.title }} - EduPortal{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Course Header -->
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <h2 class="mb-1">{{ course.title }}</h2>
+            <div class="d-flex gap-2 mb-2">
+                <span class="badge bg-{{ 'success' if course.course_status == 'published' else 'warning' }}">
+                    {{ course.course_status.title() }}
+                </span>
+                {% if course.programming_language %}
+                    <span class="badge bg-info">{{ course.programming_language }}</span>
+                {% endif %}
+                {% if course.difficulty_level %}
+                    <span class="badge bg-secondary">{{ course.difficulty_level }}</span>
+                {% endif %}
+            </div>
+            <p class="text-muted mb-0">
+                <i class="fas fa-calendar me-1"></i>Created: {{ course.created_at.strftime('%B %d, %Y') }}
+                {% if course.updated_at != course.created_at %}
+                    | Updated: {{ course.updated_at.strftime('%B %d, %Y') }}
+                {% endif %}
+            </p>
+        </div>
+        <div class="btn-group">
+            <a href="{{ url_for('edit_course', course_id=course.id) }}" class="btn btn-primary">
+                <i class="fas fa-edit me-1"></i>Edit
+            </a>
+            <div class="dropdown">
+                <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-file-pdf me-1"></i>PDF
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <form method="POST" action="{{ url_for('generate_course_pdf', course_id=course.id) }}" class="d-inline">
+                            <button type="submit" class="dropdown-item">
+                                <i class="fas fa-download me-2"></i>Generate & Download PDF
+                            </button>
+                        </form>
+                    </li>
+                    {% if course.pdf_generated %}
+                        <li>
+                            <a class="dropdown-item" href="{{ url_for('download_course_pdf', course_id=course.id) }}">
+                                <i class="fas fa-file-download me-2"></i>Download Existing PDF
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Course Information -->
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Course Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Description:</strong>
+                        <p class="mt-1">{{ course.description or 'No description provided' }}</p>
+                    </div>
+                    
+                    {% if course.estimated_hours %}
+                        <div class="mb-3">
+                            <strong>Estimated Duration:</strong>
+                            <p class="mt-1">{{ course.estimated_hours }} hours</p>
+                        </div>
+                    {% endif %}
+                    
+                    {% if course.prerequisites %}
+                        <div class="mb-3">
+                            <strong>Prerequisites:</strong>
+                            <p class="mt-1">{{ course.prerequisites }}</p>
+                        </div>
+                    {% endif %}
+                    
+                    {% if course.learning_objectives %}
+                        <div class="mb-3">
+                            <strong>Learning Objectives:</strong>
+                            <p class="mt-1">{{ course.learning_objectives }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Course Stats -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>Course Statistics
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="border-end">
+                                <h4 class="text-primary mb-0">{{ course.enrollments|length }}</h4>
+                                <small class="text-muted">Students</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <h4 class="text-success mb-0">{{ course.assignments|length }}</h4>
+                            <small class="text-muted">Assignments</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#createAssignmentModal">
+                            <i class="fas fa-plus me-2"></i>Add Assignment
+                        </button>
+                        <a href="{{ url_for('teacher_dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Course Content -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-book-open me-2"></i>Course Content
+                    </h5>
+                    <span class="badge bg-info">
+                        <i class="fas fa-code me-1"></i>Markdown
+                    </span>
+                </div>
+                <div class="card-body">
+                    {% if content_html %}
+                        <div class="markdown-content">
+                            {{ content_html|safe }}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+                            <h6 class="text-muted">No content added yet</h6>
+                            <p class="text-muted small">Add course content to help students learn effectively.</p>
+                            <a href="{{ url_for('edit_course', course_id=course.id) }}" class="btn btn-primary">
+                                <i class="fas fa-plus me-1"></i>Add Content
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Assignment Modal -->
+<div class="modal fade" id="createAssignmentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create Assignment for {{ course.title }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('create_assignment') }}">
+                <input type="hidden" name="course_id" value="{{ course.id }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="assignment_title" class="form-label">Assignment Title</label>
+                        <input type="text" class="form-control" name="title" id="assignment_title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="assignment_description" class="form-label">Description</label>
+                        <textarea class="form-control" name="description" id="assignment_description" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="due_date" class="form-label">Due Date (Optional)</label>
+                        <input type="date" class="form-control" name="due_date" id="due_date">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-plus me-1"></i>Create Assignment
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Include Highlight.js for syntax highlighting -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<style>
+.markdown-content {
+    line-height: 1.6;
+}
+
+.markdown-content h1 {
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.markdown-content h2 {
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 0.3rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.markdown-content h3 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.8rem;
+}
+
+.markdown-content pre {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 0.375rem;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.markdown-content code {
+    background-color: #f8f9fa;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+    font-size: 0.875em;
+}
+
+.markdown-content blockquote {
+    border-left: 4px solid #007bff;
+    padding-left: 1rem;
+    margin: 1rem 0;
+    color: #6c757d;
+}
+
+.markdown-content ul, .markdown-content ol {
+    padding-left: 2rem;
+}
+</style>
+
+<script>
+// Initialize highlight.js for code blocks
+hljs.highlightAll();
+</script>
+{% endblock %}

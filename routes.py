@@ -1,9 +1,13 @@
-from flask import session, render_template, request, redirect, url_for, flash
+from flask import session, render_template, request, redirect, url_for, flash, send_file
 from flask_login import current_user, login_user
 from app import app, db
 from replit_auth import require_login, require_role, make_replit_blueprint
 from models import User, StudentProfile, TeacherProfile, Course, Enrollment, Assignment
 from datetime import datetime
+import markdown
+import weasyprint
+import os
+from werkzeug.utils import secure_filename
 
 app.register_blueprint(make_replit_blueprint(), url_prefix="/auth")
 
@@ -124,22 +128,146 @@ def create_course():
     if request.method == 'POST':
         title = request.form.get('title')
         description = request.form.get('description')
+        content = request.form.get('content', '')
+        difficulty_level = request.form.get('difficulty_level')
+        programming_language = request.form.get('programming_language')
+        estimated_hours = request.form.get('estimated_hours')
+        prerequisites = request.form.get('prerequisites', '')
+        learning_objectives = request.form.get('learning_objectives', '')
+        course_status = request.form.get('course_status', 'draft')
         
         if not title:
             flash('Course title is required.', 'error')
-            return redirect(url_for('create_course'))
+            return render_template('teacher_create_course.html')
         
         course = Course()
         course.title = title
         course.description = description
+        course.content = content
+        course.difficulty_level = difficulty_level
+        course.programming_language = programming_language
+        course.estimated_hours = int(estimated_hours) if estimated_hours else None
+        course.prerequisites = prerequisites
+        course.learning_objectives = learning_objectives
+        course.course_status = course_status
         course.teacher_id = current_user.id
+        
         db.session.add(course)
         db.session.commit()
         
-        flash('Course created successfully!', 'success')
+        flash('Programming course created successfully!', 'success')
         return redirect(url_for('teacher_dashboard'))
     
-    return redirect(url_for('teacher_dashboard'))
+    return render_template('teacher_create_course.html')
+
+@app.route('/teacher/course/<int:course_id>')
+@require_role('teacher')
+def view_course(course_id):
+    course = Course.query.filter_by(id=course_id, teacher_id=current_user.id).first_or_404()
+    # Convert markdown to HTML for preview
+    content_html = markdown.markdown(course.content or '', extensions=['codehilite', 'fenced_code']) if course.content else ''
+    return render_template('teacher_view_course.html', course=course, content_html=content_html)
+
+@app.route('/teacher/course/<int:course_id>/edit', methods=['GET', 'POST'])
+@require_role('teacher')
+def edit_course(course_id):
+    course = Course.query.filter_by(id=course_id, teacher_id=current_user.id).first_or_404()
+    
+    if request.method == 'POST':
+        course.title = request.form.get('title')
+        course.description = request.form.get('description')
+        course.content = request.form.get('content', '')
+        course.difficulty_level = request.form.get('difficulty_level')
+        course.programming_language = request.form.get('programming_language')
+        course.estimated_hours = int(request.form.get('estimated_hours')) if request.form.get('estimated_hours') else None
+        course.prerequisites = request.form.get('prerequisites', '')
+        course.learning_objectives = request.form.get('learning_objectives', '')
+        course.course_status = request.form.get('course_status', 'draft')
+        course.updated_at = datetime.now()
+        
+        db.session.commit()
+        flash('Course updated successfully!', 'success')
+        return redirect(url_for('view_course', course_id=course.id))
+    
+    return render_template('teacher_edit_course.html', course=course)
+
+@app.route('/teacher/course/<int:course_id>/generate-pdf', methods=['POST'])
+@require_role('teacher')
+def generate_course_pdf(course_id):
+    course = Course.query.filter_by(id=course_id, teacher_id=current_user.id).first_or_404()
+    
+    try:
+        # Create PDF directory if it doesn't exist
+        pdf_dir = os.path.join(app.instance_path, 'pdfs')
+        os.makedirs(pdf_dir, exist_ok=True)
+        
+        # Convert markdown content to HTML
+        content_html = markdown.markdown(course.content or '', extensions=['codehilite', 'fenced_code'])
+        
+        # Create HTML template for PDF
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <title>{course.title}</title>
+            <style>
+                body {{ font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }}
+                h1, h2, h3 {{ color: #333; }}
+                .course-info {{ background: #f5f5f5; padding: 20px; margin: 20px 0; }}
+                .content {{ margin: 20px 0; }}
+                pre {{ background: #f4f4f4; padding: 15px; border-radius: 5px; }}
+                code {{ background: #f4f4f4; padding: 2px 4px; border-radius: 3px; }}
+            </style>
+        </head>
+        <body>
+            <h1>{course.title}</h1>
+            <div class="course-info">
+                <p><strong>Description:</strong> {course.description or 'No description provided'}</p>
+                <p><strong>Programming Language:</strong> {course.programming_language or 'Not specified'}</p>
+                <p><strong>Difficulty Level:</strong> {course.difficulty_level or 'Not specified'}</p>
+                <p><strong>Estimated Hours:</strong> {course.estimated_hours or 'Not specified'}</p>
+                <p><strong>Prerequisites:</strong> {course.prerequisites or 'None'}</p>
+                <p><strong>Learning Objectives:</strong> {course.learning_objectives or 'Not specified'}</p>
+            </div>
+            <div class="content">
+                <h2>Course Content</h2>
+                {content_html}
+            </div>
+        </body>
+        </html>
+        """
+        
+        # Generate PDF
+        pdf_filename = f"course_{course_id}_{secure_filename(course.title)}.pdf"
+        pdf_path = os.path.join(pdf_dir, pdf_filename)
+        
+        # Create PDF from HTML
+        weasyprint.HTML(string=html_content).write_pdf(pdf_path)
+        
+        # Update course record
+        course.pdf_generated = True
+        course.pdf_path = pdf_path
+        db.session.commit()
+        
+        flash('PDF generated successfully!', 'success')
+        return send_file(pdf_path, as_attachment=True, download_name=pdf_filename)
+        
+    except Exception as e:
+        flash(f'Error generating PDF: {str(e)}', 'error')
+        return redirect(url_for('view_course', course_id=course.id))
+
+@app.route('/teacher/course/<int:course_id>/download-pdf')
+@require_role('teacher')
+def download_course_pdf(course_id):
+    course = Course.query.filter_by(id=course_id, teacher_id=current_user.id).first_or_404()
+    
+    if not course.pdf_generated or not course.pdf_path or not os.path.exists(course.pdf_path):
+        flash('PDF not available. Please generate it first.', 'error')
+        return redirect(url_for('view_course', course_id=course.id))
+    
+    pdf_filename = f"course_{course_id}_{secure_filename(course.title)}.pdf"
+    return send_file(course.pdf_path, as_attachment=True, download_name=pdf_filename)
 
 @app.route('/teacher/create-assignment', methods=['POST'])
 @require_role('teacher')

@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+
+{% block title %}Create Programming Course - EduPortal{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-plus me-2"></i>Create New Programming Course
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="row">
+                            <!-- Basic Information -->
+                            <div class="col-md-6">
+                                <h5 class="border-bottom pb-2 mb-3">Basic Information</h5>
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">Course Title *</label>
+                                    <input type="text" class="form-control" name="title" id="title" required
+                                           placeholder="e.g., Advanced Python for Data Science">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="programming_language" class="form-label">Programming Language</label>
+                                    <select class="form-select" name="programming_language" id="programming_language">
+                                        <option value="">Select Language</option>
+                                        <option value="Python">Python</option>
+                                        <option value="JavaScript">JavaScript</option>
+                                        <option value="Java">Java</option>
+                                        <option value="C++">C++</option>
+                                        <option value="C#">C#</option>
+                                        <option value="Ruby">Ruby</option>
+                                        <option value="Go">Go</option>
+                                        <option value="Rust">Rust</option>
+                                        <option value="PHP">PHP</option>
+                                        <option value="Swift">Swift</option>
+                                        <option value="Kotlin">Kotlin</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="difficulty_level" class="form-label">Difficulty Level</label>
+                                    <select class="form-select" name="difficulty_level" id="difficulty_level">
+                                        <option value="">Select Level</option>
+                                        <option value="Beginner">Beginner</option>
+                                        <option value="Intermediate">Intermediate</option>
+                                        <option value="Advanced">Advanced</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="estimated_hours" class="form-label">Estimated Hours</label>
+                                    <input type="number" class="form-control" name="estimated_hours" id="estimated_hours" min="1" max="500"
+                                           placeholder="e.g., 40">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="course_status" class="form-label">Status</label>
+                                    <select class="form-select" name="course_status" id="course_status">
+                                        <option value="draft">Draft</option>
+                                        <option value="published">Published</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Course Details -->
+                            <div class="col-md-6">
+                                <h5 class="border-bottom pb-2 mb-3">Course Details</h5>
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Short Description</label>
+                                    <textarea class="form-control" name="description" id="description" rows="3"
+                                              placeholder="Brief description of the course..."></textarea>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="prerequisites" class="form-label">Prerequisites</label>
+                                    <textarea class="form-control" name="prerequisites" id="prerequisites" rows="3"
+                                              placeholder="List any required knowledge or prior courses..."></textarea>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="learning_objectives" class="form-label">Learning Objectives</label>
+                                    <textarea class="form-control" name="learning_objectives" id="learning_objectives" rows="4"
+                                              placeholder="What will students learn? List key objectives..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Course Content Editor -->
+                        <div class="mt-4">
+                            <h5 class="border-bottom pb-2 mb-3">Course Content (Markdown)</h5>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <label for="content" class="form-label">Markdown Content</label>
+                                    <textarea class="form-control" name="content" id="content" rows="20" 
+                                              placeholder="# Course Introduction
+
+Welcome to this programming course!
+
+## Module 1: Getting Started
+
+### What you'll learn:
+- Basic concepts
+- Setting up environment
+- First program
+
+```python
+def hello_world():
+    print('Hello, World!')
+    
+hello_world()
+```
+
+## Module 2: Advanced Topics
+
+..."></textarea>
+                                    <div class="form-text">
+                                        <small>
+                                            <strong>Markdown Tips:</strong> Use # for headings, ``` for code blocks, 
+                                            ** for bold, * for italic, - for lists.
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label class="form-label">Live Preview</label>
+                                    <div class="border p-3 bg-light" style="height: 400px; overflow-y: auto;" id="markdown-preview">
+                                        <em class="text-muted">Type in the content area to see live preview...</em>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between">
+                                    <a href="{{ url_for('teacher_dashboard') }}" class="btn btn-secondary">
+                                        <i class="fas fa-arrow-left me-2"></i>Cancel
+                                    </a>
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-save me-2"></i>Create Course
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Include Marked.js for markdown parsing -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<!-- Include Highlight.js for syntax highlighting -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<script>
+// Configure marked to use highlight.js
+marked.setOptions({
+    highlight: function(code, lang) {
+        if (lang && hljs.getLanguage(lang)) {
+            try {
+                return hljs.highlight(code, { language: lang }).value;
+            } catch (err) {}
+        }
+        return hljs.highlightAuto(code).value;
+    }
+});
+
+// Live markdown preview
+const contentTextarea = document.getElementById('content');
+const previewDiv = document.getElementById('markdown-preview');
+
+function updatePreview() {
+    const markdown = contentTextarea.value;
+    if (markdown.trim()) {
+        previewDiv.innerHTML = marked.parse(markdown);
+        // Re-highlight code blocks
+        previewDiv.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightElement(block);
+        });
+    } else {
+        previewDiv.innerHTML = '<em class="text-muted">Type in the content area to see live preview...</em>';
+    }
+}
+
+// Update preview on input
+contentTextarea.addEventListener('input', updatePreview);
+
+// Tab support in textarea
+contentTextarea.addEventListener('keydown', function(e) {
+    if (e.key === 'Tab') {
+        e.preventDefault();
+        const start = this.selectionStart;
+        const end = this.selectionEnd;
+        
+        // Insert tab character
+        this.value = this.value.substring(0, start) + '    ' + this.value.substring(end);
+        
+        // Move cursor
+        this.selectionStart = this.selectionEnd = start + 4;
+        
+        // Update preview
+        updatePreview();
+    }
+});
+
+// Initialize highlight.js
+hljs.highlightAll();
+</script>
+{% endblock %}

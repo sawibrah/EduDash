@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}Edit {{ course.title }} - EduPortal{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-edit me-2"></i>Edit Programming Course
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="row">
+                            <!-- Basic Information -->
+                            <div class="col-md-6">
+                                <h5 class="border-bottom pb-2 mb-3">Basic Information</h5>
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">Course Title *</label>
+                                    <input type="text" class="form-control" name="title" id="title" 
+                                           value="{{ course.title }}" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="programming_language" class="form-label">Programming Language</label>
+                                    <select class="form-select" name="programming_language" id="programming_language">
+                                        <option value="">Select Language</option>
+                                        <option value="Python" {{ 'selected' if course.programming_language == 'Python' }}>Python</option>
+                                        <option value="JavaScript" {{ 'selected' if course.programming_language == 'JavaScript' }}>JavaScript</option>
+                                        <option value="Java" {{ 'selected' if course.programming_language == 'Java' }}>Java</option>
+                                        <option value="C++" {{ 'selected' if course.programming_language == 'C++' }}>C++</option>
+                                        <option value="C#" {{ 'selected' if course.programming_language == 'C#' }}>C#</option>
+                                        <option value="Ruby" {{ 'selected' if course.programming_language == 'Ruby' }}>Ruby</option>
+                                        <option value="Go" {{ 'selected' if course.programming_language == 'Go' }}>Go</option>
+                                        <option value="Rust" {{ 'selected' if course.programming_language == 'Rust' }}>Rust</option>
+                                        <option value="PHP" {{ 'selected' if course.programming_language == 'PHP' }}>PHP</option>
+                                        <option value="Swift" {{ 'selected' if course.programming_language == 'Swift' }}>Swift</option>
+                                        <option value="Kotlin" {{ 'selected' if course.programming_language == 'Kotlin' }}>Kotlin</option>
+                                        <option value="Other" {{ 'selected' if course.programming_language == 'Other' }}>Other</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="difficulty_level" class="form-label">Difficulty Level</label>
+                                    <select class="form-select" name="difficulty_level" id="difficulty_level">
+                                        <option value="">Select Level</option>
+                                        <option value="Beginner" {{ 'selected' if course.difficulty_level == 'Beginner' }}>Beginner</option>
+                                        <option value="Intermediate" {{ 'selected' if course.difficulty_level == 'Intermediate' }}>Intermediate</option>
+                                        <option value="Advanced" {{ 'selected' if course.difficulty_level == 'Advanced' }}>Advanced</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="estimated_hours" class="form-label">Estimated Hours</label>
+                                    <input type="number" class="form-control" name="estimated_hours" id="estimated_hours" 
+                                           value="{{ course.estimated_hours or '' }}" min="1" max="500">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="course_status" class="form-label">Status</label>
+                                    <select class="form-select" name="course_status" id="course_status">
+                                        <option value="draft" {{ 'selected' if course.course_status == 'draft' }}>Draft</option>
+                                        <option value="published" {{ 'selected' if course.course_status == 'published' }}>Published</option>
+                                        <option value="archived" {{ 'selected' if course.course_status == 'archived' }}>Archived</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Course Details -->
+                            <div class="col-md-6">
+                                <h5 class="border-bottom pb-2 mb-3">Course Details</h5>
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Short Description</label>
+                                    <textarea class="form-control" name="description" id="description" rows="3">{{ course.description or '' }}</textarea>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="prerequisites" class="form-label">Prerequisites</label>
+                                    <textarea class="form-control" name="prerequisites" id="prerequisites" rows="3">{{ course.prerequisites or '' }}</textarea>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="learning_objectives" class="form-label">Learning Objectives</label>
+                                    <textarea class="form-control" name="learning_objectives" id="learning_objectives" rows="4">{{ course.learning_objectives or '' }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Course Content Editor -->
+                        <div class="mt-4">
+                            <h5 class="border-bottom pb-2 mb-3">Course Content (Markdown)</h5>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <label for="content" class="form-label">Markdown Content</label>
+                                    <textarea class="form-control" name="content" id="content" rows="20">{{ course.content or '' }}</textarea>
+                                    <div class="form-text">
+                                        <small>
+                                            <strong>Markdown Tips:</strong> Use # for headings, ``` for code blocks, 
+                                            ** for bold, * for italic, - for lists.
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label class="form-label">Live Preview</label>
+                                    <div class="border p-3 bg-light" style="height: 400px; overflow-y: auto;" id="markdown-preview">
+                                        <em class="text-muted">Loading preview...</em>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between">
+                                    <a href="{{ url_for('view_course', course_id=course.id) }}" class="btn btn-secondary">
+                                        <i class="fas fa-arrow-left me-2"></i>Cancel
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-2"></i>Update Course
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Include Marked.js for markdown parsing -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<!-- Include Highlight.js for syntax highlighting -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<script>
+// Configure marked to use highlight.js
+marked.setOptions({
+    highlight: function(code, lang) {
+        if (lang && hljs.getLanguage(lang)) {
+            try {
+                return hljs.highlight(code, { language: lang }).value;
+            } catch (err) {}
+        }
+        return hljs.highlightAuto(code).value;
+    }
+});
+
+// Live markdown preview
+const contentTextarea = document.getElementById('content');
+const previewDiv = document.getElementById('markdown-preview');
+
+function updatePreview() {
+    const markdown = contentTextarea.value;
+    if (markdown.trim()) {
+        previewDiv.innerHTML = marked.parse(markdown);
+        // Re-highlight code blocks
+        previewDiv.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightElement(block);
+        });
+    } else {
+        previewDiv.innerHTML = '<em class="text-muted">Type in the content area to see live preview...</em>';
+    }
+}
+
+// Update preview on input
+contentTextarea.addEventListener('input', updatePreview);
+
+// Tab support in textarea
+contentTextarea.addEventListener('keydown', function(e) {
+    if (e.key === 'Tab') {
+        e.preventDefault();
+        const start = this.selectionStart;
+        const end = this.selectionEnd;
+        
+        // Insert tab character
+        this.value = this.value.substring(0, start) + '    ' + this.value.substring(end);
+        
+        // Move cursor
+        this.selectionStart = this.selectionEnd = start + 4;
+        
+        // Update preview
+        updatePreview();
+    }
+});
+
+// Initialize preview with existing content
+document.addEventListener('DOMContentLoaded', function() {
+    updatePreview();
+    hljs.highlightAll();
+});
+</script>
+{% endblock %}

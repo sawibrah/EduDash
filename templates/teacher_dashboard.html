@@ -81,9 +81,9 @@
                 </div>
                 <div class="card-body">
                     <div class="d-grid gap-2">
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCourseModal">
+                        <a href="{{ url_for('create_course') }}" class="btn btn-primary">
                             <i class="fas fa-plus me-2"></i>Create Course
-                        </button>
+                        </a>
                         <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createAssignmentModal">
                             <i class="fas fa-file-alt me-2"></i>Create Assignment
                         </button>
@@ -112,14 +112,40 @@
                                         <div class="card-body">
                                             <div class="d-flex justify-content-between align-items-start mb-2">
                                                 <h6 class="card-title mb-0">{{ course.title }}</h6>
-                                                <span class="badge bg-success">ID: {{ course.id }}</span>
+                                                <span class="badge bg-{{ 'success' if course.course_status == 'published' else 'warning' }}">
+                                                    {{ course.course_status.title() if course.course_status else 'Draft' }}
+                                                </span>
                                             </div>
-                                            <p class="card-text small text-muted">{{ course.description[:100] }}...</p>
-                                            <div class="d-flex justify-content-between align-items-center">
+                                            
+                                            <div class="mb-2">
+                                                {% if course.programming_language %}
+                                                    <span class="badge bg-info me-1">{{ course.programming_language }}</span>
+                                                {% endif %}
+                                                {% if course.difficulty_level %}
+                                                    <span class="badge bg-secondary">{{ course.difficulty_level }}</span>
+                                                {% endif %}
+                                            </div>
+                                            
+                                            <p class="card-text small text-muted">
+                                                {{ (course.description[:100] + '...') if course.description and course.description|length > 100 else (course.description or 'No description available') }}
+                                            </p>
+                                            
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
                                                 <small class="text-muted">
                                                     <i class="fas fa-users me-1"></i>{{ course.enrollments|length }} students
+                                                    {% if course.estimated_hours %}
+                                                        | <i class="fas fa-clock me-1"></i>{{ course.estimated_hours }}h
+                                                    {% endif %}
                                                 </small>
-                                                <a href="#" class="btn btn-sm btn-outline-success">Manage</a>
+                                            </div>
+                                            
+                                            <div class="btn-group w-100">
+                                                <a href="{{ url_for('view_course', course_id=course.id) }}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-eye me-1"></i>View
+                                                </a>
+                                                <a href="{{ url_for('edit_course', course_id=course.id) }}" class="btn btn-sm btn-outline-secondary">
+                                                    <i class="fas fa-edit me-1"></i>Edit
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
@@ -131,9 +157,9 @@
                             <i class="fas fa-chalkboard fa-3x text-muted mb-3"></i>
                             <h6 class="text-muted">No courses created yet</h6>
                             <p class="text-muted small">Create your first course to get started!</p>
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCourseModal">
+                            <a href="{{ url_for('create_course') }}" class="btn btn-primary">
                                 <i class="fas fa-plus me-1"></i>Create Course
-                            </button>
+                            </a>
                         </div>
                     {% endif %}
                 </div>
@@ -205,35 +231,7 @@
     </div>
 </div>
 
-<!-- Create Course Modal -->
-<div class="modal fade" id="createCourseModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Create New Course</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form method="POST" action="{{ url_for('create_course') }}">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="title" class="form-label">Course Title</label>
-                        <input type="text" class="form-control" name="title" id="title" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="description" class="form-label">Description</label>
-                        <textarea class="form-control" name="description" id="description" rows="3"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-plus me-1"></i>Create Course
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+
 
 <!-- Create Assignment Modal -->
 <div class="modal fade" id="createAssignmentModal" tabindex="-1">

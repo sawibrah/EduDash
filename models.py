@@ -61,8 +61,18 @@ class Course(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text, nullable=True)
+    content = db.Column(db.Text, nullable=True)  # Markdown content
+    difficulty_level = db.Column(db.String(50), nullable=True)  # Beginner, Intermediate, Advanced
+    programming_language = db.Column(db.String(50), nullable=True)  # Python, JavaScript, etc.
+    estimated_hours = db.Column(db.Integer, nullable=True)  # Course duration in hours
+    prerequisites = db.Column(db.Text, nullable=True)  # Prerequisites as text
+    learning_objectives = db.Column(db.Text, nullable=True)  # What students will learn
+    course_status = db.Column(db.String(20), default='draft')  # draft, published, archived
+    pdf_generated = db.Column(db.Boolean, default=False)
+    pdf_path = db.Column(db.String(255), nullable=True)  # Path to generated PDF
     teacher_id = db.Column(db.String, db.ForeignKey(User.id), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now)
+    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
     teacher = db.relationship(User, backref='courses')
 
 # Student enrollments
