@@ -19,12 +19,26 @@
                     <span class="badge bg-secondary">{{ course.difficulty_level }}</span>
                 {% endif %}
             </div>
-            <p class="text-muted mb-0">
+            <p class="text-muted mb-2">
                 <i class="fas fa-calendar me-1"></i>Created: {{ course.created_at.strftime('%B %d, %Y') }}
                 {% if course.updated_at != course.created_at %}
                     | Updated: {{ course.updated_at.strftime('%B %d, %Y') }}
                 {% endif %}
             </p>
+            <!-- Course ID for Student Enrollment -->
+            <div class="alert alert-info py-2 mb-0">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="fas fa-key me-2"></i>
+                        <strong>Course ID for Student Enrollment:</strong> 
+                        <span class="fw-bold text-primary">{{ course.id }}</span>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary" onclick="copyToClipboard('{{ course.id }}')">
+                        <i class="fas fa-copy me-1"></i>Copy ID
+                    </button>
+                </div>
+                <small class="text-muted d-block mt-1">Share this ID with students so they can enroll in your course</small>
+            </div>
         </div>
         <div class="btn-group">
             <a href="{{ url_for('view_course_slides', course_id=course.id) }}" class="btn btn-info text-white" target="_blank">
@@ -232,6 +246,28 @@
         </div>
     </div>
 </div>
+
+<script>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        // Show success feedback
+        const btn = event.target.closest('button');
+        const originalContent = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check me-1"></i>Copied!';
+        btn.classList.remove('btn-outline-primary');
+        btn.classList.add('btn-success');
+        
+        setTimeout(() => {
+            btn.innerHTML = originalContent;
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-outline-primary');
+        }, 2000);
+    }, function(err) {
+        console.error('Could not copy text: ', err);
+        alert('Failed to copy to clipboard');
+    });
+}
+</script>
 {% endblock %}
 
 {% block scripts %}

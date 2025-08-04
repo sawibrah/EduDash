@@ -1,4 +1,4 @@
-from flask import session, render_template, request, redirect, url_for, flash, send_file
+from flask import session, render_template, request, redirect, url_for, flash, send_file, jsonify
 from flask_login import current_user, login_user
 from app import app, db
 from replit_auth import require_login, require_role, make_replit_blueprint
@@ -606,6 +606,32 @@ def enroll_course():
     
     flash(f'Successfully enrolled in {course.title}!', 'success')
     return redirect(url_for('student_dashboard'))
+
+@app.route('/api/available-courses')
+@require_role('student')
+def available_courses_api():
+    # Get all published courses that the student is not already enrolled in
+    enrolled_course_ids = [enrollment.course_id for enrollment in 
+                          Enrollment.query.filter_by(student_id=current_user.id).all()]
+    
+    available_courses = Course.query.filter(
+        Course.course_status == 'published',
+        ~Course.id.in_(enrolled_course_ids)
+    ).all()
+    
+    courses_data = []
+    for course in available_courses:
+        courses_data.append({
+            'id': course.id,
+            'title': course.title,
+            'description': course.description,
+            'programming_language': course.programming_language,
+            'difficulty_level': course.difficulty_level,
+            'estimated_hours': course.estimated_hours,
+            'teacher_name': f"{course.teacher.first_name} {course.teacher.last_name}" if course.teacher else "Unknown"
+        })
+    
+    return jsonify(courses_data)
 
 @app.route('/courses')
 @require_login
