@@ -50,18 +50,16 @@ def register_role():
         
         # Create role-specific profile
         if role == 'student':
-            student_profile = StudentProfile(
-                user_id=current_user.id,
-                student_id=f"STU{current_user.id[:8]}",
-                grade_level=request.form.get('grade_level', '9th Grade')
-            )
+            student_profile = StudentProfile()
+            student_profile.user_id = current_user.id
+            student_profile.student_id = f"STU{current_user.id[:8]}"
+            student_profile.grade_level = request.form.get('grade_level', '9th Grade')
             db.session.add(student_profile)
         elif role == 'teacher':
-            teacher_profile = TeacherProfile(
-                user_id=current_user.id,
-                employee_id=f"EMP{current_user.id[:8]}",
-                department=request.form.get('department', 'General')
-            )
+            teacher_profile = TeacherProfile()
+            teacher_profile.user_id = current_user.id
+            teacher_profile.employee_id = f"EMP{current_user.id[:8]}"
+            teacher_profile.department = request.form.get('department', 'General')
             db.session.add(teacher_profile)
         
         db.session.commit()
@@ -131,11 +129,10 @@ def create_course():
             flash('Course title is required.', 'error')
             return redirect(url_for('create_course'))
         
-        course = Course(
-            title=title,
-            description=description,
-            teacher_id=current_user.id
-        )
+        course = Course()
+        course.title = title
+        course.description = description
+        course.teacher_id = current_user.id
         db.session.add(course)
         db.session.commit()
         
@@ -170,12 +167,11 @@ def create_assignment():
             flash('Invalid due date format.', 'error')
             return redirect(url_for('teacher_dashboard'))
     
-    assignment = Assignment(
-        title=title,
-        description=description,
-        course_id=course_id,
-        due_date=due_date
-    )
+    assignment = Assignment()
+    assignment.title = title
+    assignment.description = description
+    assignment.course_id = course_id
+    assignment.due_date = due_date
     db.session.add(assignment)
     db.session.commit()
     
@@ -207,10 +203,9 @@ def enroll_course():
         flash('You are already enrolled in this course.', 'warning')
         return redirect(url_for('student_dashboard'))
     
-    enrollment = Enrollment(
-        student_id=current_user.id,
-        course_id=course_id
-    )
+    enrollment = Enrollment()
+    enrollment.student_id = current_user.id
+    enrollment.course_id = course_id
     db.session.add(enrollment)
     db.session.commit()
     
