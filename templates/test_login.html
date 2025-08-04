@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Test Login - EduPortal{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 mt-5">
+                <div class="card-header bg-warning text-dark text-center py-4">
+                    <h3 class="mb-0">
+                        <i class="fas fa-flask me-2"></i>Test User Login
+                    </h3>
+                    <small>Quick access for development testing</small>
+                </div>
+                <div class="card-body p-5">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Development Mode:</strong> Use these test accounts to quickly switch between teacher and student views.
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <form method="POST" action="{{ url_for('test_login') }}">
+                                <input type="hidden" name="test_user" value="teacher">
+                                <div class="card test-user-card border-success h-100">
+                                    <div class="card-body text-center">
+                                        <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                            <i class="fas fa-chalkboard-teacher fa-2x"></i>
+                                        </div>
+                                        <h5 class="card-title">Teacher Account</h5>
+                                        <p class="card-text small text-muted">Sarah Johnson<br>Computer Science Dept.</p>
+                                        <button type="submit" class="btn btn-success w-100">
+                                            <i class="fas fa-sign-in-alt me-2"></i>Login as Teacher
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <form method="POST" action="{{ url_for('test_login') }}">
+                                <input type="hidden" name="test_user" value="student">
+                                <div class="card test-user-card border-primary h-100">
+                                    <div class="card-body text-center">
+                                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                            <i class="fas fa-user-graduate fa-2x"></i>
+                                        </div>
+                                        <h5 class="card-title">Student Account</h5>
+                                        <p class="card-text small text-muted">Alex Chen<br>12th Grade Student</p>
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            <i class="fas fa-sign-in-alt me-2"></i>Login as Student
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="text-center">
+                        <h6 class="text-muted mb-3">Current Data Available:</h6>
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <strong class="text-success">3</strong><br>
+                                <small class="text-muted">Courses</small>
+                            </div>
+                            <div class="col-4">
+                                <strong class="text-warning">5</strong><br>
+                                <small class="text-muted">Assignments</small>
+                            </div>
+                            <div class="col-4">
+                                <strong class="text-info">2</strong><br>
+                                <small class="text-muted">Enrollments</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.test-user-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.test-user-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+</style>
+{% endblock %}

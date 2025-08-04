@@ -1,5 +1,5 @@
 from flask import session, render_template, request, redirect, url_for, flash
-from flask_login import current_user
+from flask_login import current_user, login_user
 from app import app, db
 from replit_auth import require_login, require_role, make_replit_blueprint
 from models import User, StudentProfile, TeacherProfile, Course, Enrollment, Assignment
@@ -217,6 +217,35 @@ def enroll_course():
 def browse_courses():
     courses = Course.query.all()
     return render_template('browse_courses.html', courses=courses)
+
+@app.route('/test-login', methods=['GET', 'POST'])
+def test_login():
+    """Development-only route for quick testing with predefined users"""
+    if request.method == 'POST':
+        test_user = request.form.get('test_user')
+        
+        if test_user == 'teacher':
+            user = User.query.get('teacher_test_001')
+        elif test_user == 'student':
+            user = User.query.get('student_test_001')
+        else:
+            flash('Invalid test user selected.', 'error')
+            return redirect(url_for('test_login'))
+        
+        if user:
+            login_user(user)
+            flash(f'Logged in as {user.first_name} {user.last_name} ({user.role})', 'success')
+            
+            # Redirect to appropriate dashboard
+            if user.role == 'student':
+                return redirect(url_for('student_dashboard'))
+            elif user.role == 'teacher':
+                return redirect(url_for('teacher_dashboard'))
+        else:
+            flash('Test user not found.', 'error')
+            return redirect(url_for('test_login'))
+    
+    return render_template('test_login.html')
 
 @app.errorhandler(403)
 def forbidden(error):
