@@ -270,6 +270,81 @@ def download_course_pdf(course_id):
     pdf_filename = f"course_{course_id}_{secure_filename(course.title)}.pdf"
     return send_file(course.pdf_path, as_attachment=True, download_name=pdf_filename)
 
+@app.route('/student/course/<int:course_id>/download-pdf')
+@require_role('student')
+def student_download_course_pdf(course_id):
+    # Check if student is enrolled in the course
+    enrollment = Enrollment.query.filter_by(course_id=course_id, student_id=current_user.id).first()
+    if not enrollment:
+        flash('You are not enrolled in this course.', 'error')
+        return redirect(url_for('student_dashboard'))
+    
+    course = Course.query.get_or_404(course_id)
+    
+    # Generate PDF if it doesn't exist or regenerate it
+    try:
+        # Ensure pdf directory exists
+        pdf_dir = os.path.join(app.root_path, 'static', 'pdfs')
+        os.makedirs(pdf_dir, exist_ok=True)
+        
+        # Convert markdown to HTML
+        content_html = markdown.markdown(
+            course.content or 'No content available.',
+            extensions=['codehilite', 'fenced_code']
+        )
+        
+        # Create HTML template for PDF
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>{course.title}</title>
+            <meta charset="UTF-8">
+            <style>
+                body {{ font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }}
+                h1 {{ color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }}
+                h2 {{ color: #34495e; margin-top: 30px; }}
+                h3 {{ color: #7f8c8d; }}
+                .course-info {{ background: #f8f9fa; padding: 20px; border-radius: 5px; margin: 20px 0; }}
+                .course-info p {{ margin: 5px 0; }}
+                code {{ background: #f1f2f6; padding: 2px 4px; border-radius: 3px; font-family: monospace; }}
+                pre {{ background: #2f3640; color: #f1f2f6; padding: 15px; border-radius: 5px; overflow-x: auto; }}
+                pre code {{ background: none; padding: 0; }}
+                .content {{ margin-top: 30px; }}
+                @page {{ size: A4; margin: 2cm; }}
+            </style>
+        </head>
+        <body>
+            <h1>{course.title}</h1>
+            <div class="course-info">
+                <p><strong>Description:</strong> {course.description or 'No description provided'}</p>
+                <p><strong>Programming Language:</strong> {course.programming_language or 'Not specified'}</p>
+                <p><strong>Difficulty Level:</strong> {course.difficulty_level or 'Not specified'}</p>
+                <p><strong>Estimated Hours:</strong> {course.estimated_hours or 'Not specified'}</p>
+                <p><strong>Prerequisites:</strong> {course.prerequisites or 'None'}</p>
+                <p><strong>Learning Objectives:</strong> {course.learning_objectives or 'Not specified'}</p>
+            </div>
+            <div class="content">
+                <h2>Course Content</h2>
+                {content_html}
+            </div>
+        </body>
+        </html>
+        """
+        
+        # Generate PDF
+        pdf_filename = f"course_{course_id}_{secure_filename(course.title)}.pdf"
+        pdf_path = os.path.join(pdf_dir, pdf_filename)
+        
+        # Create PDF from HTML using WeasyPrint
+        weasyprint.HTML(string=html_content).write_pdf(pdf_path)
+        
+        return send_file(pdf_path, as_attachment=True, download_name=pdf_filename)
+        
+    except Exception as e:
+        flash(f'Error generating PDF: {str(e)}', 'error')
+        return redirect(url_for('student_dashboard'))
+
 @app.route('/course/<int:course_id>/slides')
 def view_course_slides(course_id):
     # For now, allow public access for testing - we can restrict later
