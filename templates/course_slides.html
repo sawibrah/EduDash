@@ -211,7 +211,7 @@
 <body>
     <!-- Controls -->
     <button class="theme-toggle" onclick="toggleTheme()">🌙 Dark</button>
-    <a href="{{ url_for('view_course', course_id=course.id) if current_user.role == 'teacher' else url_for('student_dashboard') }}" class="back-link">
+    <a href="{{ url_for('view_course', course_id=course.id) if current_user.is_authenticated and current_user.role == 'teacher' else (url_for('student_dashboard') if current_user.is_authenticated else url_for('index')) }}" class="back-link">
         ← Back
     </a>
     <div class="slide-navigation">
