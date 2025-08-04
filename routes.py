@@ -440,20 +440,19 @@ def student_download_course_pdf(course_id):
 
 @app.route('/course/<int:course_id>/slides')
 def view_course_slides(course_id):
-    # For now, allow public access for testing - we can restrict later
-    if current_user.is_authenticated:
-        # Check if user is enrolled or is the teacher
-        if current_user.role == 'teacher':
-            course = Course.query.filter_by(id=course_id, teacher_id=current_user.id).first_or_404()
-        else:
-            # Student access - check enrollment
-            enrollment = Enrollment.query.filter_by(course_id=course_id, student_id=current_user.id).first()
-            if not enrollment:
-                flash('You are not enrolled in this course.', 'error')
-                return redirect(url_for('index'))
-            course = Course.query.get_or_404(course_id)
+    # Check authentication but handle gracefully
+    if not current_user.is_authenticated:
+        return redirect(url_for('replit_auth.login'))
+    
+    # Check if user is enrolled or is the teacher
+    if current_user.role == 'teacher':
+        course = Course.query.filter_by(id=course_id, teacher_id=current_user.id).first_or_404()
     else:
-        # For demo purposes, allow unauthenticated access to slides
+        # Student access - check enrollment
+        enrollment = Enrollment.query.filter_by(course_id=course_id, student_id=current_user.id).first()
+        if not enrollment:
+            flash('You are not enrolled in this course.', 'error')
+            return redirect(url_for('student_dashboard'))
         course = Course.query.get_or_404(course_id)
     
     return render_template('course_slides.html', course=course)
