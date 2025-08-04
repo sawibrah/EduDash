@@ -1,0 +1,162 @@
+/* Custom styles for EduPortal */
+
+/* Role selection cards */
+.role-card {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.role-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.role-card.border-primary {
+    border-width: 2px !important;
+}
+
+/* Hero section styling */
+.hero-section {
+    background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-primary-dark, #0056b3) 100%);
+}
+
+/* Card hover effects */
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+/* Profile image styling */
+.profile-image {
+    width: 24px;
+    height: 24px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* Custom scrollbar for tables */
+.table-responsive {
+    scrollbar-width: thin;
+    scrollbar-color: var(--bs-primary) transparent;
+}
+
+.table-responsive::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background-color: var(--bs-primary);
+    border-radius: 4px;
+}
+
+/* Loading states */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Badge styling */
+.badge {
+    font-size: 0.75em;
+}
+
+/* Form validation */
+.is-invalid {
+    border-color: #dc3545;
+}
+
+.invalid-feedback {
+    display: block;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 3rem 0 !important;
+    }
+    
+    .display-4 {
+        font-size: 2.5rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+}
+
+/* Dark theme adjustments */
+[data-bs-theme="dark"] .card {
+    background-color: var(--bs-dark);
+    border-color: var(--bs-gray-600);
+}
+
+[data-bs-theme="dark"] .table {
+    --bs-table-bg: transparent;
+}
+
+[data-bs-theme="dark"] .modal-content {
+    background-color: var(--bs-dark);
+    border-color: var(--bs-gray-600);
+}
+
+/* Animation classes */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Success/error states */
+.alert {
+    border: none;
+    border-radius: 0.5rem;
+}
+
+/* Custom button styles */
+.btn-outline-primary:hover,
+.btn-outline-success:hover,
+.btn-outline-info:hover,
+.btn-outline-warning:hover,
+.btn-outline-danger:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Statistics cards */
+.stats-card {
+    background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-primary-dark, #0056b3) 100%);
+}
+
+/* Course cards */
+.course-card {
+    border-left: 4px solid var(--bs-primary);
+    transition: all 0.3s ease;
+}
+
+.course-card:hover {
+    border-left-color: var(--bs-success);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Assignment status indicators */
+.assignment-pending {
+    border-left: 3px solid var(--bs-warning);
+}
+
+.assignment-completed {
+    border-left: 3px solid var(--bs-success);
+}
+
+.assignment-overdue {
+    border-left: 3px solid var(--bs-danger);
+}

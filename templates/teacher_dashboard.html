@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+
+{% block title %}Teacher Dashboard - EduPortal{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">
+                <i class="fas fa-chalkboard-teacher me-2 text-success"></i>Teacher Dashboard
+            </h2>
+            <p class="text-muted mb-0">Welcome back, {{ current_user.first_name or 'Teacher' }}!</p>
+        </div>
+        <div class="text-end">
+            {% if current_user.teacher_profile %}
+                <small class="text-muted">Employee ID: {{ current_user.teacher_profile[0].employee_id }}</small>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Quick Stats -->
+        <div class="col-md-4 mb-4">
+            <div class="card bg-success text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title mb-0">My Courses</h6>
+                            <h2 class="mb-0">{{ courses|length }}</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-book fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card bg-info text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title mb-0">Total Students</h6>
+                            <h2 class="mb-0">{{ total_students }}</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-users fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card bg-warning text-dark h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title mb-0">Assignments</h6>
+                            <h2 class="mb-0">{{ assignments|length }}</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-tasks fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Quick Actions -->
+        <div class="col-lg-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCourseModal">
+                            <i class="fas fa-plus me-2"></i>Create Course
+                        </button>
+                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createAssignmentModal">
+                            <i class="fas fa-file-alt me-2"></i>Create Assignment
+                        </button>
+                        <button class="btn btn-info text-white">
+                            <i class="fas fa-chart-bar me-2"></i>View Analytics
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Courses -->
+        <div class="col-lg-8 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-graduation-cap me-2"></i>My Courses
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if courses %}
+                        <div class="row">
+                            {% for course in courses %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="card border-start border-success border-4">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <h6 class="card-title mb-0">{{ course.title }}</h6>
+                                                <span class="badge bg-success">ID: {{ course.id }}</span>
+                                            </div>
+                                            <p class="card-text small text-muted">{{ course.description[:100] }}...</p>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-users me-1"></i>{{ course.enrollments|length }} students
+                                                </small>
+                                                <a href="#" class="btn btn-sm btn-outline-success">Manage</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-chalkboard fa-3x text-muted mb-3"></i>
+                            <h6 class="text-muted">No courses created yet</h6>
+                            <p class="text-muted small">Create your first course to get started!</p>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCourseModal">
+                                <i class="fas fa-plus me-1"></i>Create Course
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Assignments -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clock me-2"></i>Recent Assignments
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if assignments %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Assignment</th>
+                                        <th>Course</th>
+                                        <th>Due Date</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for assignment in assignments %}
+                                        <tr>
+                                            <td>
+                                                <strong>{{ assignment.title }}</strong>
+                                                {% if assignment.description %}
+                                                    <br><small class="text-muted">{{ assignment.description[:50] }}...</small>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ assignment.course.title }}</td>
+                                            <td>
+                                                {% if assignment.due_date %}
+                                                    <span class="badge bg-warning text-dark">
+                                                        {{ assignment.due_date.strftime('%b %d, %Y') }}
+                                                    </span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">No due date</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ assignment.created_at.strftime('%b %d, %Y') }}</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                                <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+                            <h6 class="text-muted">No assignments created yet</h6>
+                            <p class="text-muted small">Create assignments for your courses to engage students!</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Course Modal -->
+<div class="modal fade" id="createCourseModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create New Course</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('create_course') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Course Title</label>
+                        <input type="text" class="form-control" name="title" id="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" name="description" id="description" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i>Create Course
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Create Assignment Modal -->
+<div class="modal fade" id="createAssignmentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create New Assignment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('create_assignment') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="assignment_title" class="form-label">Assignment Title</label>
+                        <input type="text" class="form-control" name="title" id="assignment_title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="assignment_course" class="form-label">Course</label>
+                        <select class="form-select" name="course_id" id="assignment_course" required>
+                            <option value="">Select a course</option>
+                            {% for course in courses %}
+                                <option value="{{ course.id }}">{{ course.title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="assignment_description" class="form-label">Description</label>
+                        <textarea class="form-control" name="description" id="assignment_description" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="due_date" class="form-label">Due Date (Optional)</label>
+                        <input type="date" class="form-control" name="due_date" id="due_date">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-plus me-1"></i>Create Assignment
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
