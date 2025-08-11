@@ -637,12 +637,12 @@ def remove_student(course_id, student_id):
 @app.route('/teacher/assignment/<int:assignment_id>/edit', methods=['POST'])
 @require_role('teacher')
 def edit_assignment(assignment_id):
-    # Get the assignment and verify teacher owns it
+    # Get the assignment and verify teacher owns it through course ownership
     assignment = Assignment.query.get_or_404(assignment_id)
     course = Course.query.filter_by(id=assignment.course_id, teacher_id=current_user.id).first()
     
     if not course:
-        flash('You do not have permission to edit this assignment.', 'error')
+        flash('You do not have permission to edit this assignment. Only the teacher who created the course can manage its assignments.', 'error')
         return redirect(url_for('teacher_dashboard'))
     
     # Update assignment fields
@@ -683,12 +683,12 @@ def edit_assignment(assignment_id):
 @app.route('/teacher/assignment/<int:assignment_id>/delete', methods=['POST'])
 @require_role('teacher')
 def delete_assignment(assignment_id):
-    # Get the assignment and verify teacher owns it
+    # Get the assignment and verify teacher owns it through course ownership
     assignment = Assignment.query.get_or_404(assignment_id)
     course = Course.query.filter_by(id=assignment.course_id, teacher_id=current_user.id).first()
     
     if not course:
-        flash('You do not have permission to delete this assignment.', 'error')
+        flash('You do not have permission to delete this assignment. Only the teacher who created the course can manage its assignments.', 'error')
         return redirect(url_for('teacher_dashboard'))
     
     assignment_title = assignment.title
