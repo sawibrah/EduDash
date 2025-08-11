@@ -563,6 +563,43 @@ def edit_course(course_id):
     
     return render_template('teacher_edit_course.html', course=course)
 
+@app.route('/teacher/course/<int:course_id>/delete', methods=['POST'])
+@require_role('teacher')
+def delete_course(course_id):
+    course = Course.query.filter_by(id=course_id, teacher_id=current_user.id).first_or_404()
+    
+    try:
+        # Delete associated uploaded files if they exist
+        if course.uploaded_file_path and os.path.exists(course.uploaded_file_path):
+            os.remove(course.uploaded_file_path)
+        
+        # Delete generated PDF if it exists
+        if course.pdf_path and os.path.exists(course.pdf_path):
+            os.remove(course.pdf_path)
+        
+        # Delete course assignments first (due to foreign key constraints)
+        assignments = Assignment.query.filter_by(course_id=course_id).all()
+        for assignment in assignments:
+            db.session.delete(assignment)
+        
+        # Delete enrollments
+        enrollments = Enrollment.query.filter_by(course_id=course_id).all()
+        for enrollment in enrollments:
+            db.session.delete(enrollment)
+        
+        # Finally delete the course
+        course_title = course.title
+        db.session.delete(course)
+        db.session.commit()
+        
+        flash(f'Course "{course_title}" deleted successfully!', 'success')
+    
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error deleting course: {str(e)}', 'error')
+    
+    return redirect(url_for('teacher_dashboard'))
+
 @app.route('/course/<int:course_id>/download-slides')
 @require_login
 def download_course_slides(course_id):
