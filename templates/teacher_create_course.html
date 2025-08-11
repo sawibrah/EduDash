@@ -180,7 +180,7 @@ hello_world()
 
 ## Module 2: Advanced Topics
 
-...">{% if template_content %}{{ template_content }}{% endif %}</textarea>
+...">{{ template_content if template_content else '' }}</textarea>
                                     <div class="form-text">
                                         <small>
                                             <strong>Markdown Tips:</strong> Use # for headings, ``` for code blocks, 
