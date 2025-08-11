@@ -231,9 +231,26 @@ def student_dashboard():
     # Sort assignments by due date
     assignments.sort(key=lambda x: x.due_date if x.due_date else datetime.max)
     
+    # Get available quizzes for enrolled courses
+    quizzes = []
+    for course in enrolled_courses:
+        course_quizzes = Quiz.query.filter_by(course_id=course.id, is_active=True).all()
+        # Filter out quizzes already submitted
+        for quiz in course_quizzes:
+            existing_submission = CodeSubmission.query.filter_by(
+                quiz_id=quiz.id,
+                student_id=current_user.id
+            ).first()
+            if not existing_submission:
+                quizzes.append(quiz)
+    
+    # Sort quizzes by due date
+    quizzes.sort(key=lambda x: x.due_date if x.due_date else datetime.max)
+    
     return render_template('student_dashboard.html', 
                          courses=enrolled_courses, 
-                         assignments=assignments[:5])  # Show only next 5 assignments
+                         assignments=assignments[:5],
+                         quizzes=quizzes[:5])  # Show only next 5 assignments and quizzes
 
 @app.route('/teacher/dashboard')
 @require_role('teacher')
@@ -255,9 +272,19 @@ def teacher_dashboard():
     for course in courses:
         total_students += len(course.enrollments)
     
+    # Get recent quizzes
+    quizzes = []
+    for course in courses:
+        course_quizzes = Quiz.query.filter_by(course_id=course.id).all()
+        quizzes.extend(course_quizzes)
+    
+    # Sort quizzes by creation date
+    quizzes.sort(key=lambda x: x.created_at, reverse=True)
+    
     return render_template('teacher_dashboard.html', 
                          courses=courses, 
                          assignments=assignments[:5],
+                         quizzes=quizzes[:5],
                          total_students=total_students)
 
 def generate_5_slide_template(title="", programming_language=""):

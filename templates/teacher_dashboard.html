@@ -58,11 +58,11 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
-                            <h6 class="card-title mb-0">Assignments</h6>
-                            <h2 class="mb-0">{{ assignments|length }}</h2>
+                            <h6 class="card-title mb-0">Code Quizzes</h6>
+                            <h2 class="mb-0">{{ quizzes|length if quizzes else 0 }}</h2>
                         </div>
                         <div class="align-self-center">
-                            <i class="fas fa-tasks fa-2x opacity-75"></i>
+                            <i class="fas fa-code fa-2x opacity-75"></i>
                         </div>
                     </div>
                 </div>
@@ -87,8 +87,8 @@
                         <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createAssignmentModal">
                             <i class="fas fa-file-alt me-2"></i>Create Assignment
                         </button>
-                        <button class="btn btn-info text-white">
-                            <i class="fas fa-chart-bar me-2"></i>View Analytics
+                        <button class="btn btn-warning text-dark" data-bs-toggle="modal" data-bs-target="#createQuizModal">
+                            <i class="fas fa-code me-2"></i>Create Code Quiz
                         </button>
                     </div>
                 </div>
@@ -143,16 +143,12 @@
                                                 <a href="{{ url_for('view_course', course_id=course.id) }}" class="btn btn-sm btn-outline-primary">
                                                     <i class="fas fa-eye me-1"></i>View
                                                 </a>
+                                                <a href="{{ url_for('view_course_quizzes', course_id=course.id) }}" class="btn btn-sm btn-outline-warning">
+                                                    <i class="fas fa-code me-1"></i>Quizzes
+                                                </a>
                                                 <a href="{{ url_for('edit_course', course_id=course.id) }}" class="btn btn-sm btn-outline-secondary">
                                                     <i class="fas fa-edit me-1"></i>Edit
                                                 </a>
-                                                <button type="button" class="btn btn-sm btn-outline-danger" 
-                                                        data-bs-toggle="modal" 
-                                                        data-bs-target="#deleteCourseModal"
-                                                        data-course-id="{{ course.id }}"
-                                                        data-course-title="{{ course.title }}">
-                                                    <i class="fas fa-trash me-1"></i>Delete
-                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -174,10 +170,10 @@
         </div>
     </div>
 
-    <!-- Recent Assignments -->
+    <!-- Recent Assignments and Quizzes -->
     <div class="row">
-        <div class="col-12">
-            <div class="card">
+        <div class="col-lg-6">
+            <div class="card h-100">
                 <div class="card-header">
                     <h5 class="mb-0">
                         <i class="fas fa-clock me-2"></i>Recent Assignments
@@ -237,6 +233,73 @@
                             <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
                             <h6 class="text-muted">No assignments created yet</h6>
                             <p class="text-muted small">Create assignments for your courses to engage students!</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Quizzes -->
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-code me-2"></i>Recent Code Quizzes
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if quizzes %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Quiz</th>
+                                        <th>Course</th>
+                                        <th>Status</th>
+                                        <th>Submissions</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for quiz in quizzes %}
+                                        <tr>
+                                            <td>
+                                                <strong>{{ quiz.title }}</strong>
+                                                {% if quiz.programming_language %}
+                                                    <br><span class="badge bg-info">{{ quiz.programming_language }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ quiz.course.title }}</td>
+                                            <td>
+                                                {% if quiz.is_active %}
+                                                    <span class="badge bg-success">Active</span>
+                                                {% else %}
+                                                    <span class="badge bg-warning text-dark">Inactive</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-primary">{{ quiz.submissions|length }}</span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <a href="{{ url_for('view_quiz_submissions', quiz_id=quiz.id) }}" class="btn btn-sm btn-outline-primary">
+                                                        <i class="fas fa-eye me-1"></i>View
+                                                    </a>
+                                                    <a href="{{ url_for('edit_quiz', quiz_id=quiz.id) }}" class="btn btn-sm btn-outline-secondary">
+                                                        <i class="fas fa-edit me-1"></i>Edit
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-code fa-3x text-muted mb-3"></i>
+                            <h6 class="text-muted">No programming quizzes created yet</h6>
+                            <p class="text-muted small">Create code quizzes to test student programming skills!</p>
                         </div>
                     {% endif %}
                 </div>
@@ -391,5 +454,60 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
+<!-- Create Quiz Modal -->
+<div class="modal fade" id="createQuizModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-code me-2"></i>Create Code Quiz
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Select a course to start creating a programming quiz with code editor
+                </div>
+                
+                {% if courses %}
+                    <div class="row">
+                        {% for course in courses %}
+                            <div class="col-md-6 mb-3">
+                                <div class="card border-warning">
+                                    <div class="card-body">
+                                        <h6 class="card-title">{{ course.title }}</h6>
+                                        {% if course.programming_language %}
+                                            <span class="badge bg-info mb-2">{{ course.programming_language }}</span>
+                                        {% endif %}
+                                        <p class="card-text small text-muted">
+                                            {{ (course.description[:80] + '...') if course.description and course.description|length > 80 else (course.description or 'No description') }}
+                                        </p>
+                                        <a href="{{ url_for('create_quiz', course_id=course.id) }}" class="btn btn-warning text-dark btn-sm">
+                                            <i class="fas fa-plus me-1"></i>Create Quiz for this Course
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-graduation-cap fa-3x text-muted mb-3"></i>
+                        <h6 class="text-muted">No courses available</h6>
+                        <p class="text-muted small">Create a course first before adding quizzes</p>
+                        <a href="{{ url_for('create_course') }}" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i>Create Course
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}

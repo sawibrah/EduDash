@@ -58,11 +58,11 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
-                            <h6 class="card-title mb-0">Progress</h6>
-                            <h2 class="mb-0">85%</h2>
+                            <h6 class="card-title mb-0">Available Quizzes</h6>
+                            <h2 class="mb-0">{{ quizzes|length if quizzes else 0 }}</h2>
                         </div>
                         <div class="align-self-center">
-                            <i class="fas fa-chart-line fa-2x opacity-75"></i>
+                            <i class="fas fa-code fa-2x opacity-75"></i>
                         </div>
                     </div>
                 </div>
@@ -72,7 +72,7 @@
 
     <div class="row">
         <!-- My Courses -->
-        <div class="col-lg-8 mb-4">
+        <div class="col-lg-6 mb-4">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">
@@ -141,8 +141,64 @@
             </div>
         </div>
 
-        <!-- Upcoming Assignments -->
-        <div class="col-lg-4 mb-4">
+        <!-- Available Code Quizzes -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-code me-2"></i>Available Code Quizzes
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if quizzes %}
+                        <div class="list-group list-group-flush">
+                            {% for quiz in quizzes %}
+                                <div class="list-group-item border-0 px-0">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">{{ quiz.title }}</h6>
+                                            <p class="mb-1 small text-muted">{{ quiz.course.title }}</p>
+                                            <div class="mb-1">
+                                                {% if quiz.programming_language %}
+                                                    <span class="badge bg-info">{{ quiz.programming_language }}</span>
+                                                {% endif %}
+                                                {% if quiz.difficulty %}
+                                                    <span class="badge bg-secondary">{{ quiz.difficulty }}</span>
+                                                {% endif %}
+                                            </div>
+                                            {% if quiz.due_date %}
+                                                <small class="text-warning">
+                                                    <i class="fas fa-calendar me-1"></i>Due: {{ quiz.due_date.strftime('%b %d, %Y') }}
+                                                </small>
+                                            {% else %}
+                                                <small class="text-muted">
+                                                    <i class="fas fa-infinity me-1"></i>No due date
+                                                </small>
+                                            {% endif %}
+                                        </div>
+                                        <div>
+                                            <a href="{{ url_for('take_quiz', quiz_id=quiz.id) }}" class="btn btn-sm btn-success">
+                                                <i class="fas fa-play me-1"></i>Start
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-3">
+                            <i class="fas fa-code fa-2x text-muted mb-2"></i>
+                            <p class="text-muted small mb-0">No programming quizzes available</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Upcoming Assignments -->
+    <div class="row">
+        <div class="col-12 mb-4">
             <div class="card">
                 <div class="card-header">
                     <h5 class="mb-0">
