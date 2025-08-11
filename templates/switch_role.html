@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}Switch Role - EduPortal{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 mt-5">
+                <div class="card-header bg-warning text-dark text-center py-4">
+                    <h3 class="mb-0">
+                        <i class="fas fa-user-edit me-2"></i>Switch Your Role
+                    </h3>
+                </div>
+                <div class="card-body p-5">
+                    <div class="alert alert-info mb-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Current Role:</strong> {{ user_role.title() }}
+                        <br><small>You can switch to a different role if needed. This will change your dashboard and available features.</small>
+                    </div>
+                    
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="card role-card border" onclick="selectRole('student')">
+                                    <div class="card-body text-center p-4">
+                                        <input type="radio" name="role" value="student" id="student" class="d-none">
+                                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                            <i class="fas fa-user-graduate fa-2x"></i>
+                                        </div>
+                                        <h5 class="card-title">Student</h5>
+                                        <p class="card-text small">Access courses, assignments, and track your academic progress.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <div class="card role-card border" onclick="selectRole('teacher')">
+                                    <div class="card-body text-center p-4">
+                                        <input type="radio" name="role" value="teacher" id="teacher" class="d-none">
+                                        <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                            <i class="fas fa-chalkboard-teacher fa-2x"></i>
+                                        </div>
+                                        <h5 class="card-title">Teacher</h5>
+                                        <p class="card-text small">Create courses, manage assignments, and monitor student progress.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="additional-info mb-4" id="student-info" style="display: none;">
+                            <div class="form-group">
+                                <label for="grade_level" class="form-label">Grade Level</label>
+                                <select class="form-select" name="grade_level" id="grade_level">
+                                    <option value="9th Grade">9th Grade</option>
+                                    <option value="10th Grade">10th Grade</option>
+                                    <option value="11th Grade">11th Grade</option>
+                                    <option value="12th Grade">12th Grade</option>
+                                    <option value="College">College</option>
+                                    <option value="Graduate">Graduate</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="additional-info mb-4" id="teacher-info" style="display: none;">
+                            <div class="form-group">
+                                <label for="department" class="form-label">Department</label>
+                                <input type="text" class="form-control" name="department" id="department" placeholder="e.g., Computer Science, Mathematics">
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-warning btn-lg" id="submit-btn" disabled>
+                                <i class="fas fa-exchange-alt me-2"></i>Switch Role
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="text-center mt-4">
+                        <a href="{% if user_role == 'student' %}{{ url_for('student_dashboard') }}{% else %}{{ url_for('teacher_dashboard') }}{% endif %}" class="text-muted">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function selectRole(role) {
+    // Clear previous selections
+    document.querySelectorAll('.role-card').forEach(card => {
+        card.classList.remove('border-primary', 'bg-light');
+    });
+    
+    // Select the clicked role
+    const selectedCard = event.currentTarget;
+    selectedCard.classList.add('border-primary', 'bg-light');
+    
+    // Set the radio button
+    document.getElementById(role).checked = true;
+    
+    // Show/hide additional info
+    const studentInfo = document.getElementById('student-info');
+    const teacherInfo = document.getElementById('teacher-info');
+    const submitBtn = document.getElementById('submit-btn');
+    
+    if (role === 'student') {
+        studentInfo.style.display = 'block';
+        teacherInfo.style.display = 'none';
+    } else if (role === 'teacher') {
+        studentInfo.style.display = 'none';
+        teacherInfo.style.display = 'block';
+    }
+    
+    // Enable submit button
+    submitBtn.disabled = false;
+}
+
+// Initialize with current role selected
+document.addEventListener('DOMContentLoaded', function() {
+    const currentRole = '{{ user_role }}';
+    if (currentRole === 'student') {
+        document.getElementById('student').checked = true;
+        document.querySelector('[onclick="selectRole(\'student\')"]').classList.add('border-primary', 'bg-light');
+        document.getElementById('student-info').style.display = 'block';
+    } else if (currentRole === 'teacher') {
+        document.getElementById('teacher').checked = true;
+        document.querySelector('[onclick="selectRole(\'teacher\')"]').classList.add('border-primary', 'bg-light');
+        document.getElementById('teacher-info').style.display = 'block';
+    }
+    document.getElementById('submit-btn').disabled = false;
+});
+</script>
+
+<style>
+.role-card {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.role-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.role-card.border-primary {
+    border-width: 2px !important;
+}
+</style>
+{% endblock %}

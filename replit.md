@@ -15,12 +15,13 @@ EduPortal is a comprehensive Learning Management System (LMS) built with Flask t
 - Student enrollment system with course ID sharing and browsing options
 - Teacher classroom management with student enrollment tracking and removal capabilities
 
-**Simplified Authentication System:**
-- Auto-role assignment based on email domain patterns (education domains → teacher, others → student)
-- Automatic profile creation during user registration through OAuth
-- Role switching capability allowing users to change between student/teacher roles as needed
-- Streamlined onboarding with optional manual role selection fallback
-- Database-driven user management with persistent role and profile data
+**Form-Based Authentication System:**
+- Custom user registration with username, email, password, and role selection
+- Traditional login/logout functionality with session management
+- Role-specific profile creation during registration (StudentProfile/TeacherProfile)
+- Role switching capability allowing users to change between student/teacher roles
+- Database-driven user management with password hashing and validation
+- Demo accounts available for testing (demo_student/demo_teacher with password123)
 
 ## User Preferences
 
@@ -34,14 +35,15 @@ Preferred communication style: Simple, everyday language.
 - **Blueprint Architecture** for modular authentication handling through Replit OAuth
 
 ### Authentication & Authorization
-- **Replit OAuth Integration** provides seamless single sign-on authentication
+- **Form-Based Authentication** with custom registration and login forms using Flask-WTF
 - **Flask-Login** manages user sessions and login state
 - **Role-Based Access Control** with decorator-based route protection (`@require_login`, `@require_role`)
-- **JWT Token Handling** for secure OAuth token management
-- **Session Management** with browser session key tracking for multi-device support
-- **Auto-Role Assignment** based on email domain patterns with fallback to student role
-- **Automatic Profile Creation** generates role-specific profiles during OAuth registration
+- **Password Security** using Werkzeug's password hashing with secure defaults
+- **Session Management** with persistent login sessions
+- **User Registration** with validation for unique usernames/emails and password strength
+- **Role-Specific Profiles** automatically created during registration based on selected role
 - **Role Switching System** allows users to change roles with profile management
+- **Demo Accounts** for easy testing and demonstration
 
 ### Database Architecture
 - **SQLAlchemy ORM** with declarative base model structure

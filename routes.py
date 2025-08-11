@@ -1,7 +1,8 @@
 from flask import session, render_template, request, redirect, url_for, flash, send_file, jsonify
-from flask_login import current_user, login_user
+from flask_login import current_user, login_user, logout_user
 from app import app, db
-from replit_auth import require_login, require_role, make_replit_blueprint
+from auth import require_login, require_role
+from forms import RegistrationForm, LoginForm, ProfileForm
 from models import User, StudentProfile, TeacherProfile, Course, Enrollment, Assignment
 from datetime import datetime
 import markdown
@@ -17,39 +18,113 @@ MAX_FILE_SIZE = 50 * 1024 * 1024  # 50MB
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-app.register_blueprint(make_replit_blueprint(), url_prefix="/auth")
+# Remove Replit OAuth blueprint
 
 # Make session permanent
 @app.before_request
 def make_session_permanent():
     session.permanent = True
 
+# Authentication Routes
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        # Create new user
+        user = User(
+            username=form.username.data,
+            email=form.email.data,
+            first_name=form.first_name.data,
+            last_name=form.last_name.data,
+            role=form.role.data
+        )
+        user.set_password(form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        
+        # Create role-specific profile
+        if form.role.data == 'student':
+            student_profile = StudentProfile(
+                user_id=user.id,
+                student_id=f"STU{user.id:08d}",
+                grade_level=form.grade_level.data
+            )
+            db.session.add(student_profile)
+        elif form.role.data == 'teacher':
+            teacher_profile = TeacherProfile(
+                user_id=user.id,
+                employee_id=f"EMP{user.id:08d}",
+                department=form.department.data
+            )
+            db.session.add(teacher_profile)
+        
+        db.session.commit()
+        flash(f'Registration successful! Welcome, {user.first_name}!', 'success')
+        login_user(user)
+        
+        # Redirect based on role
+        if user.role == 'student':
+            return redirect(url_for('student_dashboard'))
+        else:
+            return redirect(url_for('teacher_dashboard'))
+    
+    return render_template('register.html', form=form)
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user and user.check_password(form.password.data):
+            login_user(user)
+            next_page = request.args.get('next')
+            flash(f'Welcome back, {user.first_name}!', 'success')
+            
+            if next_page:
+                return redirect(next_page)
+            elif user.role == 'student':
+                return redirect(url_for('student_dashboard'))
+            else:
+                return redirect(url_for('teacher_dashboard'))
+        else:
+            flash('Invalid username or password.', 'error')
+    
+    return render_template('login.html', form=form)
+
+@app.route('/logout')
+@require_login
+def logout():
+    user_name = current_user.first_name
+    logout_user()
+    flash(f'You have been logged out, {user_name}. See you next time!', 'info')
+    return redirect(url_for('index'))
+
 @app.route('/')
 def index():
     if current_user.is_authenticated:
-        # Redirect to appropriate dashboard based on role (role is auto-assigned now)
+        # Redirect to appropriate dashboard based on role
         if current_user.role == 'student':
             return redirect(url_for('student_dashboard'))
         elif current_user.role == 'teacher':
             return redirect(url_for('teacher_dashboard'))
-        else:
-            # Fallback if role is somehow missing - this shouldn't happen with auto-assignment
-            return redirect(url_for('register_role'))
     
     return render_template('index.html')
 
-@app.route('/register-role', methods=['GET', 'POST'])
+@app.route('/switch-role', methods=['GET', 'POST'])
 @require_login
-def register_role():
-    # This is now only used as a fallback or for role switching
+def switch_role():
     if request.method == 'POST':
         role = request.form.get('role')
         
         if role not in ['student', 'teacher']:
             flash('Please select a valid role.', 'error')
-            return render_template('register_role.html', 
-                                   user_role=current_user.role,
-                                   is_role_switch=bool(current_user.role))
+            return render_template('switch_role.html', user_role=current_user.role)
         
         # Update user role
         old_role = current_user.role
@@ -60,26 +135,24 @@ def register_role():
         if role == 'student':
             existing_profile = StudentProfile.query.filter_by(user_id=current_user.id).first()
             if not existing_profile:
-                student_profile = StudentProfile()
-                student_profile.user_id = current_user.id
-                student_profile.student_id = f"STU{current_user.id[:8]}"
-                student_profile.grade_level = request.form.get('grade_level', '9th Grade')
+                student_profile = StudentProfile(
+                    user_id=current_user.id,
+                    student_id=f"STU{current_user.id:08d}",
+                    grade_level=request.form.get('grade_level', '9th Grade')
+                )
                 db.session.add(student_profile)
         elif role == 'teacher':
             existing_profile = TeacherProfile.query.filter_by(user_id=current_user.id).first()
             if not existing_profile:
-                teacher_profile = TeacherProfile()
-                teacher_profile.user_id = current_user.id
-                teacher_profile.employee_id = f"EMP{current_user.id[:8]}"
-                teacher_profile.department = request.form.get('department', 'General')
+                teacher_profile = TeacherProfile(
+                    user_id=current_user.id,
+                    employee_id=f"EMP{current_user.id:08d}",
+                    department=request.form.get('department', 'General')
+                )
                 db.session.add(teacher_profile)
         
         db.session.commit()
-        
-        if old_role:
-            flash(f'Role changed from {old_role} to {role} successfully!', 'success')
-        else:
-            flash(f'Welcome! You have been registered as a {role}.', 'success')
+        flash(f'Role changed from {old_role} to {role} successfully!', 'success')
         
         # Redirect to appropriate dashboard
         if role == 'student':
@@ -87,9 +160,60 @@ def register_role():
         else:
             return redirect(url_for('teacher_dashboard'))
     
-    return render_template('register_role.html', 
-                           user_role=current_user.role,
-                           is_role_switch=bool(current_user.role))
+    return render_template('switch_role.html', user_role=current_user.role)
+
+# Create demo users on first run
+@app.route('/create-demo-users')
+def create_demo_users():
+    try:
+        # Check if demo users already exist
+        if User.query.filter_by(username='demo_student').first():
+            return "Demo users already exist!"
+        
+        # Create demo student
+        student = User(
+            username='demo_student',
+            email='student@demo.com',
+            first_name='Demo',
+            last_name='Student',
+            role='student'
+        )
+        student.set_password('password123')
+        db.session.add(student)
+        db.session.commit()
+        
+        student_profile = StudentProfile(
+            user_id=student.id,
+            student_id=f"STU{student.id:08d}",
+            grade_level='10th Grade'
+        )
+        db.session.add(student_profile)
+        
+        # Create demo teacher
+        teacher = User(
+            username='demo_teacher',
+            email='teacher@demo.com',
+            first_name='Demo',
+            last_name='Teacher',
+            role='teacher'
+        )
+        teacher.set_password('password123')
+        db.session.add(teacher)
+        db.session.commit()
+        
+        teacher_profile = TeacherProfile(
+            user_id=teacher.id,
+            employee_id=f"EMP{teacher.id:08d}",
+            department='Computer Science'
+        )
+        db.session.add(teacher_profile)
+        
+        db.session.commit()
+        return "Demo users created successfully! You can now login with demo_student/password123 or demo_teacher/password123"
+    
+    except Exception as e:
+        db.session.rollback()
+        return f"Error creating demo users: {str(e)}"
 
 @app.route('/student/dashboard')
 @require_role('student')

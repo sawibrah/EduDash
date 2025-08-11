@@ -74,24 +74,24 @@
                                         <i class="fas fa-tachometer-alt me-2"></i>Dashboard
                                     </a></li>
                                 {% endif %}
-                                <li><a class="dropdown-item" href="{{ url_for('register_role') }}">
+                                <li><a class="dropdown-item" href="{{ url_for('switch_role') }}">
                                     <i class="fas fa-user-edit me-2"></i>Switch Role
                                 </a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{{ url_for('replit_auth.logout') }}">
+                                <li><a class="dropdown-item" href="{{ url_for('logout') }}">
                                     <i class="fas fa-sign-out-alt me-2"></i>Logout
                                 </a></li>
                             </ul>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('replit_auth.login') }}">
+                            <a class="nav-link" href="{{ url_for('login') }}">
                                 <i class="fas fa-sign-in-alt me-2"></i>Login
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-warning" href="{{ url_for('test_login') }}">
-                                <i class="fas fa-flask me-2"></i>Test Login
+                            <a class="nav-link btn btn-outline-primary ms-2" href="{{ url_for('register') }}">
+                                <i class="fas fa-user-plus me-2"></i>Sign Up
                             </a>
                         </li>
                     {% endif %}

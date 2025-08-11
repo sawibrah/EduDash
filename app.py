@@ -34,5 +34,12 @@ db.init_app(app)
 with app.app_context():
     # Make sure to import the models here or their tables won't be created
     import models  # noqa: F401
+    
+    # Initialize Flask-Login
+    from auth import login_manager
+    login_manager.init_app(app)
+    login_manager.login_view = 'login'
+    login_manager.login_message_category = 'info'
+    
     db.create_all()
     logging.info("Database tables created")

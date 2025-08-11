@@ -4,17 +4,30 @@ from flask_dance.consumer.storage.sqla import OAuthConsumerMixin
 from flask_login import UserMixin
 from sqlalchemy import UniqueConstraint
 
-# (IMPORTANT) This table is mandatory for Replit Auth, don't drop it.
+# User model updated for form-based authentication
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
-    id = db.Column(db.String, primary_key=True)
-    email = db.Column(db.String, unique=True, nullable=True)
-    first_name = db.Column(db.String, nullable=True)
-    last_name = db.Column(db.String, nullable=True)
-    profile_image_url = db.Column(db.String, nullable=True)
-    role = db.Column(db.String, nullable=True)  # 'student' or 'teacher'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password_hash = db.Column(db.String(256), nullable=False)
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name = db.Column(db.String(50), nullable=False)
+    role = db.Column(db.String(20), nullable=False)  # 'student' or 'teacher'
+    active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
+    
+    def get_full_name(self):
+        return f"{self.first_name} {self.last_name}"
+    
+    def set_password(self, password):
+        from werkzeug.security import generate_password_hash
+        self.password_hash = generate_password_hash(password)
+    
+    def check_password(self, password):
+        from werkzeug.security import check_password_hash
+        return check_password_hash(self.password_hash, password)
 
     def is_student(self):
         return self.role == 'student'
@@ -23,8 +36,9 @@ class User(UserMixin, db.Model):
         return self.role == 'teacher'
 
 # (IMPORTANT) This table is mandatory for Replit Auth, don't drop it.
+# Keep OAuth table but update for integer foreign keys (legacy support)
 class OAuth(OAuthConsumerMixin, db.Model):
-    user_id = db.Column(db.String, db.ForeignKey(User.id))
+    user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     browser_session_key = db.Column(db.String, nullable=False)
     user = db.relationship(User)
 
@@ -39,7 +53,7 @@ class OAuth(OAuthConsumerMixin, db.Model):
 class StudentProfile(db.Model):
     __tablename__ = 'student_profiles'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.String, db.ForeignKey(User.id), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
     student_id = db.Column(db.String, unique=True, nullable=True)
     grade_level = db.Column(db.String, nullable=True)
     enrollment_date = db.Column(db.DateTime, default=datetime.now)
@@ -49,7 +63,7 @@ class StudentProfile(db.Model):
 class TeacherProfile(db.Model):
     __tablename__ = 'teacher_profiles'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.String, db.ForeignKey(User.id), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
     employee_id = db.Column(db.String, unique=True, nullable=True)
     department = db.Column(db.String, nullable=True)
     hire_date = db.Column(db.DateTime, default=datetime.now)
@@ -77,7 +91,7 @@ class Course(db.Model):
     uploaded_file_name = db.Column(db.String(255), nullable=True)  # Original filename
     content_display_type = db.Column(db.String(20), default='markdown', nullable=False)  # 'markdown' or 'uploaded_file'
     
-    teacher_id = db.Column(db.String, db.ForeignKey(User.id), nullable=False)
+    teacher_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
     teacher = db.relationship(User, backref='courses')
@@ -86,7 +100,7 @@ class Course(db.Model):
 class Enrollment(db.Model):
     __tablename__ = 'enrollments'
     id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.String, db.ForeignKey(User.id), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey(Course.id), nullable=False)
     enrollment_date = db.Column(db.DateTime, default=datetime.now)
     student = db.relationship(User, backref='enrollments')
