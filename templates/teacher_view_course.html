@@ -163,7 +163,7 @@
                                         </div>
                                         <small class="text-muted">
                                             {{ enrollment.student.email or 'No email' }} 
-                                            • Enrolled: {{ enrollment.enrolled_at.strftime('%b %d, %Y') }}
+                                            • Enrolled: {{ enrollment.enrollment_date.strftime('%b %d, %Y') }}
                                         </small>
                                     </div>
                                     <form method="POST" action="{{ url_for('remove_student', course_id=course.id, student_id=enrollment.student.id) }}" 
