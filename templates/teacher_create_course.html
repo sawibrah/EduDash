@@ -21,26 +21,27 @@
                                 <div class="mb-3">
                                     <label for="title" class="form-label">Course Title *</label>
                                     <input type="text" class="form-control" name="title" id="title" required
-                                           placeholder="e.g., Advanced Python for Data Science">
+                                           placeholder="e.g., Advanced Python for Data Science"
+                                           value="{{ title if title else '' }}">
                                 </div>
                                 
                                 <div class="mb-3">
                                     <label for="programming_language" class="form-label">Programming Language</label>
                                     <select class="form-select" name="programming_language" id="programming_language">
                                         <option value="">Select Language</option>
-                                        <option value="Python">Python</option>
-                                        <option value="JavaScript">JavaScript</option>
-                                        <option value="Java">Java</option>
-                                        <option value="C++">C++</option>
-                                        <option value="C#">C#</option>
-                                        <option value="Ruby">Ruby</option>
-                                        <option value="Go">Go</option>
-                                        <option value="Rust">Rust</option>
-                                        <option value="PHP">PHP</option>
-                                        <option value="Swift">Swift</option>
-                                        <option value="Kotlin">Kotlin</option>
-                                        <option value="Scala">Scala</option>
-                                        <option value="Other">Other</option>
+                                        <option value="Python" {% if programming_language == 'Python' %}selected{% endif %}>Python</option>
+                                        <option value="JavaScript" {% if programming_language == 'JavaScript' %}selected{% endif %}>JavaScript</option>
+                                        <option value="Java" {% if programming_language == 'Java' %}selected{% endif %}>Java</option>
+                                        <option value="C++" {% if programming_language == 'C++' %}selected{% endif %}>C++</option>
+                                        <option value="C#" {% if programming_language == 'C#' %}selected{% endif %}>C#</option>
+                                        <option value="Ruby" {% if programming_language == 'Ruby' %}selected{% endif %}>Ruby</option>
+                                        <option value="Go" {% if programming_language == 'Go' %}selected{% endif %}>Go</option>
+                                        <option value="Rust" {% if programming_language == 'Rust' %}selected{% endif %}>Rust</option>
+                                        <option value="PHP" {% if programming_language == 'PHP' %}selected{% endif %}>PHP</option>
+                                        <option value="Swift" {% if programming_language == 'Swift' %}selected{% endif %}>Swift</option>
+                                        <option value="Kotlin" {% if programming_language == 'Kotlin' %}selected{% endif %}>Kotlin</option>
+                                        <option value="Scala" {% if programming_language == 'Scala' %}selected{% endif %}>Scala</option>
+                                        <option value="Other" {% if programming_language == 'Other' %}selected{% endif %}>Other</option>
                                     </select>
                                 </div>
                                 
@@ -139,6 +140,22 @@
                         <!-- Course Content Editor -->
                         <div class="mt-4">
                             <h5 class="border-bottom pb-2 mb-3">Course Content (Markdown)</h5>
+                            
+                            <!-- Template Generation Section -->
+                            <div class="mb-4">
+                                <div class="alert alert-info">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <i class="fas fa-magic me-2"></i>
+                                            <strong>Quick Start:</strong> Generate a professional 5-slide template to get started faster
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-primary" onclick="generateTemplate()">
+                                            <i class="fas fa-wand-magic me-1"></i>Generate 5-Slide Template
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <div class="row">
                                 <div class="col-lg-6">
                                     <label for="content" class="form-label">Markdown Content</label>
@@ -163,7 +180,7 @@ hello_world()
 
 ## Module 2: Advanced Topics
 
-..."></textarea>
+...">{% if template_content %}{{ template_content }}{% endif %}</textarea>
                                     <div class="form-text">
                                         <small>
                                             <strong>Markdown Tips:</strong> Use # for headings, ``` for code blocks, 
@@ -281,6 +298,37 @@ function showPreview(mode) {
         slidesPreview.style.display = 'block';
         updateSlidesPreview();
     }
+}
+
+// Generate 5-slide template
+function generateTemplate() {
+    const title = document.getElementById('title').value || 'Your Course Title';
+    const programmingLanguage = document.getElementById('programming_language').value || '';
+    
+    // Create a form to submit template generation request
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '';
+    form.style.display = 'none';
+    
+    // Add form fields
+    const titleInput = document.createElement('input');
+    titleInput.name = 'title';
+    titleInput.value = title;
+    form.appendChild(titleInput);
+    
+    const langInput = document.createElement('input');
+    langInput.name = 'programming_language';
+    langInput.value = programmingLanguage;
+    form.appendChild(langInput);
+    
+    const templateInput = document.createElement('input');
+    templateInput.name = 'use_5_slide_template';
+    templateInput.value = '1';
+    form.appendChild(templateInput);
+    
+    document.body.appendChild(form);
+    form.submit();
 }
 
 // Update slides preview
