@@ -157,14 +157,20 @@
                                                     </div>
                                                 </div>
                                                 
-                                                {% if assignment.description %}
-                                                    <div class="mb-3">
-                                                        <strong>Description:</strong>
+                                                <div class="mb-3">
+                                                    <strong>Assignment Instructions:</strong>
+                                                    {% if assignment.description %}
                                                         <div class="border rounded p-3 mt-2 bg-light">
                                                             <pre class="mb-0" style="white-space: pre-wrap; font-family: inherit;">{{ assignment.description }}</pre>
                                                         </div>
-                                                    </div>
-                                                {% endif %}
+                                                    {% else %}
+                                                        <div class="border rounded p-3 mt-2 bg-warning-subtle text-warning-emphasis">
+                                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                                            <strong>No instructions provided.</strong> This assignment needs detailed instructions for students.
+                                                            <br><small>Click "Edit Assignment" to add assignment instructions and requirements.</small>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
 
                                                 <div class="alert alert-info">
                                                     <i class="fas fa-info-circle me-2"></i>
@@ -218,8 +224,9 @@
                         <input type="text" class="form-control" name="title" id="assignment_title" required>
                     </div>
                     <div class="mb-3">
-                        <label for="assignment_description" class="form-label">Description</label>
-                        <textarea class="form-control" name="description" id="assignment_description" rows="4" placeholder="Provide detailed instructions for the assignment..."></textarea>
+                        <label for="assignment_description" class="form-label">Assignment Instructions & Description</label>
+                        <textarea class="form-control" name="description" id="assignment_description" rows="6" placeholder="Provide detailed instructions for the assignment, including:&#10;• Objectives and learning goals&#10;• Step-by-step requirements&#10;• Submission guidelines&#10;• Evaluation criteria&#10;• Any resources or references needed"></textarea>
+                        <div class="form-text">This is where students will see the complete assignment details and instructions.</div>
                     </div>
                     <div class="mb-3">
                         <label for="due_date" class="form-label">Due Date (Optional)</label>
