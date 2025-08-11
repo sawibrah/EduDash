@@ -255,7 +255,7 @@ function deleteAssignment(assignmentId, title) {
         const csrfInput = document.createElement('input');
         csrfInput.type = 'hidden';
         csrfInput.name = 'csrf_token';
-        // csrfInput.value = '{{ csrf_token() }}'; // Uncomment if using CSRF protection
+        // CSRF token would be added here if needed
         
         form.appendChild(csrfInput);
         document.body.appendChild(form);
