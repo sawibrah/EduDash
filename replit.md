@@ -15,6 +15,13 @@ EduPortal is a comprehensive Learning Management System (LMS) built with Flask t
 - Student enrollment system with course ID sharing and browsing options
 - Teacher classroom management with student enrollment tracking and removal capabilities
 
+**Simplified Authentication System:**
+- Auto-role assignment based on email domain patterns (education domains → teacher, others → student)
+- Automatic profile creation during user registration through OAuth
+- Role switching capability allowing users to change between student/teacher roles as needed
+- Streamlined onboarding with optional manual role selection fallback
+- Database-driven user management with persistent role and profile data
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
@@ -32,6 +39,9 @@ Preferred communication style: Simple, everyday language.
 - **Role-Based Access Control** with decorator-based route protection (`@require_login`, `@require_role`)
 - **JWT Token Handling** for secure OAuth token management
 - **Session Management** with browser session key tracking for multi-device support
+- **Auto-Role Assignment** based on email domain patterns with fallback to student role
+- **Automatic Profile Creation** generates role-specific profiles during OAuth registration
+- **Role Switching System** allows users to change roles with profile management
 
 ### Database Architecture
 - **SQLAlchemy ORM** with declarative base model structure

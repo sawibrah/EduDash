@@ -27,55 +27,59 @@ def make_session_permanent():
 @app.route('/')
 def index():
     if current_user.is_authenticated:
-        # Check if user has a role assigned
-        if not current_user.role:
-            return redirect(url_for('register_role'))
-        
-        # Redirect to appropriate dashboard based on role
+        # Redirect to appropriate dashboard based on role (role is auto-assigned now)
         if current_user.role == 'student':
             return redirect(url_for('student_dashboard'))
         elif current_user.role == 'teacher':
             return redirect(url_for('teacher_dashboard'))
+        else:
+            # Fallback if role is somehow missing - this shouldn't happen with auto-assignment
+            return redirect(url_for('register_role'))
     
     return render_template('index.html')
 
 @app.route('/register-role', methods=['GET', 'POST'])
 @require_login
 def register_role():
-    # If user already has a role, redirect to dashboard
-    if current_user.role:
-        if current_user.role == 'student':
-            return redirect(url_for('student_dashboard'))
-        elif current_user.role == 'teacher':
-            return redirect(url_for('teacher_dashboard'))
-    
+    # This is now only used as a fallback or for role switching
     if request.method == 'POST':
         role = request.form.get('role')
         
         if role not in ['student', 'teacher']:
             flash('Please select a valid role.', 'error')
-            return render_template('register_role.html')
+            return render_template('register_role.html', 
+                                   user_role=current_user.role,
+                                   is_role_switch=bool(current_user.role))
         
         # Update user role
+        old_role = current_user.role
         current_user.role = role
         db.session.commit()
         
-        # Create role-specific profile
+        # Create role-specific profile if needed
         if role == 'student':
-            student_profile = StudentProfile()
-            student_profile.user_id = current_user.id
-            student_profile.student_id = f"STU{current_user.id[:8]}"
-            student_profile.grade_level = request.form.get('grade_level', '9th Grade')
-            db.session.add(student_profile)
+            existing_profile = StudentProfile.query.filter_by(user_id=current_user.id).first()
+            if not existing_profile:
+                student_profile = StudentProfile()
+                student_profile.user_id = current_user.id
+                student_profile.student_id = f"STU{current_user.id[:8]}"
+                student_profile.grade_level = request.form.get('grade_level', '9th Grade')
+                db.session.add(student_profile)
         elif role == 'teacher':
-            teacher_profile = TeacherProfile()
-            teacher_profile.user_id = current_user.id
-            teacher_profile.employee_id = f"EMP{current_user.id[:8]}"
-            teacher_profile.department = request.form.get('department', 'General')
-            db.session.add(teacher_profile)
+            existing_profile = TeacherProfile.query.filter_by(user_id=current_user.id).first()
+            if not existing_profile:
+                teacher_profile = TeacherProfile()
+                teacher_profile.user_id = current_user.id
+                teacher_profile.employee_id = f"EMP{current_user.id[:8]}"
+                teacher_profile.department = request.form.get('department', 'General')
+                db.session.add(teacher_profile)
         
         db.session.commit()
-        flash(f'Welcome! You have been registered as a {role}.', 'success')
+        
+        if old_role:
+            flash(f'Role changed from {old_role} to {role} successfully!', 'success')
+        else:
+            flash(f'Welcome! You have been registered as a {role}.', 'success')
         
         # Redirect to appropriate dashboard
         if role == 'student':
@@ -83,7 +87,9 @@ def register_role():
         else:
             return redirect(url_for('teacher_dashboard'))
     
-    return render_template('register_role.html')
+    return render_template('register_role.html', 
+                           user_role=current_user.role,
+                           is_role_switch=bool(current_user.role))
 
 @app.route('/student/dashboard')
 @require_role('student')

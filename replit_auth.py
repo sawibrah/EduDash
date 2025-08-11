@@ -127,7 +127,37 @@ def save_user(user_claims):
     user.first_name = user_claims.get('first_name')
     user.last_name = user_claims.get('last_name')
     user.profile_image_url = user_claims.get('profile_image_url')
+    
+    # Auto-assign role based on email domain or default to student
+    email = user_claims.get('email', '')
+    if any(domain in email.lower() for domain in ['@school.edu', '@university.edu', '@teacher.', '@edu.', '@instructor.']):
+        user.role = 'teacher'
+    else:
+        user.role = 'student'  # Default to student for simplicity
+    
     merged_user = db.session.merge(user)
+    db.session.commit()
+    
+    # Auto-create profile based on assigned role
+    from models import StudentProfile, TeacherProfile
+    
+    # Check if profiles already exist
+    existing_student = StudentProfile.query.filter_by(user_id=merged_user.id).first()
+    existing_teacher = TeacherProfile.query.filter_by(user_id=merged_user.id).first()
+    
+    if user.role == 'student' and not existing_student:
+        student_profile = StudentProfile()
+        student_profile.user_id = merged_user.id
+        student_profile.student_id = f"STU{merged_user.id[:8]}"
+        student_profile.grade_level = '9th Grade'  # Default grade level
+        db.session.add(student_profile)
+    elif user.role == 'teacher' and not existing_teacher:
+        teacher_profile = TeacherProfile()
+        teacher_profile.user_id = merged_user.id
+        teacher_profile.employee_id = f"EMP{merged_user.id[:8]}"
+        teacher_profile.department = 'General'  # Default department
+        db.session.add(teacher_profile)
+    
     db.session.commit()
     return merged_user
 

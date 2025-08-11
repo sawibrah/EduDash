@@ -9,13 +9,25 @@
             <div class="card shadow-lg border-0 mt-5">
                 <div class="card-header bg-primary text-white text-center py-4">
                     <h3 class="mb-0">
-                        <i class="fas fa-user-plus me-2"></i>Choose Your Role
+                        {% if is_role_switch %}
+                            <i class="fas fa-user-edit me-2"></i>Change Your Role
+                        {% else %}
+                            <i class="fas fa-user-plus me-2"></i>Choose Your Role
+                        {% endif %}
                     </h3>
                 </div>
                 <div class="card-body p-5">
-                    <p class="text-center text-muted mb-4">
-                        To complete your registration, please select your role in the educational system.
-                    </p>
+                    {% if is_role_switch %}
+                        <div class="alert alert-info mb-4">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Current Role:</strong> {{ user_role.title() }}
+                            <br><small>You can switch to a different role if needed.</small>
+                        </div>
+                    {% else %}
+                        <p class="text-center text-muted mb-4">
+                            Your role has been automatically assigned based on your email. You can change it if needed.
+                        </p>
+                    {% endif %}
                     
                     <form method="POST">
                         <div class="row">
