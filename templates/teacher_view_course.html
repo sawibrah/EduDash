@@ -320,6 +320,18 @@ function copyToClipboard(text) {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
 <style>
+/* Explicitly disable any animations */
+* {
+    animation: none !important;
+    transition: none !important;
+}
+
+/* Re-enable normal hover effects for buttons */
+.btn:hover {
+    opacity: 0.9;
+    transition: opacity 0.2s ease !important;
+}
+
 .markdown-content {
     line-height: 1.6;
 }
