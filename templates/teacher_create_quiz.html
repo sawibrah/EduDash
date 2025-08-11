@@ -100,21 +100,7 @@
                             <h5 class="border-bottom pb-2 mb-3">Instructions & Problem Statement</h5>
                             <div class="mb-3">
                                 <label for="instructions" class="form-label">Instructions *</label>
-                                <textarea class="form-control" name="instructions" id="instructions" rows="6" required
-                                          placeholder="Write detailed instructions for the programming problem.
-
-Example:
-Write a function called 'fibonacci' that takes an integer n as input and returns the nth number in the Fibonacci sequence.
-
-Requirements:
-- Function should handle n >= 0
-- Use efficient algorithm
-- Include proper error handling
-
-Test cases:
-- fibonacci(0) should return 0
-- fibonacci(1) should return 1
-- fibonacci(5) should return 5"></textarea>
+                                <textarea class="form-control" name="instructions" id="instructions" rows="6" required>{{ defaults.instructions if defaults else 'Write detailed instructions for the programming problem...' }}</textarea>
                             </div>
                         </div>
 
@@ -124,15 +110,7 @@ Test cases:
                             <div class="mb-3">
                                 <label for="starter_code" class="form-label">Starter Code (Optional)</label>
                                 <textarea class="form-control" name="starter_code" id="starter_code" rows="8" 
-                                          style="font-family: 'Monaco', 'Consolas', 'Courier New', monospace;"
-                                          placeholder="# Provide starter code or function template for students
-
-def fibonacci(n):
-    # Your code here
-    pass
-
-# Test your function
-print(fibonacci(5))"></textarea>
+                                          style="font-family: 'Monaco', 'Consolas', 'Courier New', monospace;">{{ defaults.starter_code if defaults else '# Provide starter code or function template for students' }}</textarea>
                                 <div class="form-text">
                                     <small>This code will be pre-filled in the student's code editor</small>
                                 </div>
@@ -145,10 +123,7 @@ print(fibonacci(5))"></textarea>
                             <div class="mb-3">
                                 <label for="expected_output" class="form-label">Expected Output</label>
                                 <textarea class="form-control" name="expected_output" id="expected_output" rows="4" 
-                                          style="font-family: 'Monaco', 'Consolas', 'Courier New', monospace;"
-                                          placeholder="5
-
-(Show what the program should output when run correctly)"></textarea>
+                                          style="font-family: 'Monaco', 'Consolas', 'Courier New', monospace;">{{ defaults.expected_output if defaults else 'Expected output here' }}</textarea>
                                 <div class="form-text">
                                     <small>This helps students understand what their code should produce</small>
                                 </div>

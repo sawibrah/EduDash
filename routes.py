@@ -1171,7 +1171,170 @@ def create_quiz(course_id):
         flash('Quiz created successfully!', 'success')
         return redirect(url_for('view_course_quizzes', course_id=course_id))
     
-    return render_template('teacher_create_quiz.html', course=course)
+    # Create default template values based on programming language
+    lang = course.programming_language or 'Python'
+    lang_lower = lang.lower()
+    
+    if lang == 'Python':
+        default_instructions = """Write a function called 'fibonacci' that takes an integer n as input and returns the nth number in the Fibonacci sequence.
+
+Requirements:
+- Function should handle n >= 0
+- Use efficient algorithm
+- Include proper error handling
+
+Test cases:
+- fibonacci(0) should return 0
+- fibonacci(1) should return 1
+- fibonacci(5) should return 5"""
+        
+        default_starter_code = """# Provide starter code or function template for students
+
+def fibonacci(n):
+    # Your code here
+    pass
+
+# Test your function
+print(fibonacci(5))"""
+        
+        default_expected_output = "5"
+        
+    elif lang == 'JavaScript':
+        default_instructions = """Write a function called 'fibonacci' that takes an integer n as input and returns the nth number in the Fibonacci sequence.
+
+Requirements:
+- Function should handle n >= 0
+- Use efficient algorithm
+- Include proper error handling
+
+Test cases:
+- fibonacci(0) should return 0
+- fibonacci(1) should return 1
+- fibonacci(5) should return 5"""
+        
+        default_starter_code = """// Provide starter code or function template for students
+
+function fibonacci(n) {
+    // Your code here
+}
+
+// Test your function
+console.log(fibonacci(5));"""
+        
+        default_expected_output = "5"
+        
+    elif lang == 'Java':
+        default_instructions = """Write a method called 'fibonacci' that takes an integer n as input and returns the nth number in the Fibonacci sequence.
+
+Requirements:
+- Method should handle n >= 0
+- Use efficient algorithm
+- Include proper error handling
+
+Test cases:
+- fibonacci(0) should return 0
+- fibonacci(1) should return 1
+- fibonacci(5) should return 5"""
+        
+        default_starter_code = """// Provide starter code or method template for students
+
+public class Solution {
+    public static int fibonacci(int n) {
+        // Your code here
+        return 0;
+    }
+    
+    public static void main(String[] args) {
+        System.out.println(fibonacci(5));
+    }
+}"""
+        
+        default_expected_output = "5"
+        
+    elif lang == 'C++':
+        default_instructions = """Write a C++ function called 'fibonacci' that takes an integer n as input and returns the nth number in the Fibonacci sequence.
+
+Requirements:
+- Function should handle n >= 0
+- Use efficient algorithm
+- Include proper error handling
+
+Test cases:
+- fibonacci(0) should return 0
+- fibonacci(1) should return 1
+- fibonacci(5) should return 5"""
+        
+        default_starter_code = """// Provide starter code or function template for students
+#include <iostream>
+using namespace std;
+
+int fibonacci(int n) {
+    // Your code here
+    return 0;
+}
+
+int main() {
+    cout << fibonacci(5) << endl;
+    return 0;
+}"""
+        
+        default_expected_output = "5"
+        
+    elif lang == 'C#':
+        default_instructions = """Write a C# method called 'Fibonacci' that takes an integer n as input and returns the nth number in the Fibonacci sequence.
+
+Requirements:
+- Method should handle n >= 0
+- Use efficient algorithm
+- Include proper error handling
+
+Test cases:
+- Fibonacci(0) should return 0
+- Fibonacci(1) should return 1
+- Fibonacci(5) should return 5"""
+        
+        default_starter_code = """// Provide starter code or method template for students
+using System;
+
+class Program {
+    public static int Fibonacci(int n) {
+        // Your code here
+        return 0;
+    }
+    
+    static void Main() {
+        Console.WriteLine(Fibonacci(5));
+    }
+}"""
+        
+        default_expected_output = "5"
+        
+    else:
+        # Generic template for other languages
+        default_instructions = f"""Write a program in {lang} that solves a specific problem.
+
+Requirements:
+- Follow proper {lang} syntax
+- Include appropriate error handling
+- Test your solution thoroughly
+
+Provide clear implementation and test cases."""
+        
+        default_starter_code = f"""// {lang} code template
+// Write your solution here
+
+// Test your code"""
+        
+        default_expected_output = "Expected output here"
+    
+    # Pass default values to template
+    defaults = {
+        'instructions': default_instructions,
+        'starter_code': default_starter_code,
+        'expected_output': default_expected_output
+    }
+    
+    return render_template('teacher_create_quiz.html', course=course, defaults=defaults)
 
 @app.route('/teacher/quiz/<int:quiz_id>/edit', methods=['GET', 'POST'])
 @require_role('teacher')
