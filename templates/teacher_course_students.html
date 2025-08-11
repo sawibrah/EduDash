@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+
+{% block title %}{{ course.title }} - Students - EduPortal{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">
+                <i class="fas fa-users me-2"></i>Students in {{ course.title }}
+            </h2>
+            <p class="text-muted mb-0">
+                <i class="fas fa-user-graduate me-1"></i>{{ enrollments|length }} student{{ 's' if enrollments|length != 1 else '' }} enrolled
+            </p>
+        </div>
+        <div class="btn-group">
+            <a href="{{ url_for('view_course', course_id=course.id) }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Back to Course
+            </a>
+            <a href="{{ url_for('teacher_dashboard') }}" class="btn btn-outline-primary">
+                <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Course Info Card -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card bg-light">
+                <div class="card-body py-3">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <i class="fas fa-book text-primary fa-2x"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">{{ course.title }}</h6>
+                            <div class="d-flex gap-2">
+                                <span class="badge bg-{{ 'success' if course.course_status == 'published' else 'warning' }}">
+                                    {{ course.course_status.title() }}
+                                </span>
+                                {% if course.programming_language %}
+                                    <span class="badge bg-info">{{ course.programming_language }}</span>
+                                {% endif %}
+                                {% if course.difficulty_level %}
+                                    <span class="badge bg-secondary">{{ course.difficulty_level }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <div class="text-muted small">Course ID: <span class="fw-bold">{{ course.id }}</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Students List -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>Enrolled Students
+                    </h5>
+                    {% if enrollments %}
+                        <small class="text-muted">{{ enrollments|length }} total</small>
+                    {% endif %}
+                </div>
+                <div class="card-body p-0">
+                    {% if enrollments %}
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col">
+                                            <i class="fas fa-user me-1"></i>Student
+                                        </th>
+                                        <th scope="col">
+                                            <i class="fas fa-envelope me-1"></i>Email
+                                        </th>
+                                        <th scope="col">
+                                            <i class="fas fa-calendar me-1"></i>Enrolled
+                                        </th>
+                                        <th scope="col" class="text-center">
+                                            <i class="fas fa-cog me-1"></i>Actions
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for enrollment in enrollments %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-circle me-3">
+                                                        {% if enrollment.student.profile_image_url %}
+                                                            <img src="{{ enrollment.student.profile_image_url }}" alt="Profile" class="rounded-circle" width="40" height="40">
+                                                        {% else %}
+                                                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                                <i class="fas fa-user"></i>
+                                                            </div>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div>
+                                                        <div class="fw-medium">
+                                                            {{ enrollment.student.first_name or 'Unknown' }} {{ enrollment.student.last_name or 'User' }}
+                                                        </div>
+                                                        {% if enrollment.student.student_profile and enrollment.student.student_profile.student_id %}
+                                                            <small class="text-muted">ID: {{ enrollment.student.student_profile.student_id }}</small>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="align-middle">
+                                                {% if enrollment.student.email %}
+                                                    <a href="mailto:{{ enrollment.student.email }}" class="text-decoration-none">
+                                                        {{ enrollment.student.email }}
+                                                    </a>
+                                                {% else %}
+                                                    <span class="text-muted">No email provided</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="align-middle">
+                                                <div class="text-muted">
+                                                    {{ enrollment.enrollment_date.strftime('%B %d, %Y') }}
+                                                    <br>
+                                                    <small>{{ enrollment.enrollment_date.strftime('%I:%M %p') }}</small>
+                                                </div>
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                <div class="btn-group btn-group-sm">
+                                                    <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#studentDetailModal{{ enrollment.student.id }}">
+                                                        <i class="fas fa-eye me-1"></i>View
+                                                    </button>
+                                                    <form method="POST" action="{{ url_for('remove_student', course_id=course.id, student_id=enrollment.student.id) }}" 
+                                                          onsubmit="return confirm('Are you sure you want to remove {{ enrollment.student.first_name or 'this student' }} from the course?')" class="d-inline">
+                                                        <button type="submit" class="btn btn-outline-danger">
+                                                            <i class="fas fa-user-minus me-1"></i>Remove
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Student Detail Modal -->
+                                        <div class="modal fade" id="studentDetailModal{{ enrollment.student.id }}" tabindex="-1">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">
+                                                            <i class="fas fa-user me-2"></i>Student Details
+                                                        </h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="text-center mb-3">
+                                                            {% if enrollment.student.profile_image_url %}
+                                                                <img src="{{ enrollment.student.profile_image_url }}" alt="Profile" class="rounded-circle mb-2" width="80" height="80">
+                                                            {% else %}
+                                                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 80px; height: 80px;">
+                                                                    <i class="fas fa-user fa-2x"></i>
+                                                                </div>
+                                                            {% endif %}
+                                                            <h6 class="mb-0">{{ enrollment.student.first_name or 'Unknown' }} {{ enrollment.student.last_name or 'User' }}</h6>
+                                                        </div>
+                                                        
+                                                        <div class="row">
+                                                            <div class="col-sm-6">
+                                                                <strong>Email:</strong>
+                                                                <p class="text-muted">{{ enrollment.student.email or 'Not provided' }}</p>
+                                                            </div>
+                                                            <div class="col-sm-6">
+                                                                <strong>Student ID:</strong>
+                                                                <p class="text-muted">
+                                                                    {% if enrollment.student.student_profile and enrollment.student.student_profile.student_id %}
+                                                                        {{ enrollment.student.student_profile.student_id }}
+                                                                    {% else %}
+                                                                        Not assigned
+                                                                    {% endif %}
+                                                                </p>
+                                                            </div>
+                                                            <div class="col-sm-6">
+                                                                <strong>Grade Level:</strong>
+                                                                <p class="text-muted">
+                                                                    {% if enrollment.student.student_profile and enrollment.student.student_profile.grade_level %}
+                                                                        {{ enrollment.student.student_profile.grade_level }}
+                                                                    {% else %}
+                                                                        Not specified
+                                                                    {% endif %}
+                                                                </p>
+                                                            </div>
+                                                            <div class="col-sm-6">
+                                                                <strong>Enrolled Date:</strong>
+                                                                <p class="text-muted">{{ enrollment.enrollment_date.strftime('%B %d, %Y at %I:%M %p') }}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                        {% if enrollment.student.email %}
+                                                            <a href="mailto:{{ enrollment.student.email }}" class="btn btn-primary">
+                                                                <i class="fas fa-envelope me-1"></i>Send Email
+                                                            </a>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-user-slash fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No Students Enrolled</h5>
+                            <p class="text-muted mb-4">Share your Course ID with students to get them enrolled!</p>
+                            <div class="alert alert-info d-inline-block">
+                                <i class="fas fa-key me-2"></i>
+                                <strong>Course ID:</strong> 
+                                <span class="fw-bold text-primary ms-2">{{ course.id }}</span>
+                                <button class="btn btn-sm btn-outline-primary ms-2" onclick="copyToClipboard('{{ course.id }}')">
+                                    <i class="fas fa-copy me-1"></i>Copy
+                                </button>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        // Show success feedback
+        const btn = event.target.closest('button');
+        const originalContent = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check me-1"></i>Copied!';
+        btn.classList.remove('btn-outline-primary');
+        btn.classList.add('btn-success');
+        
+        setTimeout(() => {
+            btn.innerHTML = originalContent;
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-outline-primary');
+        }, 2000);
+    }, function(err) {
+        console.error('Could not copy text: ', err);
+        alert('Failed to copy to clipboard');
+    });
+}
+</script>
+{% endblock %}

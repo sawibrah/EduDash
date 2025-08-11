@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+
+{% block title %}{{ course.title }} - Assignments - EduPortal{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">
+                <i class="fas fa-tasks me-2"></i>Assignments for {{ course.title }}
+            </h2>
+            <p class="text-muted mb-0">
+                <i class="fas fa-clipboard-list me-1"></i>{{ assignments|length }} assignment{{ 's' if assignments|length != 1 else '' }} created
+            </p>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createAssignmentModal">
+                <i class="fas fa-plus me-1"></i>New Assignment
+            </button>
+            <a href="{{ url_for('view_course', course_id=course.id) }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Back to Course
+            </a>
+            <a href="{{ url_for('teacher_dashboard') }}" class="btn btn-outline-primary">
+                <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Course Info Card -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card bg-light">
+                <div class="card-body py-3">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <i class="fas fa-book text-primary fa-2x"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">{{ course.title }}</h6>
+                            <div class="d-flex gap-2">
+                                <span class="badge bg-{{ 'success' if course.course_status == 'published' else 'warning' }}">
+                                    {{ course.course_status.title() }}
+                                </span>
+                                {% if course.programming_language %}
+                                    <span class="badge bg-info">{{ course.programming_language }}</span>
+                                {% endif %}
+                                {% if course.difficulty_level %}
+                                    <span class="badge bg-secondary">{{ course.difficulty_level }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <div class="text-muted small">{{ course.enrollments|length }} students enrolled</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assignments List -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>Course Assignments
+                    </h5>
+                    {% if assignments %}
+                        <small class="text-muted">{{ assignments|length }} total</small>
+                    {% endif %}
+                </div>
+                <div class="card-body p-0">
+                    {% if assignments %}
+                        <div class="list-group list-group-flush">
+                            {% for assignment in assignments %}
+                                <div class="list-group-item">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-8">
+                                            <div class="d-flex align-items-start">
+                                                <div class="assignment-icon me-3 mt-1">
+                                                    <i class="fas fa-clipboard-check text-success fa-lg"></i>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <h6 class="mb-1">
+                                                        <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#assignmentDetailModal{{ assignment.id }}">
+                                                            {{ assignment.title }}
+                                                        </a>
+                                                    </h6>
+                                                    {% if assignment.description %}
+                                                        <p class="text-muted mb-2 small">{{ assignment.description[:100] }}{% if assignment.description|length > 100 %}...{% endif %}</p>
+                                                    {% endif %}
+                                                    <div class="d-flex align-items-center gap-3">
+                                                        <small class="text-muted">
+                                                            <i class="fas fa-calendar-plus me-1"></i>
+                                                            Created: {{ assignment.created_at.strftime('%b %d, %Y') }}
+                                                        </small>
+                                                        {% if assignment.due_date %}
+                                                            <small class="text-muted">
+                                                                <i class="fas fa-clock me-1"></i>
+                                                                Due: {{ assignment.due_date.strftime('%b %d, %Y at %I:%M %p') }}
+                                                            </small>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 text-end">
+                                            <div class="btn-group btn-group-sm">
+                                                <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#assignmentDetailModal{{ assignment.id }}">
+                                                    <i class="fas fa-eye me-1"></i>View
+                                                </button>
+                                                <button type="button" class="btn btn-outline-primary" onclick="editAssignment({{ assignment.id }})">
+                                                    <i class="fas fa-edit me-1"></i>Edit
+                                                </button>
+                                                <button type="button" class="btn btn-outline-danger" onclick="deleteAssignment({{ assignment.id }}, '{{ assignment.title }}')">
+                                                    <i class="fas fa-trash me-1"></i>Delete
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Assignment Detail Modal -->
+                                <div class="modal fade" id="assignmentDetailModal{{ assignment.id }}" tabindex="-1">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">
+                                                    <i class="fas fa-clipboard-check me-2"></i>{{ assignment.title }}
+                                                </h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row mb-3">
+                                                    <div class="col-md-6">
+                                                        <strong>Created:</strong>
+                                                        <p class="text-muted">{{ assignment.created_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <strong>Due Date:</strong>
+                                                        <p class="text-muted">
+                                                            {% if assignment.due_date %}
+                                                                {{ assignment.due_date.strftime('%B %d, %Y at %I:%M %p') }}
+                                                                {% set now = moment() %}
+                                                                {% if assignment.due_date < now %}
+                                                                    <span class="badge bg-danger ms-2">Overdue</span>
+                                                                {% elif assignment.due_date.date() == now.date() %}
+                                                                    <span class="badge bg-warning ms-2">Due Today</span>
+                                                                {% else %}
+                                                                    <span class="badge bg-success ms-2">Upcoming</span>
+                                                                {% endif %}
+                                                            {% else %}
+                                                                No due date set
+                                                            {% endif %}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                
+                                                {% if assignment.description %}
+                                                    <div class="mb-3">
+                                                        <strong>Description:</strong>
+                                                        <div class="border rounded p-3 mt-2 bg-light">
+                                                            {{ assignment.description|nl2br|safe }}
+                                                        </div>
+                                                    </div>
+                                                {% endif %}
+
+                                                <div class="alert alert-info">
+                                                    <i class="fas fa-info-circle me-2"></i>
+                                                    <strong>Course:</strong> {{ course.title }}
+                                                    <br>
+                                                    <strong>Students Enrolled:</strong> {{ course.enrollments|length }}
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                <button type="button" class="btn btn-primary" onclick="editAssignment({{ assignment.id }})">
+                                                    <i class="fas fa-edit me-1"></i>Edit Assignment
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-clipboard fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No Assignments Created</h5>
+                            <p class="text-muted mb-4">Create your first assignment to engage your students!</p>
+                            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createAssignmentModal">
+                                <i class="fas fa-plus me-1"></i>Create First Assignment
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Assignment Modal -->
+<div class="modal fade" id="createAssignmentModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-plus me-2"></i>Create Assignment for {{ course.title }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('create_assignment') }}">
+                <input type="hidden" name="course_id" value="{{ course.id }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="assignment_title" class="form-label">Assignment Title</label>
+                        <input type="text" class="form-control" name="title" id="assignment_title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="assignment_description" class="form-label">Description</label>
+                        <textarea class="form-control" name="description" id="assignment_description" rows="4" placeholder="Provide detailed instructions for the assignment..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="due_date" class="form-label">Due Date (Optional)</label>
+                        <input type="datetime-local" class="form-control" name="due_date" id="due_date">
+                        <div class="form-text">Students will see this deadline in their dashboard</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-plus me-1"></i>Create Assignment
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function editAssignment(assignmentId) {
+    // For now, show an alert. In the future, this could open an edit modal
+    alert('Edit functionality will be implemented soon. Assignment ID: ' + assignmentId);
+}
+
+function deleteAssignment(assignmentId, title) {
+    if (confirm('Are you sure you want to delete the assignment "' + title + '"? This action cannot be undone.')) {
+        // Create a form and submit it to delete the assignment
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/teacher/assignment/' + assignmentId + '/delete';
+        
+        // Add CSRF token if needed
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrf_token';
+        // csrfInput.value = '{{ csrf_token() }}'; // Uncomment if using CSRF protection
+        
+        form.appendChild(csrfInput);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+// Custom filter for newline to break conversion
+function nl2br(str) {
+    return str.replace(/\n/g, '<br>');
+}
+</script>
+{% endblock %}

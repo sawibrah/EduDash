@@ -205,6 +205,20 @@ def view_course(course_id):
     content_html = markdown.markdown(course.content or '', extensions=['codehilite', 'fenced_code']) if course.content else ''
     return render_template('teacher_view_course.html', course=course, content_html=content_html)
 
+@app.route('/teacher/course/<int:course_id>/students')
+@require_role('teacher')
+def view_course_students(course_id):
+    course = Course.query.filter_by(id=course_id, teacher_id=current_user.id).first_or_404()
+    enrollments = Enrollment.query.filter_by(course_id=course_id).all()
+    return render_template('teacher_course_students.html', course=course, enrollments=enrollments)
+
+@app.route('/teacher/course/<int:course_id>/assignments')
+@require_role('teacher')
+def view_course_assignments(course_id):
+    course = Course.query.filter_by(id=course_id, teacher_id=current_user.id).first_or_404()
+    assignments = Assignment.query.filter_by(course_id=course_id).order_by(Assignment.created_at.desc()).all()
+    return render_template('teacher_course_assignments.html', course=course, assignments=assignments)
+
 @app.route('/teacher/course/<int:course_id>/edit', methods=['GET', 'POST'])
 @require_role('teacher')
 def edit_course(course_id):

@@ -133,13 +133,17 @@
                     <div class="row text-center">
                         <div class="col-6">
                             <div class="border-end">
-                                <h4 class="text-primary mb-0">{{ course.enrollments|length }}</h4>
-                                <small class="text-muted">Students</small>
+                                <a href="{{ url_for('view_course_students', course_id=course.id) }}" class="text-decoration-none">
+                                    <h4 class="text-primary mb-0">{{ course.enrollments|length }}</h4>
+                                    <small class="text-muted">Students</small>
+                                </a>
                             </div>
                         </div>
                         <div class="col-6">
-                            <h4 class="text-success mb-0">{{ course.assignments|length }}</h4>
-                            <small class="text-muted">Assignments</small>
+                            <a href="{{ url_for('view_course_assignments', course_id=course.id) }}" class="text-decoration-none">
+                                <h4 class="text-success mb-0">{{ course.assignments|length }}</h4>
+                                <small class="text-muted">Assignments</small>
+                            </a>
                         </div>
                     </div>
                 </div>
