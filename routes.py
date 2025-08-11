@@ -1437,42 +1437,40 @@ def take_quiz(quiz_id):
 def submit_quiz(quiz_id):
     quiz = Quiz.query.get_or_404(quiz_id)
     
-    # Verify enrollment
+    # Check if student is enrolled
     enrollment = Enrollment.query.filter_by(
         student_id=current_user.id,
         course_id=quiz.course_id
     ).first()
     
     if not enrollment:
-        return {'success': False, 'message': 'Not enrolled in course'}, 400
+        return jsonify({'success': False, 'error': 'Not enrolled in course'})
     
-    # Check for existing submission
+    # Check if already submitted
     existing_submission = CodeSubmission.query.filter_by(
         quiz_id=quiz_id,
         student_id=current_user.id
     ).first()
     
     if existing_submission:
-        return {'success': False, 'message': 'Already submitted'}, 400
+        return jsonify({'success': False, 'error': 'Already submitted'})
     
-    # Get JSON data
+    # Get code from request
     data = request.get_json()
+    code = data.get('code', '')
     
-    # Create new submission
+    # Create submission
     submission = CodeSubmission()
     submission.quiz_id = quiz_id
     submission.student_id = current_user.id
-    submission.code_content = data.get('code', '')
-    submission.language = data.get('language', quiz.programming_language)
+    submission.code = code
+    submission.submitted_at = datetime.now()
+    submission.status = 'submitted'
     
     db.session.add(submission)
     db.session.commit()
     
-    return {
-        'success': True, 
-        'message': 'Code submitted successfully!',
-        'redirect': url_for('take_quiz', quiz_id=quiz_id)
-    }
+    return jsonify({'success': True, 'message': 'Code submitted successfully'})
 
 @app.route('/teacher/quiz/<int:quiz_id>/delete', methods=['POST'])
 @require_role('teacher')
