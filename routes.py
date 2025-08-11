@@ -634,6 +634,70 @@ def remove_student(course_id, student_id):
     flash(f'Successfully removed {student_name} from {course.title}.', 'success')
     return redirect(url_for('view_course', course_id=course_id))
 
+@app.route('/teacher/assignment/<int:assignment_id>/edit', methods=['POST'])
+@require_role('teacher')
+def edit_assignment(assignment_id):
+    # Get the assignment and verify teacher owns it
+    assignment = Assignment.query.get_or_404(assignment_id)
+    course = Course.query.filter_by(id=assignment.course_id, teacher_id=current_user.id).first()
+    
+    if not course:
+        flash('You do not have permission to edit this assignment.', 'error')
+        return redirect(url_for('teacher_dashboard'))
+    
+    # Update assignment fields
+    title = request.form.get('title')
+    description = request.form.get('description')
+    course_id = request.form.get('course_id')
+    due_date_str = request.form.get('due_date')
+    
+    if not title:
+        flash('Assignment title is required.', 'error')
+        return redirect(url_for('teacher_dashboard'))
+    
+    # Verify new course also belongs to teacher if changed
+    if course_id and int(course_id) != assignment.course_id:
+        new_course = Course.query.filter_by(id=course_id, teacher_id=current_user.id).first()
+        if not new_course:
+            flash('Invalid course selected.', 'error')
+            return redirect(url_for('teacher_dashboard'))
+        assignment.course_id = course_id
+    
+    assignment.title = title
+    assignment.description = description
+    
+    # Handle due date
+    due_date = None
+    if due_date_str:
+        try:
+            due_date = datetime.strptime(due_date_str, '%Y-%m-%d')
+        except ValueError:
+            flash('Invalid due date format.', 'error')
+            return redirect(url_for('teacher_dashboard'))
+    assignment.due_date = due_date
+    
+    db.session.commit()
+    flash('Assignment updated successfully!', 'success')
+    return redirect(url_for('teacher_dashboard'))
+
+@app.route('/teacher/assignment/<int:assignment_id>/delete', methods=['POST'])
+@require_role('teacher')
+def delete_assignment(assignment_id):
+    # Get the assignment and verify teacher owns it
+    assignment = Assignment.query.get_or_404(assignment_id)
+    course = Course.query.filter_by(id=assignment.course_id, teacher_id=current_user.id).first()
+    
+    if not course:
+        flash('You do not have permission to delete this assignment.', 'error')
+        return redirect(url_for('teacher_dashboard'))
+    
+    assignment_title = assignment.title
+    db.session.delete(assignment)
+    db.session.commit()
+    
+    flash(f'Assignment "{assignment_title}" deleted successfully!', 'success')
+    return redirect(url_for('teacher_dashboard'))
+
 @app.route('/api/available-courses')
 @require_role('student')
 def available_courses_api():
