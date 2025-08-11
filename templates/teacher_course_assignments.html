@@ -111,7 +111,7 @@
                                                 <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#assignmentDetailModal{{ assignment.id }}">
                                                     <i class="fas fa-eye me-1"></i>View
                                                 </button>
-                                                <button type="button" class="btn btn-outline-primary" onclick="editAssignment({{ assignment.id }})">
+                                                <button type="button" class="btn btn-outline-primary" onclick="editAssignment({{ assignment.id }}, '{{ assignment.title|replace("'", "\\'") }}', '{{ (assignment.description or "")|replace("'", "\\'")|replace('\n', '\\n') }}', '{% if assignment.due_date %}{{ assignment.due_date.strftime("%B %d, %Y at %I:%M %p") }}{% endif %}')">
                                                     <i class="fas fa-edit me-1"></i>Edit
                                                 </button>
                                                 <button type="button" class="btn btn-outline-danger" onclick="deleteAssignment({{ assignment.id }}, '{{ assignment.title }}')">
@@ -181,7 +181,7 @@
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                <button type="button" class="btn btn-primary" onclick="editAssignment({{ assignment.id }})">
+                                                <button type="button" class="btn btn-primary" onclick="editAssignment({{ assignment.id }}, '{{ assignment.title|replace("'", "\\'") }}', '{{ (assignment.description or "")|replace("'", "\\'")|replace('\n', '\\n') }}', '{% if assignment.due_date %}{{ assignment.due_date.strftime("%B %d, %Y at %I:%M %p") }}{% endif %}')">
                                                     <i class="fas fa-edit me-1"></i>Edit Assignment
                                                 </button>
                                             </div>
@@ -245,12 +245,75 @@
     </div>
 </div>
 
-
+<!-- Edit Assignment Modal -->
+<div class="modal fade" id="editAssignmentModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-edit me-2"></i>Edit Assignment
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="" id="editAssignmentForm">
+                <input type="hidden" name="assignment_id" id="edit_assignment_id">
+                <input type="hidden" name="course_id" value="{{ course.id }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="edit_assignment_title" class="form-label">Assignment Title</label>
+                        <input type="text" class="form-control" name="title" id="edit_assignment_title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_assignment_description" class="form-label">Assignment Instructions & Description</label>
+                        <textarea class="form-control" name="description" id="edit_assignment_description" rows="6" placeholder="Provide detailed instructions for the assignment, including:&#10;• Objectives and learning goals&#10;• Step-by-step requirements&#10;• Submission guidelines&#10;• Evaluation criteria&#10;• Any resources or references needed"></textarea>
+                        <div class="form-text">This is where students will see the complete assignment details and instructions.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_due_date" class="form-label">Due Date (Optional)</label>
+                        <input type="datetime-local" class="form-control" name="due_date" id="edit_due_date">
+                        <div class="form-text">Students will see this deadline in their dashboard</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i>Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <script>
-function editAssignment(assignmentId) {
-    // For now, show an alert. In the future, this could open an edit modal
-    alert('Edit functionality will be implemented soon. Assignment ID: ' + assignmentId);
+function editAssignment(assignmentId, title, description, dueDate) {
+    // Set the form action to the correct edit URL
+    document.getElementById('editAssignmentForm').action = '/teacher/assignment/' + assignmentId + '/edit';
+    
+    // Populate the edit modal with current assignment data
+    document.getElementById('edit_assignment_id').value = assignmentId;
+    document.getElementById('edit_assignment_title').value = title;
+    document.getElementById('edit_assignment_description').value = description || '';
+    
+    // Format due date for datetime-local input
+    if (dueDate && dueDate !== 'None') {
+        // Convert "Aug 13, 2025 at 12:00 AM" format to YYYY-MM-DDTHH:MM
+        const date = new Date(dueDate);
+        if (!isNaN(date.getTime())) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            document.getElementById('edit_due_date').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+        }
+    } else {
+        document.getElementById('edit_due_date').value = '';
+    }
+    
+    // Show the edit modal
+    const editModal = new bootstrap.Modal(document.getElementById('editAssignmentModal'));
+    editModal.show();
 }
 
 function deleteAssignment(assignmentId, title) {

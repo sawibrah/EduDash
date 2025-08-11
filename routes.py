@@ -571,7 +571,11 @@ def create_assignment():
     due_date = None
     if due_date_str:
         try:
-            due_date = datetime.strptime(due_date_str, '%Y-%m-%d')
+            # Handle both datetime-local format (YYYY-MM-DDTHH:MM) and date format (YYYY-MM-DD)
+            if 'T' in due_date_str:
+                due_date = datetime.strptime(due_date_str, '%Y-%m-%dT%H:%M')
+            else:
+                due_date = datetime.strptime(due_date_str, '%Y-%m-%d')
         except ValueError:
             flash('Invalid due date format.', 'error')
             return redirect(url_for('teacher_dashboard'))
@@ -684,7 +688,11 @@ def edit_assignment(assignment_id):
     due_date = None
     if due_date_str:
         try:
-            due_date = datetime.strptime(due_date_str, '%Y-%m-%d')
+            # Handle both datetime-local format (YYYY-MM-DDTHH:MM) and date format (YYYY-MM-DD)
+            if 'T' in due_date_str:
+                due_date = datetime.strptime(due_date_str, '%Y-%m-%dT%H:%M')
+            else:
+                due_date = datetime.strptime(due_date_str, '%Y-%m-%d')
         except ValueError:
             flash('Invalid due date format.', 'error')
             return redirect(url_for('teacher_dashboard'))
@@ -692,7 +700,7 @@ def edit_assignment(assignment_id):
     
     db.session.commit()
     flash('Assignment updated successfully!', 'success')
-    return redirect(url_for('teacher_dashboard'))
+    return redirect(url_for('view_course_assignments', course_id=assignment.course_id))
 
 @app.route('/teacher/assignment/<int:assignment_id>/delete', methods=['POST'])
 @require_role('teacher')
@@ -709,8 +717,9 @@ def delete_assignment(assignment_id):
     db.session.delete(assignment)
     db.session.commit()
     
+    course_id = assignment.course_id
     flash(f'Assignment "{assignment_title}" deleted successfully!', 'success')
-    return redirect(url_for('teacher_dashboard'))
+    return redirect(url_for('view_course_assignments', course_id=course_id))
 
 @app.route('/api/available-courses')
 @require_role('student')
