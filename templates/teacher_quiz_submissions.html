@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+
+{% block title %}{{ quiz.title }} - Submissions{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2>
+                        <i class="fas fa-paper-plane me-2"></i>Quiz Submissions
+                    </h2>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ url_for('teacher_dashboard') }}">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="{{ url_for('view_course', course_id=course.id) }}">{{ course.title }}</a></li>
+                            <li class="breadcrumb-item"><a href="{{ url_for('view_course_quizzes', course_id=course.id) }}">Quizzes</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">{{ quiz.title }}</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Quiz Info Card -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h5 class="card-title">{{ quiz.title }}</h5>
+                            <p class="text-muted mb-1">{{ quiz.description or 'No description' }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <h6 class="text-muted mb-0">Total Submissions</h6>
+                                    <h4 class="text-primary">{{ submissions|length }}</h4>
+                                </div>
+                                <div class="col-6">
+                                    <h6 class="text-muted mb-0">Average Score</h6>
+                                    <h4 class="text-success">
+                                        {% set graded_submissions = submissions | selectattr('status', 'equalto', 'graded') | list %}
+                                        {% if graded_submissions %}
+                                            {{ "%.1f"|format((graded_submissions | sum(attribute='score') | float) / (graded_submissions | length) / quiz.max_score * 100) }}%
+                                        {% else %}
+                                            --
+                                        {% endif %}
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submissions List -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>Student Submissions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if submissions %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>Submitted</th>
+                                        <th>Language</th>
+                                        <th>Status</th>
+                                        <th>Score</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for submission in submissions %}
+                                    <tr>
+                                        <td>
+                                            <div class="fw-medium">
+                                                {{ submission.student.first_name or 'Unknown' }} {{ submission.student.last_name or 'Student' }}
+                                            </div>
+                                            <small class="text-muted">{{ submission.student.email }}</small>
+                                        </td>
+                                        <td>
+                                            <div>{{ submission.submitted_at.strftime('%Y-%m-%d') }}</div>
+                                            <small class="text-muted">{{ submission.submitted_at.strftime('%H:%M') }}</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">{{ submission.language or quiz.programming_language }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{% if submission.status == 'graded' %}success{% elif submission.status == 'reviewed' %}info{% else %}warning{% endif %}">
+                                                {{ submission.status.title() }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if submission.score is not none %}
+                                                <div class="fw-bold text-{% if submission.score >= quiz.max_score * 0.8 %}success{% elif submission.score >= quiz.max_score * 0.6 %}warning{% else %}danger{% endif %}">
+                                                    {{ submission.score }}/{{ quiz.max_score }}
+                                                </div>
+                                                <small class="text-muted">{{ "%.1f"|format(submission.score / quiz.max_score * 100) }}%</small>
+                                            {% else %}
+                                                <span class="text-muted">Not graded</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#viewSubmissionModal"
+                                                    data-submission-id="{{ submission.id }}"
+                                                    data-student-name="{{ submission.student.first_name }} {{ submission.student.last_name }}"
+                                                    data-code="{{ submission.code_content | e }}"
+                                                    data-language="{{ submission.language }}"
+                                                    data-output="{{ submission.output or '' }}"
+                                                    data-score="{{ submission.score or '' }}"
+                                                    data-feedback="{{ submission.feedback or '' }}">
+                                                <i class="fas fa-eye me-1"></i>View & Grade
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                            <h6 class="text-muted">No submissions yet</h6>
+                            <p class="text-muted small">Students will need to complete the quiz for submissions to appear here.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- View & Grade Submission Modal -->
+<div class="modal fade" id="viewSubmissionModal" tabindex="-1" aria-labelledby="viewSubmissionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewSubmissionModalLabel">
+                    <i class="fas fa-code me-2"></i>Code Submission - <span id="modalStudentName"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <h6>Submitted Code:</h6>
+                        <div class="border rounded p-3 mb-3" style="background: #f8f9fa; max-height: 400px; overflow-y: auto;">
+                            <pre><code id="modalCode"></code></pre>
+                        </div>
+                        
+                        <div id="modalOutputSection" style="display: none;">
+                            <h6>Program Output:</h6>
+                            <div class="border rounded p-3" style="background: #000; color: #fff; max-height: 200px; overflow-y: auto;">
+                                <pre id="modalOutput"></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4">
+                        <form id="gradeSubmissionForm" method="POST">
+                            <div class="mb-3">
+                                <label for="score" class="form-label">Score (out of {{ quiz.max_score }})</label>
+                                <input type="number" class="form-control" name="score" id="modalScore" 
+                                       min="0" max="{{ quiz.max_score }}" step="1">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="feedback" class="form-label">Feedback for Student</label>
+                                <textarea class="form-control" name="feedback" id="modalFeedback" rows="6"
+                                          placeholder="Provide constructive feedback on the student's code..."></textarea>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-star me-1"></i>Save Grade & Feedback
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Handle submission modal
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('viewSubmissionModal');
+    if (modal) {
+        modal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const submissionId = button.getAttribute('data-submission-id');
+            const studentName = button.getAttribute('data-student-name');
+            const code = button.getAttribute('data-code');
+            const language = button.getAttribute('data-language');
+            const output = button.getAttribute('data-output');
+            const score = button.getAttribute('data-score');
+            const feedback = button.getAttribute('data-feedback');
+            
+            // Update modal content
+            document.getElementById('modalStudentName').textContent = studentName;
+            document.getElementById('modalCode').textContent = code;
+            document.getElementById('modalScore').value = score;
+            document.getElementById('modalFeedback').value = feedback;
+            
+            // Show output section if there's output
+            const outputSection = document.getElementById('modalOutputSection');
+            const outputElement = document.getElementById('modalOutput');
+            if (output && output.trim()) {
+                outputElement.textContent = output;
+                outputSection.style.display = 'block';
+            } else {
+                outputSection.style.display = 'none';
+            }
+            
+            // Set form action
+            document.getElementById('gradeSubmissionForm').action = `/teacher/submission/${submissionId}/grade`;
+        });
+    }
+});
+</script>
+
+{% endblock %}

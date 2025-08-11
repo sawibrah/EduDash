@@ -3,7 +3,7 @@ from flask_login import current_user, login_user, logout_user
 from app import app, db
 from auth import require_login, require_role
 from forms import RegistrationForm, LoginForm, ProfileForm
-from models import User, StudentProfile, TeacherProfile, Course, Enrollment, Assignment
+from models import User, StudentProfile, TeacherProfile, Course, Enrollment, Assignment, Quiz, CodeSubmission
 from datetime import datetime
 import markdown
 import weasyprint
@@ -1105,6 +1105,208 @@ def test_login():
             return redirect(url_for('test_login'))
     
     return render_template('test_login.html')
+
+# Quiz Management Routes
+@app.route('/teacher/course/<int:course_id>/quizzes')
+@require_role('teacher')
+def view_course_quizzes(course_id):
+    course = Course.query.filter_by(id=course_id, teacher_id=current_user.id).first_or_404()
+    quizzes = Quiz.query.filter_by(course_id=course_id).order_by(Quiz.created_at.desc()).all()
+    return render_template('teacher_course_quizzes.html', course=course, quizzes=quizzes, now=datetime.now())
+
+@app.route('/teacher/course/<int:course_id>/create-quiz', methods=['GET', 'POST'])
+@require_role('teacher')
+def create_quiz(course_id):
+    course = Course.query.filter_by(id=course_id, teacher_id=current_user.id).first_or_404()
+    
+    if request.method == 'POST':
+        quiz = Quiz()
+        quiz.title = request.form.get('title')
+        quiz.description = request.form.get('description')
+        quiz.course_id = course_id
+        quiz.programming_language = request.form.get('programming_language') or course.programming_language
+        quiz.starter_code = request.form.get('starter_code', '')
+        quiz.expected_output = request.form.get('expected_output', '')
+        quiz.instructions = request.form.get('instructions', '')
+        quiz.max_score = int(request.form.get('max_score', 100))
+        quiz.time_limit = int(request.form.get('time_limit', 60))
+        
+        # Handle due date
+        due_date_str = request.form.get('due_date')
+        if due_date_str:
+            quiz.due_date = datetime.strptime(due_date_str, '%Y-%m-%dT%H:%M')
+        
+        quiz.is_active = request.form.get('is_active') == 'on'
+        
+        db.session.add(quiz)
+        db.session.commit()
+        
+        flash('Quiz created successfully!', 'success')
+        return redirect(url_for('view_course_quizzes', course_id=course_id))
+    
+    return render_template('teacher_create_quiz.html', course=course)
+
+@app.route('/teacher/quiz/<int:quiz_id>/edit', methods=['GET', 'POST'])
+@require_role('teacher')
+def edit_quiz(quiz_id):
+    quiz = Quiz.query.get_or_404(quiz_id)
+    course = Course.query.filter_by(id=quiz.course_id, teacher_id=current_user.id).first_or_404()
+    
+    if request.method == 'POST':
+        quiz.title = request.form.get('title')
+        quiz.description = request.form.get('description')
+        quiz.programming_language = request.form.get('programming_language')
+        quiz.starter_code = request.form.get('starter_code', '')
+        quiz.expected_output = request.form.get('expected_output', '')
+        quiz.instructions = request.form.get('instructions', '')
+        quiz.max_score = int(request.form.get('max_score', 100))
+        quiz.time_limit = int(request.form.get('time_limit', 60))
+        
+        # Handle due date
+        due_date_str = request.form.get('due_date')
+        if due_date_str:
+            quiz.due_date = datetime.strptime(due_date_str, '%Y-%m-%dT%H:%M')
+        else:
+            quiz.due_date = None
+            
+        quiz.is_active = request.form.get('is_active') == 'on'
+        quiz.updated_at = datetime.now()
+        
+        db.session.commit()
+        flash('Quiz updated successfully!', 'success')
+        return redirect(url_for('view_course_quizzes', course_id=quiz.course_id))
+    
+    return render_template('teacher_edit_quiz.html', quiz=quiz, course=course)
+
+@app.route('/teacher/quiz/<int:quiz_id>/submissions')
+@require_role('teacher')
+def view_quiz_submissions(quiz_id):
+    quiz = Quiz.query.get_or_404(quiz_id)
+    course = Course.query.filter_by(id=quiz.course_id, teacher_id=current_user.id).first_or_404()
+    submissions = CodeSubmission.query.filter_by(quiz_id=quiz_id).order_by(CodeSubmission.submitted_at.desc()).all()
+    
+    return render_template('teacher_quiz_submissions.html', quiz=quiz, course=course, submissions=submissions)
+
+@app.route('/teacher/submission/<int:submission_id>/grade', methods=['POST'])
+@require_role('teacher')
+def grade_submission(submission_id):
+    submission = CodeSubmission.query.get_or_404(submission_id)
+    quiz = Quiz.query.get_or_404(submission.quiz_id)
+    course = Course.query.filter_by(id=quiz.course_id, teacher_id=current_user.id).first_or_404()
+    
+    submission.score = int(request.form.get('score', 0))
+    submission.feedback = request.form.get('feedback', '')
+    submission.status = 'graded'
+    submission.graded_at = datetime.now()
+    
+    db.session.commit()
+    
+    flash('Submission graded successfully!', 'success')
+    return redirect(url_for('view_quiz_submissions', quiz_id=quiz.id))
+
+# Student Quiz Routes
+@app.route('/quiz/<int:quiz_id>')
+@require_role('student')
+def take_quiz(quiz_id):
+    quiz = Quiz.query.get_or_404(quiz_id)
+    
+    # Check if student is enrolled in the course
+    enrollment = Enrollment.query.filter_by(
+        student_id=current_user.id,
+        course_id=quiz.course_id
+    ).first()
+    
+    if not enrollment:
+        flash('You are not enrolled in this course.', 'error')
+        return redirect(url_for('student_dashboard'))
+    
+    # Check if quiz is active and not past due date
+    if not quiz.is_active:
+        flash('This quiz is not currently active.', 'error')
+        return redirect(url_for('student_dashboard'))
+    
+    if quiz.due_date and datetime.now() > quiz.due_date:
+        flash('This quiz is past its due date.', 'error')
+        return redirect(url_for('student_dashboard'))
+    
+    # Check if student has already submitted
+    existing_submission = CodeSubmission.query.filter_by(
+        quiz_id=quiz_id,
+        student_id=current_user.id
+    ).first()
+    
+    if existing_submission:
+        return render_template('student_quiz_submitted.html', 
+                             quiz=quiz, 
+                             submission=existing_submission)
+    
+    return render_template('student_take_quiz.html', quiz=quiz)
+
+@app.route('/quiz/<int:quiz_id>/submit', methods=['POST'])
+@require_role('student')
+def submit_quiz(quiz_id):
+    quiz = Quiz.query.get_or_404(quiz_id)
+    
+    # Verify enrollment
+    enrollment = Enrollment.query.filter_by(
+        student_id=current_user.id,
+        course_id=quiz.course_id
+    ).first()
+    
+    if not enrollment:
+        return {'success': False, 'message': 'Not enrolled in course'}, 400
+    
+    # Check for existing submission
+    existing_submission = CodeSubmission.query.filter_by(
+        quiz_id=quiz_id,
+        student_id=current_user.id
+    ).first()
+    
+    if existing_submission:
+        return {'success': False, 'message': 'Already submitted'}, 400
+    
+    # Get JSON data
+    data = request.get_json()
+    
+    # Create new submission
+    submission = CodeSubmission()
+    submission.quiz_id = quiz_id
+    submission.student_id = current_user.id
+    submission.code_content = data.get('code', '')
+    submission.language = data.get('language', quiz.programming_language)
+    
+    db.session.add(submission)
+    db.session.commit()
+    
+    return {
+        'success': True, 
+        'message': 'Code submitted successfully!',
+        'redirect': url_for('take_quiz', quiz_id=quiz_id)
+    }
+
+@app.route('/teacher/quiz/<int:quiz_id>/delete', methods=['POST'])
+@require_role('teacher')
+def delete_quiz(quiz_id):
+    quiz = Quiz.query.get_or_404(quiz_id)
+    course = Course.query.filter_by(id=quiz.course_id, teacher_id=current_user.id).first_or_404()
+    
+    try:
+        # Delete all submissions for this quiz
+        CodeSubmission.query.filter_by(quiz_id=quiz_id).delete()
+        
+        # Delete the quiz
+        quiz_title = quiz.title
+        course_id = quiz.course_id
+        db.session.delete(quiz)
+        db.session.commit()
+        
+        flash(f'Quiz "{quiz_title}" deleted successfully!', 'success')
+        
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error deleting quiz: {str(e)}', 'error')
+    
+    return redirect(url_for('view_course_quizzes', course_id=course_id))
 
 @app.errorhandler(403)
 def forbidden(error):

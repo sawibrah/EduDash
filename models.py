@@ -116,3 +116,43 @@ class Assignment(db.Model):
     due_date = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.now)
     course = db.relationship(Course, backref='assignments')
+
+# Programming Quizzes with Code Editor
+class Quiz(db.Model):
+    __tablename__ = 'quizzes'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    course_id = db.Column(db.Integer, db.ForeignKey(Course.id), nullable=False)
+    programming_language = db.Column(db.String(50), nullable=True)
+    starter_code = db.Column(db.Text, default='')
+    expected_output = db.Column(db.Text, default='')
+    instructions = db.Column(db.Text)
+    max_score = db.Column(db.Integer, default=100)
+    time_limit = db.Column(db.Integer, default=60)  # minutes
+    due_date = db.Column(db.DateTime, nullable=True)
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.now)
+    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
+    
+    course = db.relationship(Course, backref='quizzes')
+
+# Code Submissions for Quizzes
+class CodeSubmission(db.Model):
+    __tablename__ = 'code_submissions'
+    id = db.Column(db.Integer, primary_key=True)
+    quiz_id = db.Column(db.Integer, db.ForeignKey(Quiz.id), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
+    code_content = db.Column(db.Text, nullable=False)
+    language = db.Column(db.String(50))
+    output = db.Column(db.Text, default='')
+    status = db.Column(db.String(20), default='submitted')  # submitted, graded, reviewed
+    score = db.Column(db.Integer)
+    feedback = db.Column(db.Text)
+    execution_time = db.Column(db.Float)
+    memory_usage = db.Column(db.Integer)
+    submitted_at = db.Column(db.DateTime, default=datetime.now)
+    graded_at = db.Column(db.DateTime)
+    
+    quiz = db.relationship(Quiz, backref='submissions')
+    student = db.relationship(User, backref='code_submissions')

@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+
+{% block title %}Create Programming Quiz - {{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-code me-2"></i>Create Programming Quiz
+                    </h4>
+                    <nav aria-label="breadcrumb" class="mt-2">
+                        <ol class="breadcrumb breadcrumb-light mb-0">
+                            <li class="breadcrumb-item"><a href="{{ url_for('teacher_dashboard') }}" class="text-white-50">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="{{ url_for('view_course', course_id=course.id) }}" class="text-white-50">{{ course.title }}</a></li>
+                            <li class="breadcrumb-item"><a href="{{ url_for('view_course_quizzes', course_id=course.id) }}" class="text-white-50">Quizzes</a></li>
+                            <li class="breadcrumb-item active text-white">Create Quiz</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="row">
+                            <!-- Basic Quiz Information -->
+                            <div class="col-md-6">
+                                <h5 class="border-bottom pb-2 mb-3">Basic Information</h5>
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">Quiz Title *</label>
+                                    <input type="text" class="form-control" name="title" id="title" required
+                                           placeholder="e.g., Python Basics Quiz">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Description</label>
+                                    <textarea class="form-control" name="description" id="description" rows="3"
+                                              placeholder="Brief description of what this quiz tests..."></textarea>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="programming_language" class="form-label">Programming Language</label>
+                                    <select class="form-select" name="programming_language" id="programming_language">
+                                        <option value="">Select Language</option>
+                                        <option value="Python" {% if course.programming_language == 'Python' %}selected{% endif %}>Python</option>
+                                        <option value="JavaScript" {% if course.programming_language == 'JavaScript' %}selected{% endif %}>JavaScript</option>
+                                        <option value="Java" {% if course.programming_language == 'Java' %}selected{% endif %}>Java</option>
+                                        <option value="C++" {% if course.programming_language == 'C++' %}selected{% endif %}>C++</option>
+                                        <option value="C#" {% if course.programming_language == 'C#' %}selected{% endif %}>C#</option>
+                                        <option value="Ruby" {% if course.programming_language == 'Ruby' %}selected{% endif %}>Ruby</option>
+                                        <option value="Go" {% if course.programming_language == 'Go' %}selected{% endif %}>Go</option>
+                                        <option value="Rust" {% if course.programming_language == 'Rust' %}selected{% endif %}>Rust</option>
+                                        <option value="PHP" {% if course.programming_language == 'PHP' %}selected{% endif %}>PHP</option>
+                                        <option value="Swift" {% if course.programming_language == 'Swift' %}selected{% endif %}>Swift</option>
+                                        <option value="Kotlin" {% if course.programming_language == 'Kotlin' %}selected{% endif %}>Kotlin</option>
+                                        <option value="Scala" {% if course.programming_language == 'Scala' %}selected{% endif %}>Scala</option>
+                                    </select>
+                                    {% if course.programming_language %}
+                                        <div class="form-text">
+                                            <small><i class="fas fa-info-circle me-1"></i>Default: {{ course.programming_language }} (from course settings)</small>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Quiz Settings -->
+                            <div class="col-md-6">
+                                <h5 class="border-bottom pb-2 mb-3">Quiz Settings</h5>
+                                <div class="mb-3">
+                                    <label for="max_score" class="form-label">Maximum Score</label>
+                                    <input type="number" class="form-control" name="max_score" id="max_score" 
+                                           value="100" min="1" max="1000">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="time_limit" class="form-label">Time Limit (minutes)</label>
+                                    <input type="number" class="form-control" name="time_limit" id="time_limit" 
+                                           value="60" min="5" max="300">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="due_date" class="form-label">Due Date (Optional)</label>
+                                    <input type="datetime-local" class="form-control" name="due_date" id="due_date">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="is_active" id="is_active" checked>
+                                        <label class="form-check-label" for="is_active">
+                                            <strong>Quiz is Active</strong>
+                                            <br><small class="text-muted">Students can access and submit this quiz</small>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quiz Instructions -->
+                        <div class="mt-4">
+                            <h5 class="border-bottom pb-2 mb-3">Instructions & Problem Statement</h5>
+                            <div class="mb-3">
+                                <label for="instructions" class="form-label">Instructions *</label>
+                                <textarea class="form-control" name="instructions" id="instructions" rows="6" required
+                                          placeholder="Write detailed instructions for the programming problem.
+
+Example:
+Write a function called 'fibonacci' that takes an integer n as input and returns the nth number in the Fibonacci sequence.
+
+Requirements:
+- Function should handle n >= 0
+- Use efficient algorithm
+- Include proper error handling
+
+Test cases:
+- fibonacci(0) should return 0
+- fibonacci(1) should return 1
+- fibonacci(5) should return 5"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Starter Code -->
+                        <div class="mt-4">
+                            <h5 class="border-bottom pb-2 mb-3">Code Template</h5>
+                            <div class="mb-3">
+                                <label for="starter_code" class="form-label">Starter Code (Optional)</label>
+                                <textarea class="form-control" name="starter_code" id="starter_code" rows="8" 
+                                          style="font-family: 'Monaco', 'Consolas', 'Courier New', monospace;"
+                                          placeholder="# Provide starter code or function template for students
+
+def fibonacci(n):
+    # Your code here
+    pass
+
+# Test your function
+print(fibonacci(5))"></textarea>
+                                <div class="form-text">
+                                    <small>This code will be pre-filled in the student's code editor</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Expected Output -->
+                        <div class="mt-4">
+                            <h5 class="border-bottom pb-2 mb-3">Expected Output (Optional)</h5>
+                            <div class="mb-3">
+                                <label for="expected_output" class="form-label">Expected Output</label>
+                                <textarea class="form-control" name="expected_output" id="expected_output" rows="4" 
+                                          style="font-family: 'Monaco', 'Consolas', 'Courier New', monospace;"
+                                          placeholder="5
+
+(Show what the program should output when run correctly)"></textarea>
+                                <div class="form-text">
+                                    <small>This helps students understand what their code should produce</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="mt-4 pt-3 border-top">
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-1"></i>Create Quiz
+                                </button>
+                                <a href="{{ url_for('view_course_quizzes', course_id=course.id) }}" class="btn btn-secondary">
+                                    <i class="fas fa-times me-1"></i>Cancel
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-generate starter code based on language selection
+document.getElementById('programming_language').addEventListener('change', function() {
+    const language = this.value.toLowerCase();
+    const starterCodeField = document.getElementById('starter_code');
+    
+    const templates = {
+        'python': `# Write your Python solution here
+def solve():
+    # Your code here
+    pass
+
+# Test your function
+result = solve()
+print(result)`,
+        'javascript': `// Write your JavaScript solution here
+function solve() {
+    // Your code here
+    return null;
+}
+
+// Test your function
+const result = solve();
+console.log(result);`,
+        'java': `public class Solution {
+    public static void main(String[] args) {
+        Solution sol = new Solution();
+        System.out.println(sol.solve());
+    }
+    
+    public Object solve() {
+        // Your solution here
+        return null;
+    }
+}`,
+        'c++': `#include <iostream>
+using namespace std;
+
+class Solution {
+public:
+    void solve() {
+        // Your solution here
+        cout << "Hello World" << endl;
+    }
+};
+
+int main() {
+    Solution sol;
+    sol.solve();
+    return 0;
+}`
+    };
+    
+    if (templates[language] && !starterCodeField.value.trim()) {
+        starterCodeField.value = templates[language];
+    }
+});
+</script>
+
+{% endblock %}

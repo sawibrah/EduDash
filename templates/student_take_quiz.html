@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block title %}{{ quiz.title }} - Programming Quiz{% endblock %}
+
+{% block head %}
+<style>
+    .code-editor-container {
+        height: 500px;
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+    }
+    .quiz-timer {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1050;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 10px 15px;
+        border-radius: 20px;
+        font-weight: bold;
+    }
+    .instructions-card {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    .output-panel {
+        min-height: 200px;
+        max-height: 300px;
+        overflow-y: auto;
+        background: #f8f9fa;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Quiz Timer -->
+<div class="quiz-timer">
+    <i class="fas fa-clock me-1"></i>
+    Time Left: <span id="quiz-timer">{{ quiz.time_limit }}:00</span>
+</div>
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Instructions Panel -->
+        <div class="col-lg-4">
+            <div class="card sticky-top" style="top: 20px;">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>{{ quiz.title }}
+                    </h5>
+                </div>
+                <div class="card-body instructions-card">
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <strong>Language:</strong>
+                            <span class="badge bg-info">{{ quiz.programming_language or 'Any' }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <strong>Max Score:</strong>
+                            <span class="badge bg-success">{{ quiz.max_score }} points</span>
+                        </div>
+                        {% if quiz.due_date %}
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <strong>Due:</strong>
+                                <small class="text-muted">{{ quiz.due_date.strftime('%Y-%m-%d %H:%M') }}</small>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    {% if quiz.description %}
+                        <div class="mb-3">
+                            <h6>Description:</h6>
+                            <p class="small">{{ quiz.description }}</p>
+                        </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <h6>Instructions:</h6>
+                        <div class="border p-3 bg-light">
+                            <pre class="mb-0" style="white-space: pre-wrap; font-size: 0.9em;">{{ quiz.instructions }}</pre>
+                        </div>
+                    </div>
+
+                    {% if quiz.expected_output %}
+                        <div class="mb-3">
+                            <h6>Expected Output:</h6>
+                            <div class="border p-2 bg-light">
+                                <pre class="mb-0" style="font-size: 0.85em;">{{ quiz.expected_output }}</pre>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Code Editor Panel -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-code me-2"></i>Code Editor
+                        </h5>
+                        <div>
+                            <span id="save-status" class="me-3"></span>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-sm btn-success" id="run-code-btn" onclick="window.codeEditor.runCode()">
+                                    <i class="fas fa-play me-1"></i>Run Code
+                                </button>
+                                <button type="button" class="btn btn-sm btn-primary" id="submit-code-btn" onclick="window.codeEditor.submitCode({{ quiz.id }})">
+                                    <i class="fas fa-paper-plane me-1"></i>Submit Code
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <!-- Monaco Editor Container -->
+                    <div id="code-editor" class="code-editor-container"></div>
+                </div>
+            </div>
+
+            <!-- Output Panel -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-terminal me-2"></i>Output
+                    </h6>
+                </div>
+                <div class="card-body output-panel">
+                    <div id="code-output">
+                        <div class="text-muted text-center py-4">
+                            <i class="fas fa-play-circle fa-2x mb-2"></i>
+                            <p class="mb-0">Click "Run Code" to see the output</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden form data -->
+<input type="hidden" id="quiz-id" value="{{ quiz.id }}">
+
+<!-- Scripts -->
+<script src="{{ url_for('static', filename='js/code-editor.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize code editor
+    const initialCode = `{{ quiz.starter_code | safe }}` || window.codeEditor.getStarterCode('{{ quiz.programming_language | lower }}', 'basic');
+    
+    window.codeEditor.initEditor('code-editor', initialCode, '{{ quiz.programming_language | lower }}').then(function() {
+        // Load any previously saved code
+        const savedCode = window.codeEditor.loadSavedCode({{ quiz.id }});
+        
+        // Start quiz timer
+        {% if quiz.time_limit %}
+            window.QuizUtils.startTimer({{ quiz.time_limit }}, function() {
+                alert('Time is up! Your quiz will be automatically submitted.');
+                window.codeEditor.submitCode({{ quiz.id }});
+            });
+        {% endif %}
+    }).catch(function(error) {
+        console.error('Failed to initialize code editor:', error);
+        document.getElementById('code-editor').innerHTML = `
+            <div class="alert alert-danger m-3">
+                <h6>Code Editor Error</h6>
+                <p>Failed to load the code editor. Please refresh the page.</p>
+                <details>
+                    <summary>Technical Details</summary>
+                    <pre>${error.message}</pre>
+                </details>
+            </div>
+        `;
+    });
+
+    // Warn before leaving page
+    window.addEventListener('beforeunload', function(e) {
+        const message = 'Are you sure you want to leave? Your quiz progress may be lost.';
+        e.returnValue = message;
+        return message;
+    });
+
+    // Remove warning after submission
+    document.getElementById('submit-code-btn').addEventListener('click', function() {
+        window.removeEventListener('beforeunload', function(e) {});
+    });
+});
+
+// Custom submit function with confirmation
+async function submitQuizCode() {
+    const code = window.codeEditor.getCode();
+    
+    if (!code.trim()) {
+        if (!confirm('You haven\'t written any code. Submit anyway?')) {
+            return;
+        }
+    } else {
+        if (!confirm('Are you sure you want to submit your code? You cannot change it after submission.')) {
+            return;
+        }
+    }
+    
+    await window.codeEditor.submitCode({{ quiz.id }});
+}
+
+// Override the submit function
+document.addEventListener('DOMContentLoaded', function() {
+    const submitBtn = document.getElementById('submit-code-btn');
+    if (submitBtn) {
+        submitBtn.onclick = submitQuizCode;
+    }
+});
+</script>
+{% endblock %}
