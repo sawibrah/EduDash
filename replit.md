@@ -12,6 +12,8 @@ EduPortal is a comprehensive Learning Management System (LMS) built with Flask t
 - Content display selection: teachers choose between Markdown slides or uploaded files for student viewing
 - Programming language and difficulty level categorization (now includes Scala)
 - Estimated completion hours and prerequisite tracking
+- Student enrollment system with course ID sharing and browsing options
+- Teacher classroom management with student enrollment tracking and removal capabilities
 
 ## User Preferences
 

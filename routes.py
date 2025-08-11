@@ -607,6 +607,33 @@ def enroll_course():
     flash(f'Successfully enrolled in {course.title}!', 'success')
     return redirect(url_for('student_dashboard'))
 
+@app.route('/teacher/course/<int:course_id>/remove-student/<string:student_id>', methods=['POST'])
+@require_role('teacher')
+def remove_student(course_id, student_id):
+    # Verify the teacher owns this course
+    course = Course.query.filter_by(id=course_id, teacher_id=current_user.id).first_or_404()
+    
+    # Find the enrollment
+    enrollment = Enrollment.query.filter_by(
+        student_id=student_id,
+        course_id=course_id
+    ).first()
+    
+    if not enrollment:
+        flash('Student is not enrolled in this course.', 'error')
+        return redirect(url_for('view_course', course_id=course_id))
+    
+    # Get student name for flash message
+    student = User.query.get(student_id)
+    student_name = f"{student.first_name or 'Unknown'} {student.last_name or 'User'}" if student else "Student"
+    
+    # Remove the enrollment
+    db.session.delete(enrollment)
+    db.session.commit()
+    
+    flash(f'Successfully removed {student_name} from {course.title}.', 'success')
+    return redirect(url_for('view_course', course_id=course_id))
+
 @app.route('/api/available-courses')
 @require_role('student')
 def available_courses_api():
