@@ -143,7 +143,6 @@
                                                         <p class="text-muted">
                                                             {% if assignment.due_date %}
                                                                 {{ assignment.due_date.strftime('%B %d, %Y at %I:%M %p') }}
-                                                                {% set now = moment() %}
                                                                 {% if assignment.due_date < now %}
                                                                     <span class="badge bg-danger ms-2">Overdue</span>
                                                                 {% elif assignment.due_date.date() == now.date() %}

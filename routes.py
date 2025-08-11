@@ -217,7 +217,7 @@ def view_course_students(course_id):
 def view_course_assignments(course_id):
     course = Course.query.filter_by(id=course_id, teacher_id=current_user.id).first_or_404()
     assignments = Assignment.query.filter_by(course_id=course_id).order_by(Assignment.created_at.desc()).all()
-    return render_template('teacher_course_assignments.html', course=course, assignments=assignments)
+    return render_template('teacher_course_assignments.html', course=course, assignments=assignments, now=datetime.now())
 
 @app.route('/teacher/course/<int:course_id>/edit', methods=['GET', 'POST'])
 @require_role('teacher')
