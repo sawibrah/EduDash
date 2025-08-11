@@ -14,6 +14,31 @@
     <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
+    
+    <!-- Global CSS to disable all animations -->
+    <style>
+        *, *::before, *::after {
+            animation-duration: 0s !important;
+            animation-delay: 0s !important;
+            animation-iteration-count: 1 !important;
+            animation-fill-mode: none !important;
+            animation-play-state: paused !important;
+            transition-duration: 0s !important;
+            transition-delay: 0s !important;
+            transform: none !important;
+        }
+        
+        /* Re-enable essential hover effects for better UX */
+        .btn:hover {
+            opacity: 0.85;
+            transition: opacity 0.15s ease !important;
+        }
+        
+        .nav-link:hover, .dropdown-item:hover {
+            background-color: rgba(255,255,255,0.1) !important;
+            transition: background-color 0.15s ease !important;
+        }
+    </style>
 </head>
 <body>
     <!-- Navigation -->
