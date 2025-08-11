@@ -320,6 +320,29 @@ function copyToClipboard(text) {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
 <style>
+/* Shaking animation for course statistics */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+    20%, 40%, 60%, 80% { transform: translateX(2px); }
+}
+
+/* Apply shake effect to clickable statistics */
+.card-body a:hover {
+    animation: shake 0.5s ease-in-out infinite;
+    text-decoration: none !important;
+}
+
+/* Apply shake effect to buttons on hover */
+.btn:hover {
+    animation: shake 0.3s ease-in-out infinite;
+}
+
+/* Apply shake effect to list items */
+.list-group-item:hover {
+    animation: shake 0.4s ease-in-out infinite;
+}
+
 .markdown-content {
     line-height: 1.6;
 }
