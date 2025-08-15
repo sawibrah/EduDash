@@ -5,7 +5,7 @@
 {% block head %}
 <style>
     .code-editor-container {
-        height: 800px;
+        height: 900px;
         border: 1px solid #dee2e6;
         border-radius: 0.375rem;
     }
@@ -202,8 +202,13 @@ function createEditor() {
         automaticLayout: true,
         minimap: { enabled: false },
         scrollBeyondLastLine: false,
-        fontSize: 14,
-        wordWrap: 'on'
+        fontSize: 16,
+        lineHeight: 24,
+        wordWrap: 'on',
+        dimension: {
+            height: 900,
+            width: null
+        }
     });
     
     // Auto-save code
