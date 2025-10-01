@@ -94,28 +94,14 @@
                             </div>
                         </div>
                         
-                        <div class="mb-4">
-                            {{ form.role.label(class="form-label") }}
-                            {{ form.role(class="form-select", id="role-select", onchange="toggleRoleFields()") }}
-                            {% if form.role.errors %}
-                                <div class="text-danger small mt-1">
-                                    {% for error in form.role.errors %}
-                                        <div>{{ error }}</div>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
+                        <div class="alert alert-info mb-3">
+                            <i class="fas fa-info-circle me-2"></i>
+                            All new accounts are created as <strong>Student</strong> accounts. If you need teacher access, please contact an administrator after registration.
                         </div>
                         
-                        <!-- Student-specific fields -->
-                        <div id="student-fields" class="mb-3" style="display: none;">
+                        <div class="mb-3">
                             {{ form.grade_level.label(class="form-label") }}
                             {{ form.grade_level(class="form-select") }}
-                        </div>
-                        
-                        <!-- Teacher-specific fields -->
-                        <div id="teacher-fields" class="mb-3" style="display: none;">
-                            {{ form.department.label(class="form-label") }}
-                            {{ form.department(class="form-control", placeholder="e.g., Mathematics, Computer Science") }}
                         </div>
                         
                         <div class="d-grid">
@@ -135,27 +121,4 @@
     </div>
 </div>
 
-<script>
-function toggleRoleFields() {
-    const roleSelect = document.getElementById('role-select');
-    const studentFields = document.getElementById('student-fields');
-    const teacherFields = document.getElementById('teacher-fields');
-    
-    if (roleSelect.value === 'student') {
-        studentFields.style.display = 'block';
-        teacherFields.style.display = 'none';
-    } else if (roleSelect.value === 'teacher') {
-        studentFields.style.display = 'none';
-        teacherFields.style.display = 'block';
-    } else {
-        studentFields.style.display = 'none';
-        teacherFields.style.display = 'none';
-    }
-}
-
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
-    toggleRoleFields();
-});
-</script>
 {% endblock %}

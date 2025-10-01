@@ -3,6 +3,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
+from flask_wtf.csrf import CSRFProtect
 import logging
 
 # Configure logging
@@ -15,8 +16,16 @@ db = SQLAlchemy(model_class=Base)
 
 # Create the app
 app = Flask(__name__)
+
+# Enforce SESSION_SECRET is set
+if not os.environ.get("SESSION_SECRET"):
+    raise RuntimeError("SESSION_SECRET environment variable is not set. Application cannot start without a secret key for session security.")
+
 app.secret_key = os.environ.get("SESSION_SECRET")
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1) # needed for url_for to generate with https
+
+# Enable CSRF protection globally
+csrf = CSRFProtect(app)
 
 # Configure the database
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
@@ -27,6 +36,9 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "max_overflow": 20,
 }
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+# Enforce file upload size limit (50MB)
+app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024
 
 # Initialize the app with the extension
 db.init_app(app)

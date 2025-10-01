@@ -1,4 +1,4 @@
-modules = ["python-3.11", "postgresql-16"]
+modules = ["python-3.11", "postgresql-16", "python3"]
 
 [nix]
 channel = "stable-25_05"
@@ -33,5 +33,13 @@ waitForPort = 5000
 localPort = 5000
 externalPort = 80
 
+[[ports]]
+localPort = 39529
+externalPort = 3000
+
+[[ports]]
+localPort = 40059
+externalPort = 3001
+
 [agent]
-integrations = ["flask_authentication==1.0.0"]
+integrations = ["flask_authentication:1.0.0", "python_log_in_with_replit:1.0.0"]

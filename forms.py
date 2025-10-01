@@ -25,13 +25,9 @@ class RegistrationForm(FlaskForm):
         DataRequired(), 
         EqualTo('password', message='Passwords must match')
     ])
-    role = SelectField('Role', choices=[
-        ('student', 'Student'),
-        ('teacher', 'Teacher')
-    ], validators=[DataRequired()])
     
-    # Additional fields for role-specific profiles
-    grade_level = SelectField('Grade Level (Students)', choices=[
+    # Additional fields for student profile (all new users are students by default)
+    grade_level = SelectField('Grade Level', choices=[
         ('9th Grade', '9th Grade'),
         ('10th Grade', '10th Grade'),
         ('11th Grade', '11th Grade'),
@@ -39,8 +35,6 @@ class RegistrationForm(FlaskForm):
         ('College', 'College'),
         ('Graduate', 'Graduate')
     ], default='9th Grade')
-    
-    department = StringField('Department (Teachers)', default='General')
     
     submit = SubmitField('Create Account')
     

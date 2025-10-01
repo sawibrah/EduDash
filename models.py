@@ -53,21 +53,21 @@ class OAuth(OAuthConsumerMixin, db.Model):
 class StudentProfile(db.Model):
     __tablename__ = 'student_profiles'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False, unique=True)
     student_id = db.Column(db.String, unique=True, nullable=True)
     grade_level = db.Column(db.String, nullable=True)
     enrollment_date = db.Column(db.DateTime, default=datetime.now)
-    user = db.relationship(User, backref='student_profile')
+    user = db.relationship(User, backref=db.backref('student_profile', uselist=False))
 
 # Teacher-specific data
 class TeacherProfile(db.Model):
     __tablename__ = 'teacher_profiles'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False, unique=True)
     employee_id = db.Column(db.String, unique=True, nullable=True)
     department = db.Column(db.String, nullable=True)
     hire_date = db.Column(db.DateTime, default=datetime.now)
-    user = db.relationship(User, backref='teacher_profile')
+    user = db.relationship(User, backref=db.backref('teacher_profile', uselist=False))
 
 # Courses (managed by teachers)
 class Course(db.Model):
@@ -99,6 +99,9 @@ class Course(db.Model):
 # Student enrollments
 class Enrollment(db.Model):
     __tablename__ = 'enrollments'
+    __table_args__ = (
+        db.UniqueConstraint('student_id', 'course_id', name='unique_student_course_enrollment'),
+    )
     id = db.Column(db.Integer, primary_key=True)
     student_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey(Course.id), nullable=False)

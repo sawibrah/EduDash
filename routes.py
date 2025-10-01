@@ -1,11 +1,13 @@
 from flask import session, render_template, request, redirect, url_for, flash, send_file, jsonify
 from flask_login import current_user, login_user, logout_user
-from app import app, db
+from sqlalchemy.orm import joinedload
+from app import app, db, csrf
 from auth import require_login, require_role
 from forms import RegistrationForm, LoginForm, ProfileForm
 from models import User, StudentProfile, TeacherProfile, Course, Enrollment, Assignment, Quiz, CodeSubmission
 from datetime import datetime
 import markdown
+import bleach
 import weasyprint
 import os
 from werkzeug.utils import secure_filename
@@ -33,43 +35,32 @@ def register():
     
     form = RegistrationForm()
     if form.validate_on_submit():
-        # Create new user
+        # Create new user - all new registrations default to student role for security
+        # Teachers must be manually promoted by administrators
         user = User(
             username=form.username.data,
             email=form.email.data,
             first_name=form.first_name.data,
             last_name=form.last_name.data,
-            role=form.role.data
+            role='student'  # Force student role - teachers require admin approval
         )
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
         
-        # Create role-specific profile
-        if form.role.data == 'student':
-            student_profile = StudentProfile(
-                user_id=user.id,
-                student_id=f"STU{user.id:08d}",
-                grade_level=form.grade_level.data
-            )
-            db.session.add(student_profile)
-        elif form.role.data == 'teacher':
-            teacher_profile = TeacherProfile(
-                user_id=user.id,
-                employee_id=f"EMP{user.id:08d}",
-                department=form.department.data
-            )
-            db.session.add(teacher_profile)
+        # Create student profile for all new users
+        student_profile = StudentProfile(
+            user_id=user.id,
+            student_id=f"STU{user.id:08d}",
+            grade_level=form.grade_level.data if form.grade_level.data else '9th Grade'
+        )
+        db.session.add(student_profile)
         
         db.session.commit()
         flash(f'Registration successful! Welcome, {user.first_name}!', 'success')
         login_user(user)
         
-        # Redirect based on role
-        if user.role == 'student':
-            return redirect(url_for('student_dashboard'))
-        else:
-            return redirect(url_for('teacher_dashboard'))
+        return redirect(url_for('student_dashboard'))
     
     return render_template('register.html', form=form)
 
@@ -116,133 +107,37 @@ def index():
     
     return render_template('index.html')
 
-@app.route('/switch-role', methods=['GET', 'POST'])
-@require_login
-def switch_role():
-    if request.method == 'POST':
-        role = request.form.get('role')
-        
-        if role not in ['student', 'teacher']:
-            flash('Please select a valid role.', 'error')
-            return render_template('switch_role.html', user_role=current_user.role)
-        
-        # Update user role
-        old_role = current_user.role
-        current_user.role = role
-        db.session.commit()
-        
-        # Create role-specific profile if needed
-        if role == 'student':
-            existing_profile = StudentProfile.query.filter_by(user_id=current_user.id).first()
-            if not existing_profile:
-                student_profile = StudentProfile(
-                    user_id=current_user.id,
-                    student_id=f"STU{current_user.id:08d}",
-                    grade_level=request.form.get('grade_level', '9th Grade')
-                )
-                db.session.add(student_profile)
-        elif role == 'teacher':
-            existing_profile = TeacherProfile.query.filter_by(user_id=current_user.id).first()
-            if not existing_profile:
-                teacher_profile = TeacherProfile(
-                    user_id=current_user.id,
-                    employee_id=f"EMP{current_user.id:08d}",
-                    department=request.form.get('department', 'General')
-                )
-                db.session.add(teacher_profile)
-        
-        db.session.commit()
-        flash(f'Role changed from {old_role} to {role} successfully!', 'success')
-        
-        # Redirect to appropriate dashboard
-        if role == 'student':
-            return redirect(url_for('student_dashboard'))
-        else:
-            return redirect(url_for('teacher_dashboard'))
-    
-    return render_template('switch_role.html', user_role=current_user.role)
 
-# Create demo users on first run
-@app.route('/create-demo-users')
-def create_demo_users():
-    try:
-        # Check if demo users already exist
-        if User.query.filter_by(username='demo_student').first():
-            return "Demo users already exist!"
-        
-        # Create demo student
-        student = User(
-            username='demo_student',
-            email='student@demo.com',
-            first_name='Demo',
-            last_name='Student',
-            role='student'
-        )
-        student.set_password('password123')
-        db.session.add(student)
-        db.session.commit()
-        
-        student_profile = StudentProfile(
-            user_id=student.id,
-            student_id=f"STU{student.id:08d}",
-            grade_level='10th Grade'
-        )
-        db.session.add(student_profile)
-        
-        # Create demo teacher
-        teacher = User(
-            username='demo_teacher',
-            email='teacher@demo.com',
-            first_name='Demo',
-            last_name='Teacher',
-            role='teacher'
-        )
-        teacher.set_password('password123')
-        db.session.add(teacher)
-        db.session.commit()
-        
-        teacher_profile = TeacherProfile(
-            user_id=teacher.id,
-            employee_id=f"EMP{teacher.id:08d}",
-            department='Computer Science'
-        )
-        db.session.add(teacher_profile)
-        
-        db.session.commit()
-        return "Demo users created successfully! You can now login with demo_student/password123 or demo_teacher/password123"
-    
-    except Exception as e:
-        db.session.rollback()
-        return f"Error creating demo users: {str(e)}"
 
 @app.route('/student/dashboard')
 @require_role('student')
 def student_dashboard():
-    # Get student's enrollments and assignments
-    enrollments = Enrollment.query.filter_by(student_id=current_user.id).all()
+    # Get student's enrollments with eager loading to avoid N+1 queries
+    enrollments = Enrollment.query.options(
+        joinedload(Enrollment.course).joinedload(Course.teacher)
+    ).filter_by(student_id=current_user.id).all()
     enrolled_courses = [enrollment.course for enrollment in enrollments]
     
-    # Get assignments for enrolled courses
-    assignments = []
-    for course in enrolled_courses:
-        course_assignments = Assignment.query.filter_by(course_id=course.id).all()
-        assignments.extend(course_assignments)
+    # Get assignments for enrolled courses with eager loading
+    course_ids = [course.id for course in enrolled_courses]
+    assignments = Assignment.query.options(
+        joinedload(Assignment.course)
+    ).filter(Assignment.course_id.in_(course_ids)).all() if course_ids else []
     
     # Sort assignments by due date
     assignments.sort(key=lambda x: x.due_date if x.due_date else datetime.max)
     
-    # Get available quizzes for enrolled courses
-    quizzes = []
-    for course in enrolled_courses:
-        course_quizzes = Quiz.query.filter_by(course_id=course.id, is_active=True).all()
-        # Filter out quizzes already submitted
-        for quiz in course_quizzes:
-            existing_submission = CodeSubmission.query.filter_by(
-                quiz_id=quiz.id,
-                student_id=current_user.id
-            ).first()
-            if not existing_submission:
-                quizzes.append(quiz)
+    # Get available quizzes for enrolled courses with eager loading
+    quizzes = Quiz.query.options(
+        joinedload(Quiz.course)
+    ).filter(
+        Quiz.course_id.in_(course_ids),
+        Quiz.is_active == True
+    ).all() if course_ids else []
+    
+    # Filter out quizzes already submitted
+    submitted_quiz_ids = [s.quiz_id for s in CodeSubmission.query.filter_by(student_id=current_user.id).all()]
+    quizzes = [q for q in quizzes if q.id not in submitted_quiz_ids]
     
     # Sort quizzes by due date
     quizzes.sort(key=lambda x: x.due_date if x.due_date else datetime.max)
@@ -255,36 +150,31 @@ def student_dashboard():
 @app.route('/teacher/dashboard')
 @require_role('teacher')
 def teacher_dashboard():
-    # Get teacher's courses
-    courses = Course.query.filter_by(teacher_id=current_user.id).all()
+    # Get teacher's courses with eager loading to avoid N+1 queries
+    courses = Course.query.options(
+        joinedload(Course.enrollments)
+    ).filter_by(teacher_id=current_user.id).all()
     
-    # Get recent assignments
-    assignments = []
-    for course in courses:
-        course_assignments = Assignment.query.filter_by(course_id=course.id).all()
-        assignments.extend(course_assignments)
+    # Get course IDs for efficient querying
+    course_ids = [course.id for course in courses]
     
-    # Sort assignments by creation date
-    assignments.sort(key=lambda x: x.created_at, reverse=True)
+    # Get recent assignments with eager loading
+    assignments = Assignment.query.options(
+        joinedload(Assignment.course)
+    ).filter(Assignment.course_id.in_(course_ids)).order_by(Assignment.created_at.desc()).limit(5).all() if course_ids else []
     
-    # Get total student count across all courses
-    total_students = 0
-    for course in courses:
-        total_students += len(course.enrollments)
+    # Get total student count across all courses (already loaded with joinedload)
+    total_students = sum(len(course.enrollments) for course in courses)
     
-    # Get recent quizzes
-    quizzes = []
-    for course in courses:
-        course_quizzes = Quiz.query.filter_by(course_id=course.id).all()
-        quizzes.extend(course_quizzes)
-    
-    # Sort quizzes by creation date
-    quizzes.sort(key=lambda x: x.created_at, reverse=True)
+    # Get recent quizzes with eager loading
+    quizzes = Quiz.query.options(
+        joinedload(Quiz.course)
+    ).filter(Quiz.course_id.in_(course_ids)).order_by(Quiz.created_at.desc()).limit(5).all() if course_ids else []
     
     return render_template('teacher_dashboard.html', 
                          courses=courses, 
-                         assignments=assignments[:5],
-                         quizzes=quizzes[:5],
+                         assignments=assignments,
+                         quizzes=quizzes,
                          total_students=total_students)
 
 def generate_5_slide_template(title="", programming_language=""):
@@ -515,15 +405,26 @@ def create_course():
 @require_role('teacher')
 def view_course(course_id):
     course = Course.query.filter_by(id=course_id, teacher_id=current_user.id).first_or_404()
-    # Convert markdown to HTML for preview
-    content_html = markdown.markdown(course.content or '', extensions=['codehilite', 'fenced_code']) if course.content else ''
+    # Convert markdown to HTML for preview and sanitize to prevent XSS
+    if course.content:
+        content_html = markdown.markdown(course.content, extensions=['codehilite', 'fenced_code'])
+        # Sanitize HTML while allowing safe tags for educational content
+        allowed_tags = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'br', 'strong', 'em', 'u', 'ul', 'ol', 'li', 
+                       'code', 'pre', 'blockquote', 'a', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'div', 'span']
+        allowed_attrs = {'a': ['href', 'title'], 'code': ['class'], 'pre': ['class'], 'div': ['class'], 'span': ['class']}
+        content_html = bleach.clean(content_html, tags=allowed_tags, attributes=allowed_attrs, strip=True)
+    else:
+        content_html = ''
     return render_template('teacher_view_course.html', course=course, content_html=content_html)
 
 @app.route('/teacher/course/<int:course_id>/students')
 @require_role('teacher')
 def view_course_students(course_id):
     course = Course.query.filter_by(id=course_id, teacher_id=current_user.id).first_or_404()
-    enrollments = Enrollment.query.filter_by(course_id=course_id).all()
+    # Eager load student relationships to avoid N+1 queries
+    enrollments = Enrollment.query.options(
+        joinedload(Enrollment.student)
+    ).filter_by(course_id=course_id).all()
     return render_template('teacher_course_students.html', course=course, enrollments=enrollments)
 
 @app.route('/teacher/course/<int:course_id>/assignments')
@@ -1074,12 +975,16 @@ def delete_assignment(assignment_id):
 
 @app.route('/api/available-courses')
 @require_role('student')
+@csrf.exempt
 def available_courses_api():
     # Get all published courses that the student is not already enrolled in
     enrolled_course_ids = [enrollment.course_id for enrollment in 
                           Enrollment.query.filter_by(student_id=current_user.id).all()]
     
-    available_courses = Course.query.filter(
+    # Eager load teacher relationships to avoid N+1 queries
+    available_courses = Course.query.options(
+        joinedload(Course.teacher)
+    ).filter(
         Course.course_status == 'published',
         ~Course.id.in_(enrolled_course_ids)
     ).all()
@@ -1373,7 +1278,10 @@ def edit_quiz(quiz_id):
 def view_quiz_submissions(quiz_id):
     quiz = Quiz.query.get_or_404(quiz_id)
     course = Course.query.filter_by(id=quiz.course_id, teacher_id=current_user.id).first_or_404()
-    submissions = CodeSubmission.query.filter_by(quiz_id=quiz_id).order_by(CodeSubmission.submitted_at.desc()).all()
+    # Eager load student relationships to avoid N+1 queries
+    submissions = CodeSubmission.query.options(
+        joinedload(CodeSubmission.student)
+    ).filter_by(quiz_id=quiz_id).order_by(CodeSubmission.submitted_at.desc()).all()
     
     return render_template('teacher_quiz_submissions.html', quiz=quiz, course=course, submissions=submissions)
 
@@ -1434,6 +1342,7 @@ def take_quiz(quiz_id):
 
 @app.route('/quiz/<int:quiz_id>/submit', methods=['POST'])
 @require_role('student')
+@csrf.exempt
 def submit_quiz(quiz_id):
     quiz = Quiz.query.get_or_404(quiz_id)
     
@@ -1463,7 +1372,7 @@ def submit_quiz(quiz_id):
     submission = CodeSubmission()
     submission.quiz_id = quiz_id
     submission.student_id = current_user.id
-    submission.code = code
+    submission.code_content = code
     submission.submitted_at = datetime.now()
     submission.status = 'submitted'
     
@@ -1478,13 +1387,15 @@ def delete_quiz(quiz_id):
     quiz = Quiz.query.get_or_404(quiz_id)
     course = Course.query.filter_by(id=quiz.course_id, teacher_id=current_user.id).first_or_404()
     
+    # Store course_id before deletion
+    course_id = quiz.course_id
+    
     try:
         # Delete all submissions for this quiz
         CodeSubmission.query.filter_by(quiz_id=quiz_id).delete()
         
         # Delete the quiz
         quiz_title = quiz.title
-        course_id = quiz.course_id
         db.session.delete(quiz)
         db.session.commit()
         

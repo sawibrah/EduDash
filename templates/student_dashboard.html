@@ -14,7 +14,7 @@
         </div>
         <div class="text-end">
             {% if current_user.student_profile %}
-                <small class="text-muted">Student ID: {{ current_user.student_profile[0].student_id }}</small>
+                <small class="text-muted">Student ID: {{ current_user.student_profile.student_id }}</small>
             {% endif %}
         </div>
     </div>
