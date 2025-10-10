@@ -926,6 +926,19 @@ def toggle_exam_status(exam_id):
     
     return '', 204  # Return no content for AJAX request
 
+@app.route('/teacher/exam/<int:exam_id>/reset-submissions', methods=['POST'])
+@require_role('teacher')
+def reset_exam_submissions(exam_id):
+    exam = Exam.query.get_or_404(exam_id)
+    course = Course.query.filter_by(id=exam.course_id, teacher_id=current_user.id).first_or_404()
+    
+    # Delete all submissions for this exam
+    deleted_count = ExamSubmission.query.filter_by(exam_id=exam_id).delete()
+    db.session.commit()
+    
+    flash(f'Reset complete! {deleted_count} submission(s) cleared. Students can now retake this exam.', 'success')
+    return redirect(url_for('view_course_exams', course_id=course.id))
+
 @app.route('/student/enroll', methods=['POST'])
 @require_role('student')
 def enroll_course():
