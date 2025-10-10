@@ -4,7 +4,7 @@ from sqlalchemy.orm import joinedload
 from app import app, db, csrf
 from auth import require_login, require_role
 from forms import RegistrationForm, LoginForm, ProfileForm
-from models import User, StudentProfile, TeacherProfile, Course, Enrollment, Assignment, Quiz, CodeSubmission
+from models import User, StudentProfile, TeacherProfile, Course, Enrollment, Exam, ExamSubmission, Quiz, CodeSubmission
 from datetime import datetime
 import json
 import markdown
@@ -119,14 +119,14 @@ def student_dashboard():
     ).filter_by(student_id=current_user.id).all()
     enrolled_courses = [enrollment.course for enrollment in enrollments]
     
-    # Get assignments for enrolled courses with eager loading
+    # Get exams for enrolled courses with eager loading
     course_ids = [course.id for course in enrolled_courses]
-    assignments = Assignment.query.options(
-        joinedload(Assignment.course)
-    ).filter(Assignment.course_id.in_(course_ids)).all() if course_ids else []
+    exams = Exam.query.options(
+        joinedload(Exam.course)
+    ).filter(Exam.course_id.in_(course_ids)).all() if course_ids else []
     
-    # Sort assignments by due date
-    assignments.sort(key=lambda x: x.due_date if x.due_date else datetime.max)
+    # Sort exams by due date
+    exams.sort(key=lambda x: x.due_date if x.due_date else datetime.max)
     
     # Get available quizzes for enrolled courses with eager loading
     quizzes = Quiz.query.options(
@@ -145,8 +145,8 @@ def student_dashboard():
     
     return render_template('student_dashboard.html', 
                          courses=enrolled_courses, 
-                         assignments=assignments[:5],
-                         quizzes=quizzes[:5])  # Show only next 5 assignments and quizzes
+                         exams=exams[:5],
+                         quizzes=quizzes[:5])  # Show only next 5 exams and quizzes
 
 @app.route('/teacher/dashboard')
 @require_role('teacher')
@@ -159,10 +159,10 @@ def teacher_dashboard():
     # Get course IDs for efficient querying
     course_ids = [course.id for course in courses]
     
-    # Get recent assignments with eager loading
-    assignments = Assignment.query.options(
-        joinedload(Assignment.course)
-    ).filter(Assignment.course_id.in_(course_ids)).order_by(Assignment.created_at.desc()).limit(5).all() if course_ids else []
+    # Get recent exams with eager loading
+    exams = Exam.query.options(
+        joinedload(Exam.course)
+    ).filter(Exam.course_id.in_(course_ids)).order_by(Exam.created_at.desc()).limit(5).all() if course_ids else []
     
     # Get total student count across all courses (already loaded with joinedload)
     total_students = sum(len(course.enrollments) for course in courses)
@@ -174,7 +174,7 @@ def teacher_dashboard():
     
     return render_template('teacher_dashboard.html', 
                          courses=courses, 
-                         assignments=assignments,
+                         exams=exams,
                          quizzes=quizzes,
                          total_students=total_students)
 
@@ -428,12 +428,12 @@ def view_course_students(course_id):
     ).filter_by(course_id=course_id).all()
     return render_template('teacher_course_students.html', course=course, enrollments=enrollments)
 
-@app.route('/teacher/course/<int:course_id>/assignments')
+@app.route('/teacher/course/<int:course_id>/exams')
 @require_role('teacher')
-def view_course_assignments(course_id):
+def view_course_exams(course_id):
     course = Course.query.filter_by(id=course_id, teacher_id=current_user.id).first_or_404()
-    assignments = Assignment.query.filter_by(course_id=course_id).order_by(Assignment.created_at.desc()).all()
-    return render_template('teacher_course_assignments.html', course=course, assignments=assignments, now=datetime.now())
+    exams = Exam.query.filter_by(course_id=course_id).order_by(Exam.created_at.desc()).all()
+    return render_template('teacher_course_exams.html', course=course, exams=exams, now=datetime.now())
 
 @app.route('/teacher/course/<int:course_id>/edit', methods=['GET', 'POST'])
 @require_role('teacher')
@@ -506,10 +506,10 @@ def delete_course(course_id):
         if course.pdf_path and os.path.exists(course.pdf_path):
             os.remove(course.pdf_path)
         
-        # Delete course assignments first (due to foreign key constraints)
-        assignments = Assignment.query.filter_by(course_id=course_id).all()
-        for assignment in assignments:
-            db.session.delete(assignment)
+        # Delete course exams first (due to foreign key constraints)
+        exams = Exam.query.filter_by(course_id=course_id).all()
+        for exam in exams:
+            db.session.delete(exam)
         
         # Delete enrollments
         enrollments = Enrollment.query.filter_by(course_id=course_id).all()
@@ -803,16 +803,16 @@ def convert_markdown_to_slides(markdown_content):
     
     return '\n'.join(html_slides) if html_slides else "<section><h1>No content available</h1></section>"
 
-@app.route('/teacher/create-assignment', methods=['POST'])
+@app.route('/teacher/create-exam', methods=['POST'])
 @require_role('teacher')
-def create_assignment():
+def create_exam():
     title = request.form.get('title')
     description = request.form.get('description')
     course_id = request.form.get('course_id')
     due_date_str = request.form.get('due_date')
     
     if not title or not course_id:
-        flash('Assignment title and course are required.', 'error')
+        flash('Exam title and course are required.', 'error')
         return redirect(url_for('teacher_dashboard'))
     
     # Verify teacher owns the course
@@ -833,15 +833,15 @@ def create_assignment():
             flash('Invalid due date format.', 'error')
             return redirect(url_for('teacher_dashboard'))
     
-    assignment = Assignment()
-    assignment.title = title
-    assignment.description = description
-    assignment.course_id = course_id
-    assignment.due_date = due_date
-    db.session.add(assignment)
+    exam = Exam()
+    exam.title = title
+    exam.description = description
+    exam.course_id = course_id
+    exam.due_date = due_date
+    db.session.add(exam)
     db.session.commit()
     
-    flash('Assignment created successfully!', 'success')
+    flash('Exam created successfully!', 'success')
     return redirect(url_for('teacher_dashboard'))
 
 @app.route('/student/enroll', methods=['POST'])
@@ -905,37 +905,37 @@ def remove_student(course_id, student_id):
     flash(f'Successfully removed {student_name} from {course.title}.', 'success')
     return redirect(url_for('view_course', course_id=course_id))
 
-@app.route('/teacher/assignment/<int:assignment_id>/edit', methods=['POST'])
+@app.route('/teacher/exam/<int:exam_id>/edit', methods=['POST'])
 @require_role('teacher')
-def edit_assignment(assignment_id):
-    # Get the assignment and verify teacher owns it through course ownership
-    assignment = Assignment.query.get_or_404(assignment_id)
-    course = Course.query.filter_by(id=assignment.course_id, teacher_id=current_user.id).first()
+def edit_exam(exam_id):
+    # Get the exam and verify teacher owns it through course ownership
+    exam = Exam.query.get_or_404(exam_id)
+    course = Course.query.filter_by(id=exam.course_id, teacher_id=current_user.id).first()
     
     if not course:
-        flash('You do not have permission to edit this assignment. Only the teacher who created the course can manage its assignments.', 'error')
+        flash('You do not have permission to edit this exam. Only the teacher who created the course can manage its exams.', 'error')
         return redirect(url_for('teacher_dashboard'))
     
-    # Update assignment fields
+    # Update exam fields
     title = request.form.get('title')
     description = request.form.get('description')
     course_id = request.form.get('course_id')
     due_date_str = request.form.get('due_date')
     
     if not title:
-        flash('Assignment title is required.', 'error')
+        flash('Exam title is required.', 'error')
         return redirect(url_for('teacher_dashboard'))
     
     # Verify new course also belongs to teacher if changed
-    if course_id and int(course_id) != assignment.course_id:
+    if course_id and int(course_id) != exam.course_id:
         new_course = Course.query.filter_by(id=course_id, teacher_id=current_user.id).first()
         if not new_course:
             flash('Invalid course selected.', 'error')
             return redirect(url_for('teacher_dashboard'))
-        assignment.course_id = course_id
+        exam.course_id = course_id
     
-    assignment.title = title
-    assignment.description = description
+    exam.title = title
+    exam.description = description
     
     # Handle due date
     due_date = None
@@ -949,30 +949,30 @@ def edit_assignment(assignment_id):
         except ValueError:
             flash('Invalid due date format.', 'error')
             return redirect(url_for('teacher_dashboard'))
-    assignment.due_date = due_date
+    exam.due_date = due_date
     
     db.session.commit()
-    flash('Assignment updated successfully!', 'success')
-    return redirect(url_for('view_course_assignments', course_id=assignment.course_id))
+    flash('Exam updated successfully!', 'success')
+    return redirect(url_for('view_course_exams', course_id=exam.course_id))
 
-@app.route('/teacher/assignment/<int:assignment_id>/delete', methods=['POST'])
+@app.route('/teacher/exam/<int:exam_id>/delete', methods=['POST'])
 @require_role('teacher')
-def delete_assignment(assignment_id):
-    # Get the assignment and verify teacher owns it through course ownership
-    assignment = Assignment.query.get_or_404(assignment_id)
-    course = Course.query.filter_by(id=assignment.course_id, teacher_id=current_user.id).first()
+def delete_exam(exam_id):
+    # Get the exam and verify teacher owns it through course ownership
+    exam = Exam.query.get_or_404(exam_id)
+    course = Course.query.filter_by(id=exam.course_id, teacher_id=current_user.id).first()
     
     if not course:
-        flash('You do not have permission to delete this assignment. Only the teacher who created the course can manage its assignments.', 'error')
+        flash('You do not have permission to delete this exam. Only the teacher who created the course can manage its exams.', 'error')
         return redirect(url_for('teacher_dashboard'))
     
-    assignment_title = assignment.title
-    db.session.delete(assignment)
+    exam_title = exam.title
+    db.session.delete(exam)
     db.session.commit()
     
-    course_id = assignment.course_id
-    flash(f'Assignment "{assignment_title}" deleted successfully!', 'success')
-    return redirect(url_for('view_course_assignments', course_id=course_id))
+    course_id = exam.course_id
+    flash(f'Exam "{exam_title}" deleted successfully!', 'success')
+    return redirect(url_for('view_course_exams', course_id=course_id))
 
 @app.route('/api/available-courses')
 @require_role('student')

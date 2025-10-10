@@ -109,16 +109,42 @@ class Enrollment(db.Model):
     student = db.relationship(User, backref='enrollments')
     course = db.relationship(Course, backref='enrollments')
 
-# Assignments
-class Assignment(db.Model):
-    __tablename__ = 'assignments'
+# Exams (MCQ with rich content support - replaces Assignments)
+class Exam(db.Model):
+    __tablename__ = 'exams'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text, nullable=True)
     course_id = db.Column(db.Integer, db.ForeignKey(Course.id), nullable=False)
+    
+    # MCQ fields with rich content support
+    questions_json = db.Column(db.Text, nullable=True)  # JSON: [{question, options, correct_answer, content_type}]
+    
+    # Exam settings
+    max_score = db.Column(db.Integer, default=100)
+    time_limit = db.Column(db.Integer, default=60)  # minutes
     due_date = db.Column(db.DateTime, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.now)
-    course = db.relationship(Course, backref='assignments')
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.Integer, default=datetime.now)
+    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
+    
+    course = db.relationship(Course, backref='exams')
+
+# Exam Submissions
+class ExamSubmission(db.Model):
+    __tablename__ = 'exam_submissions'
+    id = db.Column(db.Integer, primary_key=True)
+    exam_id = db.Column(db.Integer, db.ForeignKey(Exam.id), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
+    
+    answers_json = db.Column(db.Text, nullable=True)  # JSON string of student answers
+    score = db.Column(db.Integer)
+    status = db.Column(db.String(20), default='graded')  # auto-graded for MCQ
+    submitted_at = db.Column(db.DateTime, default=datetime.now)
+    graded_at = db.Column(db.DateTime)
+    
+    exam = db.relationship(Exam, backref='submissions')
+    student = db.relationship(User, backref='exam_submissions')
 
 # Programming Quizzes with Code Editor and Multiple Choice
 class Quiz(db.Model):
