@@ -155,6 +155,15 @@ function loadQuestions() {
     }
     
     questions.forEach((question, index) => {
+        // Handle both array and object formats for options
+        let optionsArray = [];
+        if (Array.isArray(question.options)) {
+            optionsArray = question.options;
+        } else if (typeof question.options === 'object') {
+            // Convert object to array (A, B, C, D order)
+            optionsArray = ['A', 'B', 'C', 'D'].map(key => question.options[key]).filter(v => v);
+        }
+        
         const questionHtml = `
             <div class="card question-card mb-3">
                 <div class="card-header bg-light">
@@ -163,15 +172,15 @@ function loadQuestions() {
                 <div class="card-body">
                     <p class="lead mb-3">${escapeHtml(question.question)}</p>
                     <div class="options">
-                        ${question.options.map((option, optIdx) => `
+                        ${optionsArray.map((option, optIdx) => `
                             <div class="form-check mb-2">
                                 <input type="radio" 
-                                       class="form-check-input" 
+                                       class="form-check-input option-input" 
                                        id="q${index}_opt${optIdx}" 
                                        name="question_${index}" 
                                        value="${optIdx}"
                                        onchange="selectAnswer(${index}, ${optIdx})">
-                                <label class="form-check-label" for="q${index}_opt${optIdx}">
+                                <label class="form-check-label option-label" for="q${index}_opt${optIdx}">
                                     <strong>${String.fromCharCode(65 + optIdx)}.</strong> ${escapeHtml(option)}
                                 </label>
                             </div>
