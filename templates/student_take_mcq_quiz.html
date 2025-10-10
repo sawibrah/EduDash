@@ -164,14 +164,14 @@ function loadQuestions() {
                     <p class="lead mb-3">${escapeHtml(question.question)}</p>
                     <div class="options">
                         ${question.options.map((option, optIdx) => `
-                            <div class="mb-2">
+                            <div class="form-check mb-2">
                                 <input type="radio" 
-                                       class="option-input" 
+                                       class="form-check-input" 
                                        id="q${index}_opt${optIdx}" 
                                        name="question_${index}" 
                                        value="${optIdx}"
                                        onchange="selectAnswer(${index}, ${optIdx})">
-                                <label class="option-label w-100" for="q${index}_opt${optIdx}">
+                                <label class="form-check-label" for="q${index}_opt${optIdx}">
                                     <strong>${String.fromCharCode(65 + optIdx)}.</strong> ${escapeHtml(option)}
                                 </label>
                             </div>

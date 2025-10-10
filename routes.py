@@ -1421,6 +1421,7 @@ def submit_quiz(quiz_id):
         # Get student answers
         answers = data.get('answers', {})
         submission.answers_json = json.dumps(answers)
+        submission.code_content = ''  # MCQ doesn't use code
         
         # Auto-grade multiple choice
         questions = json.loads(quiz.questions_json or '[]')
