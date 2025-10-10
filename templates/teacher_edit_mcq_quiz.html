@@ -116,10 +116,24 @@ const existingQuestions = {{ questions | tojson | safe }};
 function addQuestion(questionData = null) {
     const data = questionData || {
         question: '',
-        options: { A: '', B: '', C: '', D: '' },
-        correct_answer: 'A',
+        options: ['', '', '', ''],
+        correct_answer: 0,
         explanation: ''
     };
+    
+    // Normalize options to array format
+    let options = Array.isArray(data.options) ? data.options : [
+        data.options.A || '', 
+        data.options.B || '', 
+        data.options.C || '', 
+        data.options.D || ''
+    ];
+    
+    // Normalize correct answer to index
+    let correctIndex = data.correct_answer;
+    if (typeof correctIndex === 'string') {
+        correctIndex = correctIndex.charCodeAt(0) - 65; // Convert 'A', 'B', 'C', 'D' to 0, 1, 2, 3
+    }
     
     const qIndex = questionIndex++;
     
@@ -146,12 +160,12 @@ function addQuestion(questionData = null) {
                             <div class="input-group-text">
                                 <input class="form-check-input mt-0" type="radio" 
                                        name="correct_${qIndex}" value="A" 
-                                       ${data.correct_answer === 'A' ? 'checked' : ''}
+                                       ${correctIndex === 0 ? 'checked' : ''}
                                        title="Mark as correct answer">
                             </div>
                             <span class="input-group-text">A</span>
                             <input type="text" class="form-control" name="option_${qIndex}_A" 
-                                   placeholder="Option A" value="${data.options.A || ''}" required>
+                                   placeholder="Option A" value="${options[0] || ''}" required>
                         </div>
                     </div>
                     <div class="mb-2">
@@ -159,12 +173,12 @@ function addQuestion(questionData = null) {
                             <div class="input-group-text">
                                 <input class="form-check-input mt-0" type="radio" 
                                        name="correct_${qIndex}" value="B" 
-                                       ${data.correct_answer === 'B' ? 'checked' : ''}
+                                       ${correctIndex === 1 ? 'checked' : ''}
                                        title="Mark as correct answer">
                             </div>
                             <span class="input-group-text">B</span>
                             <input type="text" class="form-control" name="option_${qIndex}_B" 
-                                   placeholder="Option B" value="${data.options.B || ''}" required>
+                                   placeholder="Option B" value="${options[1] || ''}" required>
                         </div>
                     </div>
                     <div class="mb-2">
@@ -172,12 +186,12 @@ function addQuestion(questionData = null) {
                             <div class="input-group-text">
                                 <input class="form-check-input mt-0" type="radio" 
                                        name="correct_${qIndex}" value="C" 
-                                       ${data.correct_answer === 'C' ? 'checked' : ''}
+                                       ${correctIndex === 2 ? 'checked' : ''}
                                        title="Mark as correct answer">
                             </div>
                             <span class="input-group-text">C</span>
                             <input type="text" class="form-control" name="option_${qIndex}_C" 
-                                   placeholder="Option C" value="${data.options.C || ''}" required>
+                                   placeholder="Option C" value="${options[2] || ''}" required>
                         </div>
                     </div>
                     <div class="mb-2">
@@ -185,12 +199,12 @@ function addQuestion(questionData = null) {
                             <div class="input-group-text">
                                 <input class="form-check-input mt-0" type="radio" 
                                        name="correct_${qIndex}" value="D" 
-                                       ${data.correct_answer === 'D' ? 'checked' : ''}
+                                       ${correctIndex === 3 ? 'checked' : ''}
                                        title="Mark as correct answer">
                             </div>
                             <span class="input-group-text">D</span>
                             <input type="text" class="form-control" name="option_${qIndex}_D" 
-                                   placeholder="Option D" value="${data.options.D || ''}" required>
+                                   placeholder="Option D" value="${options[3] || ''}" required>
                         </div>
                     </div>
                 </div>
