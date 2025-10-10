@@ -217,6 +217,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST" action="{{ url_for('create_assignment') }}">
+                {{ csrf_token() }}
                 <input type="hidden" name="course_id" value="{{ course.id }}">
                 <div class="modal-body">
                     <div class="mb-3">
@@ -256,6 +257,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST" action="" id="editAssignmentForm">
+                {{ csrf_token() }}
                 <input type="hidden" name="assignment_id" id="edit_assignment_id">
                 <input type="hidden" name="course_id" value="{{ course.id }}">
                 <div class="modal-body">

@@ -218,6 +218,7 @@
                                                 </button>
                                                 <form method="POST" action="{{ url_for('delete_assignment', assignment_id=assignment.id) }}" 
                                                       onsubmit="return confirm('Are you sure you want to delete this assignment?')" class="d-inline">
+                                                    {{ csrf_token() }}
                                                     <button type="submit" class="btn btn-sm btn-outline-danger">
                                                         <i class="fas fa-trash me-1"></i>Delete
                                                     </button>
@@ -428,6 +429,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <form id="deleteCourseForm" method="POST" style="display: inline;">
+                    {{ csrf_token() }}
                     <button type="submit" class="btn btn-danger">
                         <i class="fas fa-trash me-1"></i>Yes, Delete Course
                     </button>
