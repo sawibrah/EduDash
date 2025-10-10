@@ -1426,8 +1426,6 @@ def toggle_quiz_status(quiz_id):
     quiz.is_active = not quiz.is_active
     db.session.commit()
     
-    status_text = 'activated' if quiz.is_active else 'deactivated'
-    flash(f'Quiz "{quiz.title}" has been {status_text}.', 'success')
     return redirect(url_for('view_course_quizzes', course_id=course.id))
 
 # Student Quiz Routes
