@@ -158,10 +158,37 @@ function loadQuestions() {
         // Handle both array and object formats for options
         let optionsArray = [];
         if (Array.isArray(question.options)) {
-            optionsArray = question.options;
+            // Check if options are objects (rich content) or strings
+            optionsArray = question.options.map(opt => {
+                if (typeof opt === 'string') {
+                    return { text: opt, image: '', code: '', code_language: 'python' };
+                }
+                return opt;
+            });
         } else if (typeof question.options === 'object') {
             // Convert object to array (A, B, C, D order)
-            optionsArray = ['A', 'B', 'C', 'D'].map(key => question.options[key]).filter(v => v);
+            optionsArray = ['A', 'B', 'C', 'D'].map(key => ({
+                text: question.options[key] || '',
+                image: '',
+                code: '',
+                code_language: 'python'
+            })).filter(v => v.text);
+        }
+        
+        // Build question content with rich media
+        let questionContent = `<p class="lead mb-3">${escapeHtml(question.question)}</p>`;
+        
+        if (question.question_image) {
+            questionContent += `<div class="mb-3"><img src="${escapeHtml(question.question_image)}" class="img-fluid rounded" style="max-width: 400px; max-height: 300px;"></div>`;
+        }
+        
+        if (question.question_code) {
+            const language = question.question_code_language || 'python';
+            questionContent += `
+                <div class="mb-3">
+                    <pre><code class="language-${language}">${escapeHtml(question.question_code)}</code></pre>
+                </div>
+            `;
         }
         
         const questionHtml = `
@@ -170,10 +197,22 @@ function loadQuestions() {
                     <h5 class="mb-0">Question ${index + 1}</h5>
                 </div>
                 <div class="card-body">
-                    <p class="lead mb-3">${escapeHtml(question.question)}</p>
+                    ${questionContent}
                     <div class="options">
-                        ${optionsArray.map((option, optIdx) => `
-                            <div class="form-check mb-2">
+                        ${optionsArray.map((option, optIdx) => {
+                            let optionContent = `<strong>${String.fromCharCode(65 + optIdx)}.</strong> ${escapeHtml(option.text || option)}`;
+                            
+                            if (option.image) {
+                                optionContent += `<br><img src="${escapeHtml(option.image)}" class="img-fluid rounded mt-2" style="max-width: 200px; max-height: 150px;">`;
+                            }
+                            
+                            if (option.code) {
+                                const optLang = option.code_language || 'python';
+                                optionContent += `<br><pre class="mt-2"><code class="language-${optLang}">${escapeHtml(option.code)}</code></pre>`;
+                            }
+                            
+                            return `
+                            <div class="form-check mb-3">
                                 <input type="radio" 
                                        class="form-check-input option-input" 
                                        id="q${index}_opt${optIdx}" 
@@ -181,16 +220,23 @@ function loadQuestions() {
                                        value="${optIdx}"
                                        onchange="selectAnswer(${index}, ${optIdx})">
                                 <label class="form-check-label option-label" for="q${index}_opt${optIdx}">
-                                    <strong>${String.fromCharCode(65 + optIdx)}.</strong> ${escapeHtml(option)}
+                                    ${optionContent}
                                 </label>
                             </div>
-                        `).join('')}
+                        `}).join('')}
                     </div>
                 </div>
             </div>
         `;
         container.insertAdjacentHTML('beforeend', questionHtml);
     });
+    
+    // Initialize syntax highlighting if available
+    if (typeof hljs !== 'undefined') {
+        document.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightBlock(block);
+        });
+    }
 }
 
 function selectAnswer(questionIndex, optionIndex) {

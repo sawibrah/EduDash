@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container mt-4">
     <div class="row">
-        <div class="col-lg-10 mx-auto">
+        <div class="col-lg-11 mx-auto">
             <div class="card">
                 <div class="card-header bg-primary text-white">
                     <h4 class="mb-0">
@@ -83,7 +83,7 @@
                             
                             <div class="alert alert-info mb-3">
                                 <i class="fas fa-lightbulb me-2"></i>
-                                <strong>Tip:</strong> Click "Load Template" to start with 5 sample multiple choice questions that you can customize.
+                                <strong>Rich Content Support:</strong> You can add text, images, and code blocks to questions and options.
                                 <button type="button" class="btn btn-sm btn-primary ms-2" onclick="loadTemplate()">
                                     <i class="fas fa-magic me-1"></i>Load Template
                                 </button>
@@ -122,62 +122,66 @@
 let questionCount = 0;
 let questions = [];
 
-// Default template with 5 sample questions
+// Default template with 5 sample questions including rich content
 const defaultTemplate = [
     {
-        question: "What is the primary purpose of a variable in programming?",
+        question: "What will be the output of the following Python code?",
+        question_code: "x = [1, 2, 3]\nprint(x * 2)",
+        question_code_language: "python",
         options: [
-            "To store and manage data",
-            "To create loops",
-            "To define functions",
-            "To import libraries"
+            {text: "[1, 2, 3, 1, 2, 3]"},
+            {text: "[2, 4, 6]"},
+            {text: "[1, 2, 3, 2]"},
+            {text: "Error"}
         ],
         correct_answer: 0,
-        explanation: "Variables are used to store and manage data that can be used throughout your program."
+        explanation: "In Python, multiplying a list by 2 duplicates its elements."
     },
     {
-        question: "Which of the following is a correct way to declare a list in Python?",
+        question: "Which HTTP status code indicates a successful response?",
         options: [
-            "list = (1, 2, 3)",
-            "list = [1, 2, 3]",
-            "list = {1, 2, 3}",
-            "list = <1, 2, 3>"
+            {text: "404 - Not Found"},
+            {text: "200 - OK"},
+            {text: "500 - Internal Server Error"},
+            {text: "301 - Moved Permanently"}
         ],
         correct_answer: 1,
-        explanation: "In Python, lists are declared using square brackets []."
+        explanation: "200 OK indicates that the request was successful."
     },
     {
-        question: "What does 'DRY' stand for in programming principles?",
+        question: "What is the time complexity of binary search?",
         options: [
-            "Do Repeat Yourself",
-            "Don't Repeat Yourself",
-            "Data Repeats Yearly",
-            "Debug Run Yield"
+            {text: "O(n)"},
+            {text: "O(log n)"},
+            {text: "O(n²)"},
+            {text: "O(1)"}
         ],
         correct_answer: 1,
-        explanation: "DRY stands for 'Don't Repeat Yourself', a principle that encourages code reusability."
+        explanation: "Binary search has O(log n) time complexity as it divides the search space in half each iteration."
     },
     {
-        question: "What is the output of: print(type(5.0))?",
+        question: "Complete the code to create a function that returns the sum of two numbers:",
+        question_code: "def add_numbers(a, b):\n    # Complete this function\n    return ___",
+        question_code_language: "python",
         options: [
-            "<class 'int'>",
-            "<class 'float'>",
-            "<class 'str'>",
-            "<class 'double'>"
+            {text: "a + b"},
+            {text: "a - b"},
+            {text: "a * b"},
+            {text: "a / b"}
         ],
-        correct_answer: 1,
-        explanation: "5.0 is a floating-point number, so type() returns <class 'float'>."
+        correct_answer: 0,
+        explanation: "To sum two numbers, we use the addition operator (+)."
     },
     {
-        question: "Which loop is best when you know the exact number of iterations?",
+        question: "What does REST stand for in web development?",
         options: [
-            "while loop",
-            "for loop",
-            "do-while loop",
-            "infinite loop"
+            {text: "Representational State Transfer"},
+            {text: "Remote Execution Service Tool"},
+            {text: "Realtime Event Streaming Technology"},
+            {text: "Resource Encoding Standard Transfer"}
         ],
-        correct_answer: 1,
-        explanation: "A for loop is ideal when you know exactly how many times you want to iterate."
+        correct_answer: 0,
+        explanation: "REST stands for Representational State Transfer, an architectural style for web services."
     }
 ];
 
@@ -207,7 +211,15 @@ function addQuestion(templateData = null) {
     
     const questionData = templateData || {
         question: '',
-        options: ['', '', '', ''],
+        question_image: '',
+        question_code: '',
+        question_code_language: 'python',
+        options: [
+            {text: '', image: '', code: '', code_language: 'python'},
+            {text: '', image: '', code: '', code_language: 'python'},
+            {text: '', image: '', code: '', code_language: 'python'},
+            {text: '', image: '', code: '', code_language: 'python'}
+        ],
         correct_answer: 0,
         explanation: ''
     };
@@ -234,23 +246,82 @@ function addQuestion(templateData = null) {
                               onchange="updateQuestion('${questionId}')">${questionData.question}</textarea>
                 </div>
                 
+                <!-- Question Rich Content -->
+                <div class="mb-3">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleQuestionImage('${questionId}')">
+                        <i class="fas fa-image"></i> Add Image URL
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleQuestionCode('${questionId}')">
+                        <i class="fas fa-code"></i> Add Code Block
+                    </button>
+                    
+                    <div id="${questionId}-image-section" class="content-toggle" style="display: ${questionData.question_image ? 'block' : 'none'}">
+                        <input type="text" class="form-control question-image mt-2" 
+                               placeholder="Image URL" value="${questionData.question_image || ''}"
+                               onchange="updateQuestion('${questionId}')">
+                        ${questionData.question_image ? `<img src="${questionData.question_image}" class="img-preview">` : ''}
+                    </div>
+                    
+                    <div id="${questionId}-code-section" class="content-toggle" style="display: ${questionData.question_code ? 'block' : 'none'}">
+                        <select class="form-select mt-2 question-code-language" onchange="updateQuestion('${questionId}')">
+                            <option value="python" ${questionData.question_code_language === 'python' ? 'selected' : ''}>Python</option>
+                            <option value="javascript" ${questionData.question_code_language === 'javascript' ? 'selected' : ''}>JavaScript</option>
+                            <option value="java" ${questionData.question_code_language === 'java' ? 'selected' : ''}>Java</option>
+                            <option value="cpp" ${questionData.question_code_language === 'cpp' ? 'selected' : ''}>C++</option>
+                            <option value="sql" ${questionData.question_code_language === 'sql' ? 'selected' : ''}>SQL</option>
+                        </select>
+                        <textarea class="form-control question-code mt-2" rows="3"
+                                  placeholder="Code snippet..." onchange="updateQuestion('${questionId}')">${questionData.question_code || ''}</textarea>
+                    </div>
+                </div>
+                
                 <div class="mb-3">
                     <label class="form-label">Answer Options *</label>
-                    ${questionData.options.map((opt, idx) => `
-                        <div class="input-group mb-2">
-                            <div class="input-group-text">
-                                <input class="form-check-input mt-0" type="radio" 
-                                       name="correct_${questionId}" value="${idx}" 
-                                       ${idx === questionData.correct_answer ? 'checked' : ''}
-                                       onchange="updateQuestion('${questionId}')"
-                                       title="Mark as correct answer">
+                    ${questionData.options.map((opt, idx) => {
+                        const optId = `${questionId}-opt${idx}`;
+                        return `
+                        <div class="card mb-2 option-card" data-option-index="${idx}">
+                            <div class="card-body p-2">
+                                <div class="input-group">
+                                    <div class="input-group-text">
+                                        <input class="form-check-input mt-0" type="radio" 
+                                               name="correct_${questionId}" value="${idx}" 
+                                               ${idx === questionData.correct_answer ? 'checked' : ''}
+                                               onchange="updateQuestion('${questionId}')"
+                                               title="Mark as correct answer">
+                                    </div>
+                                    <input type="text" class="form-control option-text" 
+                                           placeholder="Option ${String.fromCharCode(65 + idx)}" 
+                                           value="${opt.text || ''}" required
+                                           onchange="updateQuestion('${questionId}')">
+                                </div>
+                                <div class="mt-2">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleOptionImage('${optId}')">
+                                        <i class="fas fa-image"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleOptionCode('${optId}')">
+                                        <i class="fas fa-code"></i>
+                                    </button>
+                                </div>
+                                <div id="${optId}-image" style="display: ${opt.image ? 'block' : 'none'}">
+                                    <input type="text" class="form-control option-image mt-2" 
+                                           placeholder="Image URL" value="${opt.image || ''}"
+                                           onchange="updateQuestion('${questionId}')">
+                                </div>
+                                <div id="${optId}-code" style="display: ${opt.code ? 'block' : 'none'}">
+                                    <select class="form-select mt-2 option-code-language" onchange="updateQuestion('${questionId}')">
+                                        <option value="python" ${(opt.code_language || 'python') === 'python' ? 'selected' : ''}>Python</option>
+                                        <option value="javascript" ${(opt.code_language || 'python') === 'javascript' ? 'selected' : ''}>JavaScript</option>
+                                        <option value="java" ${(opt.code_language || 'python') === 'java' ? 'selected' : ''}>Java</option>
+                                        <option value="cpp" ${(opt.code_language || 'python') === 'cpp' ? 'selected' : ''}>C++</option>
+                                        <option value="sql" ${(opt.code_language || 'python') === 'sql' ? 'selected' : ''}>SQL</option>
+                                    </select>
+                                    <textarea class="form-control option-code mt-2" rows="2"
+                                              onchange="updateQuestion('${questionId}')">${opt.code || ''}</textarea>
+                                </div>
                             </div>
-                            <input type="text" class="form-control option-text" 
-                                   placeholder="Option ${String.fromCharCode(65 + idx)}" 
-                                   value="${opt}" required
-                                   onchange="updateQuestion('${questionId}')">
                         </div>
-                    `).join('')}
+                    `}).join('')}
                 </div>
                 
                 <div class="mb-3">
@@ -266,17 +337,51 @@ function addQuestion(templateData = null) {
     document.getElementById('questions-container').insertAdjacentHTML('beforeend', questionHtml);
 }
 
+function toggleQuestionImage(questionId) {
+    const section = document.getElementById(`${questionId}-image-section`);
+    section.style.display = section.style.display === 'none' ? 'block' : 'none';
+}
+
+function toggleQuestionCode(questionId) {
+    const section = document.getElementById(`${questionId}-code-section`);
+    section.style.display = section.style.display === 'none' ? 'block' : 'none';
+}
+
+function toggleOptionImage(optId) {
+    const section = document.getElementById(`${optId}-image`);
+    section.style.display = section.style.display === 'none' ? 'block' : 'none';
+}
+
+function toggleOptionCode(optId) {
+    const section = document.getElementById(`${optId}-code`);
+    section.style.display = section.style.display === 'none' ? 'block' : 'none';
+}
+
 function updateQuestion(questionId) {
     const questionCard = document.getElementById(questionId);
     const index = parseInt(questionCard.dataset.questionIndex);
     
     const questionText = questionCard.querySelector('.question-text').value;
-    const options = Array.from(questionCard.querySelectorAll('.option-text')).map(opt => opt.value);
+    const questionImage = questionCard.querySelector('.question-image')?.value || '';
+    const questionCode = questionCard.querySelector('.question-code')?.value || '';
+    const questionCodeLanguage = questionCard.querySelector('.question-code-language')?.value || 'python';
+    
+    const optionCards = questionCard.querySelectorAll('.option-card');
+    const options = Array.from(optionCards).map(card => ({
+        text: card.querySelector('.option-text').value,
+        image: card.querySelector('.option-image')?.value || '',
+        code: card.querySelector('.option-code')?.value || '',
+        code_language: card.querySelector('.option-code-language')?.value || 'python'
+    }));
+    
     const correctAnswer = parseInt(questionCard.querySelector(`input[name="correct_${questionId}"]:checked`)?.value || 0);
     const explanation = questionCard.querySelector('.explanation-text').value;
     
     questions[index].data = {
         question: questionText,
+        question_image: questionImage,
+        question_code: questionCode,
+        question_code_language: questionCodeLanguage,
         options: options,
         correct_answer: correctAnswer,
         explanation: explanation
@@ -326,6 +431,24 @@ window.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <style>
+.code-preview {
+    background-color: #2d2d2d;
+    color: #f8f8f2;
+    padding: 10px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    white-space: pre-wrap;
+    margin-top: 5px;
+}
+.img-preview {
+    max-width: 200px;
+    max-height: 150px;
+    margin-top: 5px;
+    border-radius: 4px;
+}
+.content-toggle {
+    margin-top: 10px;
+}
 .card-header .btn-danger {
     opacity: 0.7;
 }

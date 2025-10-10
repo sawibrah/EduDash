@@ -1500,27 +1500,34 @@ def edit_mcq_quiz(quiz_id):
             
         quiz.is_active = request.form.get('is_active') == 'on'
         
-        # Parse questions from form
-        questions = []
-        question_count = int(request.form.get('question_count', 0))
+        # Check if questions_json is provided (new rich content format)
+        questions_json = request.form.get('questions_json')
+        if questions_json:
+            # Use the rich content JSON format directly
+            quiz.questions_json = questions_json
+        else:
+            # Fallback: Parse questions from individual form fields (legacy format)
+            questions = []
+            question_count = int(request.form.get('question_count', 0))
+            
+            for i in range(question_count):
+                question_text = request.form.get(f'question_{i}')
+                if question_text:
+                    question = {
+                        'question': question_text,
+                        'options': {
+                            'A': request.form.get(f'option_{i}_A', ''),
+                            'B': request.form.get(f'option_{i}_B', ''),
+                            'C': request.form.get(f'option_{i}_C', ''),
+                            'D': request.form.get(f'option_{i}_D', '')
+                        },
+                        'correct_answer': request.form.get(f'correct_{i}', 'A'),
+                        'explanation': request.form.get(f'explanation_{i}', '')
+                    }
+                    questions.append(question)
+            
+            quiz.questions_json = json.dumps(questions)
         
-        for i in range(question_count):
-            question_text = request.form.get(f'question_{i}')
-            if question_text:
-                question = {
-                    'question': question_text,
-                    'options': {
-                        'A': request.form.get(f'option_{i}_A', ''),
-                        'B': request.form.get(f'option_{i}_B', ''),
-                        'C': request.form.get(f'option_{i}_C', ''),
-                        'D': request.form.get(f'option_{i}_D', '')
-                    },
-                    'correct_answer': request.form.get(f'correct_{i}', 'A'),
-                    'explanation': request.form.get(f'explanation_{i}', '')
-                }
-                questions.append(question)
-        
-        quiz.questions_json = json.dumps(questions)
         quiz.updated_at = datetime.now()
         
         db.session.commit()

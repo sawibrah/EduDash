@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container mt-4">
     <div class="row">
-        <div class="col-lg-10 mx-auto">
+        <div class="col-lg-11 mx-auto">
             <div class="card">
                 <div class="card-header bg-primary text-white">
                     <h4 class="mb-0">
@@ -23,7 +23,7 @@
                 <div class="card-body">
                     <form method="POST" id="quiz-form">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                        <input type="hidden" name="question_count" id="question_count" value="0">
+                        <input type="hidden" name="questions_json" id="questions_json">
                         
                         <div class="row">
                             <!-- Basic Quiz Information -->
@@ -81,6 +81,11 @@
                                 <h5 class="mb-0">Questions</h5>
                             </div>
                             
+                            <div class="alert alert-info mb-3">
+                                <i class="fas fa-lightbulb me-2"></i>
+                                <strong>Rich Content Support:</strong> You can add text, images, and code blocks to questions and options.
+                            </div>
+                            
                             <div id="questions-container">
                                 <!-- Questions will be loaded here -->
                             </div>
@@ -110,42 +115,127 @@
     </div>
 </div>
 
+<style>
+.code-preview {
+    background-color: #2d2d2d;
+    color: #f8f8f2;
+    padding: 10px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    white-space: pre-wrap;
+    margin-top: 5px;
+}
+.img-preview {
+    max-width: 200px;
+    max-height: 150px;
+    margin-top: 5px;
+    border-radius: 4px;
+}
+.content-toggle {
+    margin-top: 10px;
+}
+.card-header .btn-danger {
+    opacity: 0.7;
+}
+.card-header .btn-danger:hover {
+    opacity: 1;
+}
+</style>
+
 <script>
-let questionIndex = 0;
+let questionCount = 0;
+let questions = [];
 
-// Load existing questions
-const existingQuestions = {{ questions | tojson | safe }};
+// Load existing questions from quiz
+let existingQuestions = [];
+try {
+    const questionsStr = {{ quiz.questions_json|tojson|safe }};
+    existingQuestions = questionsStr ? JSON.parse(questionsStr) : [];
+} catch (e) {
+    console.error('Error parsing questions:', e);
+    existingQuestions = [];
+}
 
-function addQuestion(questionData = null) {
-    const data = questionData || {
+function addQuestion(templateData = null) {
+    questionCount++;
+    const questionId = `q${questionCount}`;
+    
+    // Normalize the templateData to rich content format
+    let questionData = templateData || {
         question: '',
-        options: ['', '', '', ''],
+        question_image: '',
+        question_code: '',
+        question_code_language: 'python',
+        options: [
+            {text: '', image: '', code: '', code_language: 'python'},
+            {text: '', image: '', code: '', code_language: 'python'},
+            {text: '', image: '', code: '', code_language: 'python'},
+            {text: '', image: '', code: '', code_language: 'python'}
+        ],
         correct_answer: 0,
         explanation: ''
     };
     
-    // Normalize options to array format
-    let options = Array.isArray(data.options) ? data.options : [
-        data.options.A || '', 
-        data.options.B || '', 
-        data.options.C || '', 
-        data.options.D || ''
-    ];
-    
-    // Normalize correct answer to index
-    let correctIndex = data.correct_answer;
-    if (typeof correctIndex === 'string') {
-        correctIndex = correctIndex.charCodeAt(0) - 65; // Convert 'A', 'B', 'C', 'D' to 0, 1, 2, 3
+    // Handle legacy format (options as array of strings or object with A,B,C,D keys)
+    if (templateData && templateData.options) {
+        if (Array.isArray(templateData.options)) {
+            // If options is array of strings, convert to rich format
+            if (typeof templateData.options[0] === 'string') {
+                questionData.options = templateData.options.map(opt => ({
+                    text: opt,
+                    image: '',
+                    code: '',
+                    code_language: 'python'
+                }));
+            } else {
+                // Already in rich format
+                questionData.options = templateData.options.map(opt => ({
+                    text: opt.text || '',
+                    image: opt.image || '',
+                    code: opt.code || '',
+                    code_language: opt.code_language || 'python'
+                }));
+            }
+        } else if (typeof templateData.options === 'object') {
+            // Convert {A: '', B: '', C: '', D: ''} format to array
+            questionData.options = [
+                {text: templateData.options.A || '', image: '', code: '', code_language: 'python'},
+                {text: templateData.options.B || '', image: '', code: '', code_language: 'python'},
+                {text: templateData.options.C || '', image: '', code: '', code_language: 'python'},
+                {text: templateData.options.D || '', image: '', code: '', code_language: 'python'}
+            ];
+        }
     }
     
-    const qIndex = questionIndex++;
+    // Normalize correct answer to index
+    if (templateData && templateData.correct_answer !== undefined) {
+        if (typeof templateData.correct_answer === 'string') {
+            questionData.correct_answer = templateData.correct_answer.charCodeAt(0) - 65;
+        } else {
+            questionData.correct_answer = templateData.correct_answer;
+        }
+    }
+    
+    // Copy over question text and other fields
+    if (templateData) {
+        questionData.question = templateData.question || '';
+        questionData.question_image = templateData.question_image || '';
+        questionData.question_code = templateData.question_code || '';
+        questionData.question_code_language = templateData.question_code_language || 'python';
+        questionData.explanation = templateData.explanation || '';
+    }
+    
+    questions.push({
+        id: questionId,
+        data: questionData
+    });
     
     const questionHtml = `
-        <div class="card mb-3" id="question_${qIndex}">
+        <div class="card mb-3" id="${questionId}" data-question-index="${questions.length - 1}">
             <div class="card-header bg-light">
                 <div class="d-flex justify-content-between align-items-center">
-                    <strong>Question ${qIndex + 1}</strong>
-                    <button type="button" class="btn btn-sm btn-danger" onclick="removeQuestion(${qIndex})">
+                    <strong>Question ${questionCount}</strong>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="removeQuestion('${questionId}')">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
@@ -153,111 +243,184 @@ function addQuestion(questionData = null) {
             <div class="card-body">
                 <div class="mb-3">
                     <label class="form-label">Question Text *</label>
-                    <textarea class="form-control" name="question_${qIndex}" rows="2" required>${data.question}</textarea>
+                    <textarea class="form-control question-text" rows="2" required
+                              onchange="updateQuestion('${questionId}')">${questionData.question}</textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleQuestionImage('${questionId}')">
+                        <i class="fas fa-image"></i> Add Image URL
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleQuestionCode('${questionId}')">
+                        <i class="fas fa-code"></i> Add Code Block
+                    </button>
+                    
+                    <div id="${questionId}-image-section" class="content-toggle" style="display: ${questionData.question_image ? 'block' : 'none'}">
+                        <input type="text" class="form-control question-image mt-2" 
+                               placeholder="Image URL" value="${questionData.question_image || ''}"
+                               onchange="updateQuestion('${questionId}')">
+                        ${questionData.question_image ? `<img src="${questionData.question_image}" class="img-preview">` : ''}
+                    </div>
+                    
+                    <div id="${questionId}-code-section" class="content-toggle" style="display: ${questionData.question_code ? 'block' : 'none'}">
+                        <select class="form-select mt-2 question-code-language" onchange="updateQuestion('${questionId}')">
+                            <option value="python" ${questionData.question_code_language === 'python' ? 'selected' : ''}>Python</option>
+                            <option value="javascript" ${questionData.question_code_language === 'javascript' ? 'selected' : ''}>JavaScript</option>
+                            <option value="java" ${questionData.question_code_language === 'java' ? 'selected' : ''}>Java</option>
+                            <option value="cpp" ${questionData.question_code_language === 'cpp' ? 'selected' : ''}>C++</option>
+                            <option value="sql" ${questionData.question_code_language === 'sql' ? 'selected' : ''}>SQL</option>
+                        </select>
+                        <textarea class="form-control question-code mt-2" rows="3"
+                                  placeholder="Code snippet..." onchange="updateQuestion('${questionId}')">${questionData.question_code || ''}</textarea>
+                    </div>
                 </div>
                 
                 <div class="mb-3">
                     <label class="form-label">Answer Options *</label>
-                    <div class="mb-2">
-                        <div class="input-group">
-                            <div class="input-group-text">
-                                <input class="form-check-input mt-0" type="radio" 
-                                       name="correct_${qIndex}" value="A" 
-                                       ${correctIndex === 0 ? 'checked' : ''}
-                                       title="Mark as correct answer">
+                    ${questionData.options.map((opt, idx) => {
+                        const optId = `${questionId}-opt${idx}`;
+                        return `
+                        <div class="card mb-2 option-card" data-option-index="${idx}">
+                            <div class="card-body p-2">
+                                <div class="input-group">
+                                    <div class="input-group-text">
+                                        <input class="form-check-input mt-0" type="radio" 
+                                               name="correct_${questionId}" value="${idx}" 
+                                               ${idx === questionData.correct_answer ? 'checked' : ''}
+                                               onchange="updateQuestion('${questionId}')"
+                                               title="Mark as correct answer">
+                                    </div>
+                                    <input type="text" class="form-control option-text" 
+                                           placeholder="Option ${String.fromCharCode(65 + idx)}" 
+                                           value="${opt.text || ''}" required
+                                           onchange="updateQuestion('${questionId}')">
+                                </div>
+                                <div class="mt-2">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleOptionImage('${optId}')">
+                                        <i class="fas fa-image"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleOptionCode('${optId}')">
+                                        <i class="fas fa-code"></i>
+                                    </button>
+                                </div>
+                                <div id="${optId}-image" style="display: ${opt.image ? 'block' : 'none'}">
+                                    <input type="text" class="form-control option-image mt-2" 
+                                           placeholder="Image URL" value="${opt.image || ''}"
+                                           onchange="updateQuestion('${questionId}')">
+                                </div>
+                                <div id="${optId}-code" style="display: ${opt.code ? 'block' : 'none'}">
+                                    <select class="form-select mt-2 option-code-language" onchange="updateQuestion('${questionId}')">
+                                        <option value="python" ${(opt.code_language || 'python') === 'python' ? 'selected' : ''}>Python</option>
+                                        <option value="javascript" ${(opt.code_language || 'python') === 'javascript' ? 'selected' : ''}>JavaScript</option>
+                                        <option value="java" ${(opt.code_language || 'python') === 'java' ? 'selected' : ''}>Java</option>
+                                        <option value="cpp" ${(opt.code_language || 'python') === 'cpp' ? 'selected' : ''}>C++</option>
+                                        <option value="sql" ${(opt.code_language || 'python') === 'sql' ? 'selected' : ''}>SQL</option>
+                                    </select>
+                                    <textarea class="form-control option-code mt-2" rows="2"
+                                              onchange="updateQuestion('${questionId}')">${opt.code || ''}</textarea>
+                                </div>
                             </div>
-                            <span class="input-group-text">A</span>
-                            <input type="text" class="form-control" name="option_${qIndex}_A" 
-                                   placeholder="Option A" value="${options[0] || ''}" required>
                         </div>
-                    </div>
-                    <div class="mb-2">
-                        <div class="input-group">
-                            <div class="input-group-text">
-                                <input class="form-check-input mt-0" type="radio" 
-                                       name="correct_${qIndex}" value="B" 
-                                       ${correctIndex === 1 ? 'checked' : ''}
-                                       title="Mark as correct answer">
-                            </div>
-                            <span class="input-group-text">B</span>
-                            <input type="text" class="form-control" name="option_${qIndex}_B" 
-                                   placeholder="Option B" value="${options[1] || ''}" required>
-                        </div>
-                    </div>
-                    <div class="mb-2">
-                        <div class="input-group">
-                            <div class="input-group-text">
-                                <input class="form-check-input mt-0" type="radio" 
-                                       name="correct_${qIndex}" value="C" 
-                                       ${correctIndex === 2 ? 'checked' : ''}
-                                       title="Mark as correct answer">
-                            </div>
-                            <span class="input-group-text">C</span>
-                            <input type="text" class="form-control" name="option_${qIndex}_C" 
-                                   placeholder="Option C" value="${options[2] || ''}" required>
-                        </div>
-                    </div>
-                    <div class="mb-2">
-                        <div class="input-group">
-                            <div class="input-group-text">
-                                <input class="form-check-input mt-0" type="radio" 
-                                       name="correct_${qIndex}" value="D" 
-                                       ${correctIndex === 3 ? 'checked' : ''}
-                                       title="Mark as correct answer">
-                            </div>
-                            <span class="input-group-text">D</span>
-                            <input type="text" class="form-control" name="option_${qIndex}_D" 
-                                   placeholder="Option D" value="${options[3] || ''}" required>
-                        </div>
-                    </div>
+                    `}).join('')}
                 </div>
                 
-                <div class="mb-0">
+                <div class="mb-3">
                     <label class="form-label">Explanation (Optional)</label>
-                    <textarea class="form-control" name="explanation_${qIndex}" rows="2"
-                              placeholder="Explain why this answer is correct...">${data.explanation || ''}</textarea>
+                    <textarea class="form-control explanation-text" rows="2" 
+                              onchange="updateQuestion('${questionId}')"
+                              placeholder="Explain why this answer is correct...">${questionData.explanation || ''}</textarea>
                 </div>
             </div>
         </div>
     `;
     
     document.getElementById('questions-container').insertAdjacentHTML('beforeend', questionHtml);
-    updateQuestionCount();
 }
 
-function removeQuestion(index) {
+function toggleQuestionImage(questionId) {
+    const section = document.getElementById(`${questionId}-image-section`);
+    section.style.display = section.style.display === 'none' ? 'block' : 'none';
+}
+
+function toggleQuestionCode(questionId) {
+    const section = document.getElementById(`${questionId}-code-section`);
+    section.style.display = section.style.display === 'none' ? 'block' : 'none';
+}
+
+function toggleOptionImage(optId) {
+    const section = document.getElementById(`${optId}-image`);
+    section.style.display = section.style.display === 'none' ? 'block' : 'none';
+}
+
+function toggleOptionCode(optId) {
+    const section = document.getElementById(`${optId}-code`);
+    section.style.display = section.style.display === 'none' ? 'block' : 'none';
+}
+
+function updateQuestion(questionId) {
+    const questionCard = document.getElementById(questionId);
+    const index = parseInt(questionCard.dataset.questionIndex);
+    
+    const questionText = questionCard.querySelector('.question-text').value;
+    const questionImage = questionCard.querySelector('.question-image')?.value || '';
+    const questionCode = questionCard.querySelector('.question-code')?.value || '';
+    const questionCodeLanguage = questionCard.querySelector('.question-code-language')?.value || 'python';
+    
+    const optionCards = questionCard.querySelectorAll('.option-card');
+    const options = Array.from(optionCards).map(card => ({
+        text: card.querySelector('.option-text').value,
+        image: card.querySelector('.option-image')?.value || '',
+        code: card.querySelector('.option-code')?.value || '',
+        code_language: card.querySelector('.option-code-language')?.value || 'python'
+    }));
+    
+    const correctAnswer = parseInt(questionCard.querySelector(`input[name="correct_${questionId}"]:checked`)?.value || 0);
+    const explanation = questionCard.querySelector('.explanation-text').value;
+    
+    questions[index].data = {
+        question: questionText,
+        question_image: questionImage,
+        question_code: questionCode,
+        question_code_language: questionCodeLanguage,
+        options: options,
+        correct_answer: correctAnswer,
+        explanation: explanation
+    };
+}
+
+function removeQuestion(questionId) {
     if (!confirm('Are you sure you want to remove this question?')) {
         return;
     }
     
-    const questionCard = document.getElementById(`question_${index}`);
-    if (questionCard) {
-        questionCard.remove();
-        renumberQuestions();
-        updateQuestionCount();
-    }
-}
-
-function renumberQuestions() {
-    const questionCards = document.querySelectorAll('#questions-container .card');
-    questionCards.forEach((card, idx) => {
+    const questionCard = document.getElementById(questionId);
+    const index = parseInt(questionCard.dataset.questionIndex);
+    
+    questions.splice(index, 1);
+    questionCard.remove();
+    
+    const remainingCards = document.querySelectorAll('#questions-container .card');
+    remainingCards.forEach((card, idx) => {
+        card.dataset.questionIndex = idx;
         card.querySelector('.card-header strong').textContent = `Question ${idx + 1}`;
     });
 }
 
-function updateQuestionCount() {
-    const count = document.querySelectorAll('#questions-container .card').length;
-    document.getElementById('question_count').value = count;
-}
-
 document.getElementById('quiz-form').addEventListener('submit', function(e) {
-    const questionCount = document.querySelectorAll('#questions-container .card').length;
-    if (questionCount === 0) {
+    if (questions.length === 0) {
         e.preventDefault();
         alert('Please add at least one question to the quiz.');
         return false;
     }
-    updateQuestionCount();
+    
+    // Update all questions before submitting
+    questions.forEach(q => {
+        updateQuestion(q.id);
+    });
+    
+    // Serialize questions to JSON
+    const questionsData = questions.map(q => q.data);
+    document.getElementById('questions_json').value = JSON.stringify(questionsData);
 });
 
 // Load existing questions on page load
@@ -269,13 +432,4 @@ window.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-
-<style>
-.card-header .btn-danger {
-    opacity: 0.7;
-}
-.card-header .btn-danger:hover {
-    opacity: 1;
-}
-</style>
 {% endblock %}
