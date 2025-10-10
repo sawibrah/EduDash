@@ -1,0 +1,264 @@
+{% extends "base.html" %}
+
+{% block title %}Edit MCQ Quiz - {{ quiz.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-edit me-2"></i>Edit Multiple Choice Quiz
+                    </h4>
+                    <nav aria-label="breadcrumb" class="mt-2">
+                        <ol class="breadcrumb breadcrumb-light mb-0">
+                            <li class="breadcrumb-item"><a href="{{ url_for('teacher_dashboard') }}" class="text-white-50">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="{{ url_for('view_course', course_id=course.id) }}" class="text-white-50">{{ course.title }}</a></li>
+                            <li class="breadcrumb-item"><a href="{{ url_for('view_course_quizzes', course_id=course.id) }}" class="text-white-50">Quizzes</a></li>
+                            <li class="breadcrumb-item active text-white">Edit Quiz</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="card-body">
+                    <form method="POST" id="quiz-form">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <input type="hidden" name="question_count" id="question_count" value="0">
+                        
+                        <div class="row">
+                            <!-- Basic Quiz Information -->
+                            <div class="col-md-6">
+                                <h5 class="border-bottom pb-2 mb-3">Basic Information</h5>
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">Quiz Title *</label>
+                                    <input type="text" class="form-control" name="title" id="title" required
+                                           value="{{ quiz.title }}">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Description</label>
+                                    <textarea class="form-control" name="description" id="description" rows="3">{{ quiz.description or '' }}</textarea>
+                                </div>
+                            </div>
+
+                            <!-- Quiz Settings -->
+                            <div class="col-md-6">
+                                <h5 class="border-bottom pb-2 mb-3">Quiz Settings</h5>
+                                <div class="mb-3">
+                                    <label for="max_score" class="form-label">Maximum Score</label>
+                                    <input type="number" class="form-control" name="max_score" id="max_score" 
+                                           value="{{ quiz.max_score }}" min="1" max="1000">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="time_limit" class="form-label">Time Limit (minutes)</label>
+                                    <input type="number" class="form-control" name="time_limit" id="time_limit" 
+                                           value="{{ quiz.time_limit }}" min="5" max="300">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="due_date" class="form-label">Due Date (Optional)</label>
+                                    <input type="datetime-local" class="form-control" name="due_date" id="due_date"
+                                           value="{% if quiz.due_date %}{{ quiz.due_date.strftime('%Y-%m-%dT%H:%M') }}{% endif %}">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="is_active" id="is_active" 
+                                               {% if quiz.is_active %}checked{% endif %}>
+                                        <label class="form-check-label" for="is_active">
+                                            <strong>Quiz is Active</strong>
+                                            <br><small class="text-muted">Students can access and submit this quiz</small>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Questions Section -->
+                        <div class="mt-4">
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+                                <h5 class="mb-0">Questions</h5>
+                                <button type="button" class="btn btn-sm btn-success" onclick="addQuestion()">
+                                    <i class="fas fa-plus me-1"></i>Add Question
+                                </button>
+                            </div>
+                            
+                            <div id="questions-container">
+                                <!-- Questions will be loaded here -->
+                            </div>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="mt-4 pt-3 border-top">
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-1"></i>Update Quiz
+                                </button>
+                                <a href="{{ url_for('view_course_quizzes', course_id=course.id) }}" class="btn btn-secondary">
+                                    <i class="fas fa-times me-1"></i>Cancel
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let questionIndex = 0;
+
+// Load existing questions
+const existingQuestions = {{ questions | tojson | safe }};
+
+function addQuestion(questionData = null) {
+    const data = questionData || {
+        question: '',
+        options: { A: '', B: '', C: '', D: '' },
+        correct_answer: 'A',
+        explanation: ''
+    };
+    
+    const qIndex = questionIndex++;
+    
+    const questionHtml = `
+        <div class="card mb-3" id="question_${qIndex}">
+            <div class="card-header bg-light">
+                <div class="d-flex justify-content-between align-items-center">
+                    <strong>Question ${qIndex + 1}</strong>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="removeQuestion(${qIndex})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Question Text *</label>
+                    <textarea class="form-control" name="question_${qIndex}" rows="2" required>${data.question}</textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Answer Options *</label>
+                    <div class="mb-2">
+                        <div class="input-group">
+                            <div class="input-group-text">
+                                <input class="form-check-input mt-0" type="radio" 
+                                       name="correct_${qIndex}" value="A" 
+                                       ${data.correct_answer === 'A' ? 'checked' : ''}
+                                       title="Mark as correct answer">
+                            </div>
+                            <span class="input-group-text">A</span>
+                            <input type="text" class="form-control" name="option_${qIndex}_A" 
+                                   placeholder="Option A" value="${data.options.A || ''}" required>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <div class="input-group">
+                            <div class="input-group-text">
+                                <input class="form-check-input mt-0" type="radio" 
+                                       name="correct_${qIndex}" value="B" 
+                                       ${data.correct_answer === 'B' ? 'checked' : ''}
+                                       title="Mark as correct answer">
+                            </div>
+                            <span class="input-group-text">B</span>
+                            <input type="text" class="form-control" name="option_${qIndex}_B" 
+                                   placeholder="Option B" value="${data.options.B || ''}" required>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <div class="input-group">
+                            <div class="input-group-text">
+                                <input class="form-check-input mt-0" type="radio" 
+                                       name="correct_${qIndex}" value="C" 
+                                       ${data.correct_answer === 'C' ? 'checked' : ''}
+                                       title="Mark as correct answer">
+                            </div>
+                            <span class="input-group-text">C</span>
+                            <input type="text" class="form-control" name="option_${qIndex}_C" 
+                                   placeholder="Option C" value="${data.options.C || ''}" required>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <div class="input-group">
+                            <div class="input-group-text">
+                                <input class="form-check-input mt-0" type="radio" 
+                                       name="correct_${qIndex}" value="D" 
+                                       ${data.correct_answer === 'D' ? 'checked' : ''}
+                                       title="Mark as correct answer">
+                            </div>
+                            <span class="input-group-text">D</span>
+                            <input type="text" class="form-control" name="option_${qIndex}_D" 
+                                   placeholder="Option D" value="${data.options.D || ''}" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-0">
+                    <label class="form-label">Explanation (Optional)</label>
+                    <textarea class="form-control" name="explanation_${qIndex}" rows="2"
+                              placeholder="Explain why this answer is correct...">${data.explanation || ''}</textarea>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('questions-container').insertAdjacentHTML('beforeend', questionHtml);
+    updateQuestionCount();
+}
+
+function removeQuestion(index) {
+    if (!confirm('Are you sure you want to remove this question?')) {
+        return;
+    }
+    
+    const questionCard = document.getElementById(`question_${index}`);
+    if (questionCard) {
+        questionCard.remove();
+        renumberQuestions();
+        updateQuestionCount();
+    }
+}
+
+function renumberQuestions() {
+    const questionCards = document.querySelectorAll('#questions-container .card');
+    questionCards.forEach((card, idx) => {
+        card.querySelector('.card-header strong').textContent = `Question ${idx + 1}`;
+    });
+}
+
+function updateQuestionCount() {
+    const count = document.querySelectorAll('#questions-container .card').length;
+    document.getElementById('question_count').value = count;
+}
+
+document.getElementById('quiz-form').addEventListener('submit', function(e) {
+    const questionCount = document.querySelectorAll('#questions-container .card').length;
+    if (questionCount === 0) {
+        e.preventDefault();
+        alert('Please add at least one question to the quiz.');
+        return false;
+    }
+    updateQuestionCount();
+});
+
+// Load existing questions on page load
+window.addEventListener('DOMContentLoaded', function() {
+    if (existingQuestions && existingQuestions.length > 0) {
+        existingQuestions.forEach(q => {
+            addQuestion(q);
+        });
+    }
+});
+</script>
+
+<style>
+.card-header .btn-danger {
+    opacity: 0.7;
+}
+.card-header .btn-danger:hover {
+    opacity: 1;
+}
+</style>
+{% endblock %}

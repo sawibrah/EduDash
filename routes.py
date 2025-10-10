@@ -1286,6 +1286,10 @@ def edit_quiz(quiz_id):
     quiz = Quiz.query.get_or_404(quiz_id)
     course = Course.query.filter_by(id=quiz.course_id, teacher_id=current_user.id).first_or_404()
     
+    # Redirect to appropriate edit page based on quiz type
+    if quiz.quiz_type == 'multiple_choice':
+        return redirect(url_for('edit_mcq_quiz', quiz_id=quiz_id))
+    
     if request.method == 'POST':
         quiz.title = request.form.get('title')
         quiz.description = request.form.get('description')
@@ -1311,6 +1315,64 @@ def edit_quiz(quiz_id):
         return redirect(url_for('view_course_quizzes', course_id=quiz.course_id))
     
     return render_template('teacher_edit_quiz.html', quiz=quiz, course=course)
+
+@app.route('/teacher/quiz/<int:quiz_id>/edit-mcq', methods=['GET', 'POST'])
+@require_role('teacher')
+def edit_mcq_quiz(quiz_id):
+    quiz = Quiz.query.get_or_404(quiz_id)
+    course = Course.query.filter_by(id=quiz.course_id, teacher_id=current_user.id).first_or_404()
+    
+    if request.method == 'POST':
+        quiz.title = request.form.get('title')
+        quiz.description = request.form.get('description')
+        quiz.max_score = int(request.form.get('max_score', 100))
+        quiz.time_limit = int(request.form.get('time_limit', 60))
+        
+        # Handle due date
+        due_date_str = request.form.get('due_date')
+        if due_date_str:
+            quiz.due_date = datetime.strptime(due_date_str, '%Y-%m-%dT%H:%M')
+        else:
+            quiz.due_date = None
+            
+        quiz.is_active = request.form.get('is_active') == 'on'
+        
+        # Parse questions from form
+        questions = []
+        question_count = int(request.form.get('question_count', 0))
+        
+        for i in range(question_count):
+            question_text = request.form.get(f'question_{i}')
+            if question_text:
+                question = {
+                    'question': question_text,
+                    'options': {
+                        'A': request.form.get(f'option_{i}_A', ''),
+                        'B': request.form.get(f'option_{i}_B', ''),
+                        'C': request.form.get(f'option_{i}_C', ''),
+                        'D': request.form.get(f'option_{i}_D', '')
+                    },
+                    'correct_answer': request.form.get(f'correct_{i}', 'A'),
+                    'explanation': request.form.get(f'explanation_{i}', '')
+                }
+                questions.append(question)
+        
+        quiz.questions_json = json.dumps(questions)
+        quiz.updated_at = datetime.now()
+        
+        db.session.commit()
+        flash('MCQ Quiz updated successfully!', 'success')
+        return redirect(url_for('view_course_quizzes', course_id=quiz.course_id))
+    
+    # Parse questions for display
+    questions = []
+    if quiz.questions_json:
+        try:
+            questions = json.loads(quiz.questions_json)
+        except:
+            questions = []
+    
+    return render_template('teacher_edit_mcq_quiz.html', quiz=quiz, course=course, questions=questions)
 
 @app.route('/teacher/quiz/<int:quiz_id>/submissions')
 @require_role('teacher')
