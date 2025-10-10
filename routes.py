@@ -212,7 +212,7 @@ def admin_dashboard():
     recent_enrollments = Enrollment.query.options(
         joinedload(Enrollment.student),
         joinedload(Enrollment.course)
-    ).order_by(Enrollment.enrolled_at.desc()).limit(5).all()
+    ).order_by(Enrollment.enrollment_date.desc()).limit(5).all()
     
     # Course engagement stats
     active_courses = Course.query.filter_by(course_status='published').count()
