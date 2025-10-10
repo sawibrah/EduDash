@@ -1426,7 +1426,7 @@ def toggle_quiz_status(quiz_id):
     quiz.is_active = not quiz.is_active
     db.session.commit()
     
-    return redirect(url_for('view_course_quizzes', course_id=course.id))
+    return '', 204  # Return no content for AJAX request
 
 # Student Quiz Routes
 @app.route('/quiz/<int:quiz_id>')

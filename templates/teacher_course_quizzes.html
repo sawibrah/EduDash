@@ -66,15 +66,14 @@
                                             <div class="d-flex justify-content-between align-items-start mb-2">
                                                 <h6 class="card-title mb-0">{{ quiz.title }}</h6>
                                                 <div>
-                                                    <form method="POST" action="{{ url_for('toggle_quiz_status', quiz_id=quiz.id) }}" style="display: inline;">
-                                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                                                        <button type="submit" class="badge border-0 bg-{% if quiz.is_active %}success{% else %}warning{% endif %} {% if not quiz.is_active %}text-dark{% endif %}" 
-                                                                style="cursor: pointer; transition: opacity 0.2s;" 
-                                                                onmouseover="this.style.opacity='0.8'" 
-                                                                onmouseout="this.style.opacity='1'">
-                                                            {% if quiz.is_active %}Active{% else %}Inactive{% endif %}
-                                                        </button>
-                                                    </form>
+                                                    <button type="button" 
+                                                            class="badge border-0 status-badge-{{ quiz.id }} bg-{% if quiz.is_active %}success{% else %}warning{% endif %} {% if not quiz.is_active %}text-dark{% endif %}" 
+                                                            style="cursor: pointer; transition: all 0.2s;" 
+                                                            onclick="toggleQuizStatus({{ quiz.id }}, {{ 'true' if quiz.is_active else 'false' }})"
+                                                            onmouseover="this.style.opacity='0.8'" 
+                                                            onmouseout="this.style.opacity='1'">
+                                                        {% if quiz.is_active %}Active{% else %}Inactive{% endif %}
+                                                    </button>
                                                 </div>
                                             </div>
                                             
@@ -188,6 +187,35 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Toggle quiz status without page reload
+function toggleQuizStatus(quizId, isActive) {
+    const badge = document.querySelector('.status-badge-' + quizId);
+    const card = badge.closest('.card');
+    
+    fetch(`/teacher/quiz/${quizId}/toggle-status`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': '{{ csrf_token() }}'
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            // Toggle the status
+            const newStatus = !isActive;
+            
+            // Update badge
+            badge.className = `badge border-0 status-badge-${quizId} bg-${newStatus ? 'success' : 'warning'}${newStatus ? '' : ' text-dark'}`;
+            badge.textContent = newStatus ? 'Active' : 'Inactive';
+            badge.setAttribute('onclick', `toggleQuizStatus(${quizId}, ${newStatus})`);
+            
+            // Update card border
+            card.className = `card border-start border-${newStatus ? 'success' : 'warning'} border-4`;
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
 </script>
 
 {% endblock %}
