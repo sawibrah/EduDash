@@ -71,8 +71,7 @@
                                                         <button type="submit" class="badge border-0 bg-{% if quiz.is_active %}success{% else %}warning{% endif %} {% if not quiz.is_active %}text-dark{% endif %}" 
                                                                 style="cursor: pointer; transition: opacity 0.2s;" 
                                                                 onmouseover="this.style.opacity='0.8'" 
-                                                                onmouseout="this.style.opacity='1'"
-                                                                title="Click to {% if quiz.is_active %}deactivate{% else %}activate{% endif %}">
+                                                                onmouseout="this.style.opacity='1'">
                                                             {% if quiz.is_active %}Active{% else %}Inactive{% endif %}
                                                         </button>
                                                     </form>
