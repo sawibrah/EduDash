@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}User Management - Admin{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">
+                <i class="fas fa-users me-2"></i>User Management
+            </h2>
+            <p class="text-muted mb-0">Manage all platform users</p>
+        </div>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h5 class="mb-0">All Users ({{ users|length }})</h5>
+                </div>
+                <div class="col-auto">
+                    <div class="btn-group">
+                        <button class="btn btn-sm btn-outline-primary" onclick="filterUsers('all')">All</button>
+                        <button class="btn btn-sm btn-outline-info" onclick="filterUsers('student')">Students</button>
+                        <button class="btn btn-sm btn-outline-success" onclick="filterUsers('teacher')">Teachers</button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="filterUsers('admin')">Admins</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="usersTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Registered</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr data-role="{{ user.role }}">
+                            <td>{{ user.id }}</td>
+                            <td><strong>{{ user.username }}</strong></td>
+                            <td>{{ user.first_name }} {{ user.last_name }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>
+                                {% if user.role == 'admin' %}
+                                    <span class="badge bg-danger">Admin</span>
+                                {% elif user.role == 'teacher' %}
+                                    <span class="badge bg-success">Teacher</span>
+                                {% else %}
+                                    <span class="badge bg-info">Student</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small class="text-muted">{{ user.created_at.strftime('%Y-%m-%d %H:%M') if user.created_at else 'N/A' }}</small>
+                            </td>
+                            <td>
+                                {% if user.id != current_user.id %}
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle" 
+                                            data-bs-toggle="dropdown">
+                                        Change Role
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        {% if user.role != 'student' %}
+                                        <li>
+                                            <form method="POST" action="{{ url_for('promote_user', user_id=user.id) }}" style="display: inline;">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                                <input type="hidden" name="new_role" value="student"/>
+                                                <button type="submit" class="dropdown-item">
+                                                    <i class="fas fa-user-graduate me-2"></i>Set as Student
+                                                </button>
+                                            </form>
+                                        </li>
+                                        {% endif %}
+                                        {% if user.role != 'teacher' %}
+                                        <li>
+                                            <form method="POST" action="{{ url_for('promote_user', user_id=user.id) }}" style="display: inline;">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                                <input type="hidden" name="new_role" value="teacher"/>
+                                                <button type="submit" class="dropdown-item">
+                                                    <i class="fas fa-chalkboard-teacher me-2"></i>Set as Teacher
+                                                </button>
+                                            </form>
+                                        </li>
+                                        {% endif %}
+                                        {% if user.role != 'admin' %}
+                                        <li>
+                                            <form method="POST" action="{{ url_for('promote_user', user_id=user.id) }}" style="display: inline;">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                                <input type="hidden" name="new_role" value="admin"/>
+                                                <button type="submit" class="dropdown-item">
+                                                    <i class="fas fa-user-shield me-2"></i>Set as Admin
+                                                </button>
+                                            </form>
+                                        </li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                                {% else %}
+                                <span class="badge bg-secondary">You</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function filterUsers(role) {
+    const rows = document.querySelectorAll('#usersTable tbody tr');
+    rows.forEach(row => {
+        if (role === 'all' || row.dataset.role === role) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+</script>
+{% endblock %}

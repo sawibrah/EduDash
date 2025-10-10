@@ -192,10 +192,10 @@ def teacher_dashboard():
 @app.route('/admin/dashboard')
 @require_role('admin')
 def admin_dashboard():
-    # Get all users with their profiles
-    users = User.query.order_by(User.id.desc()).all()
+    # Get all users with limit for performance
+    users = User.query.order_by(User.id.desc()).limit(10).all()
     
-    # Get statistics
+    # Get comprehensive statistics
     total_users = User.query.count()
     total_students = User.query.filter_by(role='student').count()
     total_teachers = User.query.filter_by(role='teacher').count()
@@ -203,6 +203,19 @@ def admin_dashboard():
     total_courses = Course.query.count()
     total_exams = Exam.query.count()
     total_quizzes = Quiz.query.count()
+    total_enrollments = Enrollment.query.count()
+    total_exam_submissions = ExamSubmission.query.count()
+    total_quiz_submissions = CodeSubmission.query.count()
+    
+    # Get recent activity
+    recent_courses = Course.query.order_by(Course.created_at.desc()).limit(5).all()
+    recent_enrollments = Enrollment.query.options(
+        joinedload(Enrollment.student),
+        joinedload(Enrollment.course)
+    ).order_by(Enrollment.enrolled_at.desc()).limit(5).all()
+    
+    # Course engagement stats
+    active_courses = Course.query.filter_by(course_status='published').count()
     
     return render_template('admin_dashboard.html',
                          users=users,
@@ -212,7 +225,27 @@ def admin_dashboard():
                          total_admins=total_admins,
                          total_courses=total_courses,
                          total_exams=total_exams,
-                         total_quizzes=total_quizzes)
+                         total_quizzes=total_quizzes,
+                         total_enrollments=total_enrollments,
+                         total_exam_submissions=total_exam_submissions,
+                         total_quiz_submissions=total_quiz_submissions,
+                         recent_courses=recent_courses,
+                         recent_enrollments=recent_enrollments,
+                         active_courses=active_courses)
+
+@app.route('/admin/users')
+@require_role('admin')
+def admin_users():
+    # Get all users with pagination-ready query
+    users = User.query.order_by(User.created_at.desc()).all()
+    return render_template('admin_users.html', users=users)
+
+@app.route('/admin/courses')
+@require_role('admin')
+def admin_courses():
+    # Get all courses with teacher info
+    courses = Course.query.options(joinedload(Course.teacher)).order_by(Course.created_at.desc()).all()
+    return render_template('admin_courses.html', courses=courses)
 
 @app.route('/admin/user/<int:user_id>/promote', methods=['POST'])
 @require_role('admin')
@@ -222,7 +255,7 @@ def promote_user(user_id):
     
     if new_role not in ['student', 'teacher', 'admin']:
         flash('Invalid role specified.', 'error')
-        return redirect(url_for('admin_dashboard'))
+        return redirect(request.referrer or url_for('admin_dashboard'))
     
     old_role = user.role
     user.role = new_role
@@ -239,7 +272,24 @@ def promote_user(user_id):
     
     db.session.commit()
     flash(f'User {user.username} promoted from {old_role} to {new_role} successfully!', 'success')
-    return redirect(url_for('admin_dashboard'))
+    return redirect(request.referrer or url_for('admin_dashboard'))
+
+@app.route('/admin/course/<int:course_id>/toggle-status', methods=['POST'])
+@require_role('admin')
+def admin_toggle_course_status(course_id):
+    course = Course.query.get_or_404(course_id)
+    
+    # Toggle between published and draft
+    if course.course_status == 'published':
+        course.course_status = 'draft'
+        message = f'Course "{course.title}" set to draft.'
+    else:
+        course.course_status = 'published'
+        message = f'Course "{course.title}" published.'
+    
+    db.session.commit()
+    flash(message, 'success')
+    return redirect(url_for('admin_courses'))
 
 def generate_5_slide_template(title="", programming_language=""):
     """Generate a 5-slide markdown template for courses"""
