@@ -16,23 +16,21 @@
     <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
+    <!-- HTMX for smooth page transitions -->
+    <script src="https://unpkg.com/htmx.org@1.9.10" defer></script>
     
     <!-- Custom styles for smooth interactions -->
     <style>
         /* Prevent white flash during page transitions */
-        html {
-            background-color: #212529;
+        html, body {
+            background-color: #212529 !important;
+            min-height: 100vh;
         }
         
-        body {
-            background-color: #212529;
-            opacity: 0;
-            animation: fadeIn 0.15s ease-in forwards;
-        }
-        
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
+        /* Smooth page transitions */
+        @media (prefers-reduced-motion: no-preference) {
+            html {
+                view-transition-name: root;
             }
         }
         
