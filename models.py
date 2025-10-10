@@ -118,14 +118,23 @@ class Exam(db.Model):
     course_id = db.Column(db.Integer, db.ForeignKey(Course.id), nullable=False)
     
     # MCQ fields with rich content support
-    questions_json = db.Column(db.Text, nullable=True)  # JSON: [{question, options, correct_answer, content_type}]
+    # JSON structure: [{
+    #   "question": "text",
+    #   "question_image": "url",
+    #   "question_code": "code snippet", 
+    #   "question_code_language": "python",
+    #   "options": [{"text": "...", "image": "url", "code": "snippet", "code_language": "python"}],
+    #   "correct_answer": 0,
+    #   "explanation": "text"
+    # }]
+    questions_json = db.Column(db.Text, nullable=True)
     
     # Exam settings
     max_score = db.Column(db.Integer, default=100)
     time_limit = db.Column(db.Integer, default=60)  # minutes
     due_date = db.Column(db.DateTime, nullable=True)
     is_active = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.Integer, default=datetime.now)
+    created_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
     
     course = db.relationship(Course, backref='exams')
@@ -155,8 +164,17 @@ class Quiz(db.Model):
     course_id = db.Column(db.Integer, db.ForeignKey(Course.id), nullable=False)
     quiz_type = db.Column(db.String(20), default='multiple_choice', nullable=False)  # 'multiple_choice' or 'coding'
     
-    # Multiple Choice fields
-    questions_json = db.Column(db.Text, nullable=True)  # JSON string of questions and answers
+    # Multiple Choice fields with rich content support
+    # JSON structure: [{
+    #   "question": "text",
+    #   "question_image": "url",
+    #   "question_code": "code snippet", 
+    #   "question_code_language": "python",
+    #   "options": [{"text": "...", "image": "url", "code": "snippet", "code_language": "python"}],
+    #   "correct_answer": 0,
+    #   "explanation": "text"
+    # }]
+    questions_json = db.Column(db.Text, nullable=True)
     
     # Coding quiz fields
     programming_language = db.Column(db.String(50), nullable=True)

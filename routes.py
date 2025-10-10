@@ -435,6 +435,12 @@ def view_course_exams(course_id):
     exams = Exam.query.filter_by(course_id=course_id).order_by(Exam.created_at.desc()).all()
     return render_template('teacher_course_exams.html', course=course, exams=exams, now=datetime.now())
 
+@app.route('/teacher/course/<int:course_id>/create-exam')
+@require_role('teacher')
+def show_create_exam(course_id):
+    course = Course.query.filter_by(id=course_id, teacher_id=current_user.id).first_or_404()
+    return render_template('teacher_create_exam.html', course=course)
+
 @app.route('/teacher/course/<int:course_id>/edit', methods=['GET', 'POST'])
 @require_role('teacher')
 def edit_course(course_id):
@@ -809,10 +815,18 @@ def create_exam():
     title = request.form.get('title')
     description = request.form.get('description')
     course_id = request.form.get('course_id')
+    questions_json = request.form.get('questions_json')
+    max_score = request.form.get('max_score', 100)
+    time_limit = request.form.get('time_limit', 60)
     due_date_str = request.form.get('due_date')
+    is_active = request.form.get('is_active') == 'on'
     
-    if not title or not course_id:
-        flash('Exam title and course are required.', 'error')
+    if not title:
+        flash('Exam title is required.', 'error')
+        return redirect(url_for('teacher_dashboard'))
+    
+    if not course_id:
+        flash('Course ID is required.', 'error')
         return redirect(url_for('teacher_dashboard'))
     
     # Verify teacher owns the course
@@ -824,25 +838,28 @@ def create_exam():
     due_date = None
     if due_date_str:
         try:
-            # Handle both datetime-local format (YYYY-MM-DDTHH:MM) and date format (YYYY-MM-DD)
             if 'T' in due_date_str:
                 due_date = datetime.strptime(due_date_str, '%Y-%m-%dT%H:%M')
             else:
                 due_date = datetime.strptime(due_date_str, '%Y-%m-%d')
         except ValueError:
             flash('Invalid due date format.', 'error')
-            return redirect(url_for('teacher_dashboard'))
+            return redirect(url_for('show_create_exam', course_id=course_id))
     
     exam = Exam()
     exam.title = title
     exam.description = description
     exam.course_id = course_id
+    exam.questions_json = questions_json
+    exam.max_score = int(max_score) if max_score else 100
+    exam.time_limit = int(time_limit) if time_limit else 60
     exam.due_date = due_date
+    exam.is_active = is_active
     db.session.add(exam)
     db.session.commit()
     
     flash('Exam created successfully!', 'success')
-    return redirect(url_for('teacher_dashboard'))
+    return redirect(url_for('view_course_exams', course_id=course_id))
 
 @app.route('/student/enroll', methods=['POST'])
 @require_role('student')

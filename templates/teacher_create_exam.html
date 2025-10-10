@@ -1,0 +1,443 @@
+{% extends "base.html" %}
+
+{% block title %}Create Exam - {{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-11 mx-auto">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-file-alt me-2"></i>Create Exam
+                    </h4>
+                    <nav aria-label="breadcrumb" class="mt-2">
+                        <ol class="breadcrumb breadcrumb-light mb-0">
+                            <li class="breadcrumb-item"><a href="{{ url_for('teacher_dashboard') }}" class="text-white-50">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="{{ url_for('view_course', course_id=course.id) }}" class="text-white-50">{{ course.title }}</a></li>
+                            <li class="breadcrumb-item"><a href="{{ url_for('view_course_exams', course_id=course.id) }}" class="text-white-50">Exams</a></li>
+                            <li class="breadcrumb-item active text-white">Create Exam</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('create_exam') }}" id="exam-form">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <input type="hidden" name="course_id" value="{{ course.id }}"/>
+                        <input type="hidden" name="questions_json" id="questions_json">
+                        
+                        <div class="row">
+                            <!-- Basic Exam Information -->
+                            <div class="col-md-6">
+                                <h5 class="border-bottom pb-2 mb-3">Basic Information</h5>
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">Exam Title *</label>
+                                    <input type="text" class="form-control" name="title" id="title" required
+                                           placeholder="e.g., Mid-Term Exam - Python Programming">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Description</label>
+                                    <textarea class="form-control" name="description" id="description" rows="3"
+                                              placeholder="Brief description of exam topics..."></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Exam Settings -->
+                            <div class="col-md-6">
+                                <h5 class="border-bottom pb-2 mb-3">Exam Settings</h5>
+                                <div class="mb-3">
+                                    <label for="max_score" class="form-label">Maximum Score</label>
+                                    <input type="number" class="form-control" name="max_score" id="max_score" 
+                                           value="100" min="1" max="1000">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="time_limit" class="form-label">Time Limit (minutes)</label>
+                                    <input type="number" class="form-control" name="time_limit" id="time_limit" 
+                                           value="60" min="5" max="300">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="due_date" class="form-label">Due Date (Optional)</label>
+                                    <input type="datetime-local" class="form-control" name="due_date" id="due_date">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="is_active" id="is_active" checked>
+                                        <label class="form-check-label" for="is_active">
+                                            <strong>Exam is Active</strong>
+                                            <br><small class="text-muted">Students can access and submit this exam</small>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Questions Section -->
+                        <div class="mt-4">
+                            <div class="border-bottom pb-2 mb-3">
+                                <h5 class="mb-0">Questions</h5>
+                            </div>
+                            
+                            <div class="alert alert-info mb-3">
+                                <i class="fas fa-lightbulb me-2"></i>
+                                <strong>Rich Content Support:</strong> You can add text, images, and code blocks to questions and options.
+                                <button type="button" class="btn btn-sm btn-success ms-2" onclick="loadTemplate()">
+                                    <i class="fas fa-magic me-1"></i>Load Template
+                                </button>
+                            </div>
+                            
+                            <div id="questions-container">
+                                <!-- Questions will be added here -->
+                            </div>
+                            
+                            <div class="mt-3">
+                                <button type="button" class="btn btn-success" onclick="addQuestion()">
+                                    <i class="fas fa-plus me-1"></i>Add Question
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="mt-4 pt-3 border-top">
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-save me-1"></i>Create Exam
+                                </button>
+                                <a href="{{ url_for('view_course_exams', course_id=course.id) }}" class="btn btn-secondary">
+                                    <i class="fas fa-times me-1"></i>Cancel
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.code-preview {
+    background-color: #2d2d2d;
+    color: #f8f8f2;
+    padding: 10px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    white-space: pre-wrap;
+    margin-top: 5px;
+}
+.img-preview {
+    max-width: 200px;
+    max-height: 150px;
+    margin-top: 5px;
+    border-radius: 4px;
+}
+.content-toggle {
+    margin-top: 10px;
+}
+</style>
+
+<script>
+let questionCount = 0;
+let questions = [];
+
+// Default template with 5 sample questions including rich content
+const defaultTemplate = [
+    {
+        question: "What will be the output of the following Python code?",
+        question_code: "x = [1, 2, 3]\nprint(x * 2)",
+        question_code_language: "python",
+        options: [
+            {text: "[1, 2, 3, 1, 2, 3]"},
+            {text: "[2, 4, 6]"},
+            {text: "[1, 2, 3, 2]"},
+            {text: "Error"}
+        ],
+        correct_answer: 0,
+        explanation: "In Python, multiplying a list by 2 duplicates its elements."
+    },
+    {
+        question: "Which HTTP status code indicates a successful response?",
+        options: [
+            {text: "404 - Not Found"},
+            {text: "200 - OK"},
+            {text: "500 - Internal Server Error"},
+            {text: "301 - Moved Permanently"}
+        ],
+        correct_answer: 1,
+        explanation: "200 OK indicates that the request was successful."
+    },
+    {
+        question: "What is the time complexity of binary search?",
+        options: [
+            {text: "O(n)"},
+            {text: "O(log n)"},
+            {text: "O(n²)"},
+            {text: "O(1)"}
+        ],
+        correct_answer: 1,
+        explanation: "Binary search has O(log n) time complexity as it divides the search space in half each iteration."
+    },
+    {
+        question: "Complete the code to create a function that returns the sum of two numbers:",
+        question_code: "def add_numbers(a, b):\n    # Complete this function\n    return ___",
+        question_code_language: "python",
+        options: [
+            {text: "a + b"},
+            {text: "a - b"},
+            {text: "a * b"},
+            {text: "a / b"}
+        ],
+        correct_answer: 0,
+        explanation: "To sum two numbers, we use the addition operator (+)."
+    },
+    {
+        question: "What does REST stand for in web development?",
+        options: [
+            {text: "Representational State Transfer"},
+            {text: "Remote Execution Service Tool"},
+            {text: "Realtime Event Streaming Technology"},
+            {text: "Resource Encoding Standard Transfer"}
+        ],
+        correct_answer: 0,
+        explanation: "REST stands for Representational State Transfer, an architectural style for web services."
+    }
+];
+
+function loadTemplate() {
+    if (questions.length > 0) {
+        if (!confirm('This will replace all existing questions. Continue?')) {
+            return;
+        }
+    }
+    
+    questions = [];
+    document.getElementById('questions-container').innerHTML = '';
+    questionCount = 0;
+    
+    defaultTemplate.forEach(q => {
+        addQuestion(q);
+    });
+    
+    alert('Template loaded! You can now customize the questions.');
+}
+
+function addQuestion(templateData = null) {
+    questionCount++;
+    const questionId = `q${questionCount}`;
+    
+    const questionData = templateData || {
+        question: '',
+        question_image: '',
+        question_code: '',
+        question_code_language: 'python',
+        options: [
+            {text: '', image: '', code: '', code_language: 'python'},
+            {text: '', image: '', code: '', code_language: 'python'},
+            {text: '', image: '', code: '', code_language: 'python'},
+            {text: '', image: '', code: '', code_language: 'python'}
+        ],
+        correct_answer: 0,
+        explanation: ''
+    };
+    
+    questions.push({
+        id: questionId,
+        data: questionData
+    });
+    
+    const questionHtml = `
+        <div class="card mb-3" id="${questionId}" data-question-index="${questions.length - 1}">
+            <div class="card-header bg-light">
+                <div class="d-flex justify-content-between align-items-center">
+                    <strong>Question ${questionCount}</strong>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="removeQuestion('${questionId}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Question Text *</label>
+                    <textarea class="form-control question-text" rows="2" required
+                              onchange="updateQuestion('${questionId}')">${questionData.question}</textarea>
+                </div>
+                
+                <!-- Question Rich Content -->
+                <div class="mb-3">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleQuestionImage('${questionId}')">
+                        <i class="fas fa-image"></i> Add Image URL
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleQuestionCode('${questionId}')">
+                        <i class="fas fa-code"></i> Add Code Block
+                    </button>
+                    
+                    <div id="${questionId}-image-section" class="content-toggle" style="display: ${questionData.question_image ? 'block' : 'none'}">
+                        <input type="text" class="form-control question-image mt-2" 
+                               placeholder="Image URL" value="${questionData.question_image || ''}"
+                               onchange="updateQuestion('${questionId}')">
+                        ${questionData.question_image ? `<img src="${questionData.question_image}" class="img-preview">` : ''}
+                    </div>
+                    
+                    <div id="${questionId}-code-section" class="content-toggle" style="display: ${questionData.question_code ? 'block' : 'none'}">
+                        <select class="form-select mt-2 question-code-language" onchange="updateQuestion('${questionId}')">
+                            <option value="python" ${questionData.question_code_language === 'python' ? 'selected' : ''}>Python</option>
+                            <option value="javascript" ${questionData.question_code_language === 'javascript' ? 'selected' : ''}>JavaScript</option>
+                            <option value="java" ${questionData.question_code_language === 'java' ? 'selected' : ''}>Java</option>
+                            <option value="cpp" ${questionData.question_code_language === 'cpp' ? 'selected' : ''}>C++</option>
+                            <option value="sql" ${questionData.question_code_language === 'sql' ? 'selected' : ''}>SQL</option>
+                        </select>
+                        <textarea class="form-control question-code mt-2" rows="3"
+                                  placeholder="Code snippet..." onchange="updateQuestion('${questionId}')">${questionData.question_code || ''}</textarea>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Answer Options *</label>
+                    ${questionData.options.map((opt, idx) => {
+                        const optId = `${questionId}-opt${idx}`;
+                        return `
+                        <div class="card mb-2 option-card" data-option-index="${idx}">
+                            <div class="card-body p-2">
+                                <div class="input-group">
+                                    <div class="input-group-text">
+                                        <input class="form-check-input mt-0" type="radio" 
+                                               name="correct_${questionId}" value="${idx}" 
+                                               ${idx === questionData.correct_answer ? 'checked' : ''}
+                                               onchange="updateQuestion('${questionId}')"
+                                               title="Mark as correct answer">
+                                    </div>
+                                    <input type="text" class="form-control option-text" 
+                                           placeholder="Option ${String.fromCharCode(65 + idx)}" 
+                                           value="${opt.text || ''}" required
+                                           onchange="updateQuestion('${questionId}')">
+                                </div>
+                                <div class="mt-2">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleOptionImage('${optId}')">
+                                        <i class="fas fa-image"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleOptionCode('${optId}')">
+                                        <i class="fas fa-code"></i>
+                                    </button>
+                                </div>
+                                <div id="${optId}-image" style="display: ${opt.image ? 'block' : 'none'}">
+                                    <input type="text" class="form-control option-image mt-2" 
+                                           placeholder="Image URL" value="${opt.image || ''}"
+                                           onchange="updateQuestion('${questionId}')">
+                                </div>
+                                <div id="${optId}-code" style="display: ${opt.code ? 'block' : 'none'}">
+                                    <select class="form-select mt-2 option-code-language" onchange="updateQuestion('${questionId}')">
+                                        <option value="python" ${(opt.code_language || 'python') === 'python' ? 'selected' : ''}>Python</option>
+                                        <option value="javascript" ${(opt.code_language || 'python') === 'javascript' ? 'selected' : ''}>JavaScript</option>
+                                        <option value="java" ${(opt.code_language || 'python') === 'java' ? 'selected' : ''}>Java</option>
+                                        <option value="cpp" ${(opt.code_language || 'python') === 'cpp' ? 'selected' : ''}>C++</option>
+                                        <option value="sql" ${(opt.code_language || 'python') === 'sql' ? 'selected' : ''}>SQL</option>
+                                    </select>
+                                    <textarea class="form-control option-code mt-2" rows="2"
+                                              onchange="updateQuestion('${questionId}')">${opt.code || ''}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    `}).join('')}
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Explanation (Optional)</label>
+                    <textarea class="form-control explanation-text" rows="2" 
+                              onchange="updateQuestion('${questionId}')"
+                              placeholder="Explain why this answer is correct...">${questionData.explanation || ''}</textarea>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('questions-container').insertAdjacentHTML('beforeend', questionHtml);
+}
+
+function toggleQuestionImage(questionId) {
+    const section = document.getElementById(`${questionId}-image-section`);
+    section.style.display = section.style.display === 'none' ? 'block' : 'none';
+}
+
+function toggleQuestionCode(questionId) {
+    const section = document.getElementById(`${questionId}-code-section`);
+    section.style.display = section.style.display === 'none' ? 'block' : 'none';
+}
+
+function toggleOptionImage(optId) {
+    const section = document.getElementById(`${optId}-image`);
+    section.style.display = section.style.display === 'none' ? 'block' : 'none';
+}
+
+function toggleOptionCode(optId) {
+    const section = document.getElementById(`${optId}-code`);
+    section.style.display = section.style.display === 'none' ? 'block' : 'none';
+}
+
+function updateQuestion(questionId) {
+    const questionCard = document.getElementById(questionId);
+    const index = parseInt(questionCard.dataset.questionIndex);
+    
+    const questionText = questionCard.querySelector('.question-text').value;
+    const questionImage = questionCard.querySelector('.question-image')?.value || '';
+    const questionCode = questionCard.querySelector('.question-code')?.value || '';
+    const questionCodeLanguage = questionCard.querySelector('.question-code-language')?.value || 'python';
+    
+    const optionCards = questionCard.querySelectorAll('.option-card');
+    const options = Array.from(optionCards).map(card => ({
+        text: card.querySelector('.option-text').value,
+        image: card.querySelector('.option-image')?.value || '',
+        code: card.querySelector('.option-code')?.value || '',
+        code_language: card.querySelector('.option-code-language')?.value || 'python'
+    }));
+    
+    const correctAnswer = parseInt(questionCard.querySelector(`input[name="correct_${questionId}"]:checked`)?.value || 0);
+    const explanation = questionCard.querySelector('.explanation-text').value;
+    
+    questions[index].data = {
+        question: questionText,
+        question_image: questionImage,
+        question_code: questionCode,
+        question_code_language: questionCodeLanguage,
+        options: options,
+        correct_answer: correctAnswer,
+        explanation: explanation
+    };
+}
+
+function removeQuestion(questionId) {
+    if (!confirm('Are you sure you want to remove this question?')) {
+        return;
+    }
+    
+    const questionCard = document.getElementById(questionId);
+    const index = parseInt(questionCard.dataset.questionIndex);
+    
+    questions.splice(index, 1);
+    questionCard.remove();
+    
+    const remainingCards = document.querySelectorAll('#questions-container .card');
+    remainingCards.forEach((card, idx) => {
+        card.dataset.questionIndex = idx;
+        card.querySelector('.card-header strong').textContent = `Question ${idx + 1}`;
+    });
+}
+
+document.getElementById('exam-form').addEventListener('submit', function(e) {
+    if (questions.length === 0) {
+        e.preventDefault();
+        alert('Please add at least one question to the exam.');
+        return false;
+    }
+    
+    questions.forEach(q => {
+        updateQuestion(q.id);
+    });
+    
+    const questionsData = questions.map(q => q.data);
+    document.getElementById('questions_json').value = JSON.stringify(questionsData);
+});
+</script>
+{% endblock %}
