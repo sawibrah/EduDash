@@ -123,7 +123,10 @@ def student_dashboard():
     course_ids = [course.id for course in enrolled_courses]
     exams = Exam.query.options(
         joinedload(Exam.course)
-    ).filter(Exam.course_id.in_(course_ids)).all() if course_ids else []
+    ).filter(
+        Exam.course_id.in_(course_ids),
+        Exam.is_active == True
+    ).all() if course_ids else []
     
     # Sort exams by due date
     exams.sort(key=lambda x: x.due_date if x.due_date else datetime.max)
