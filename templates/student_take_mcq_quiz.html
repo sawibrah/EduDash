@@ -266,7 +266,7 @@ function submitQuiz() {
     .then(data => {
         if (data.success) {
             const score = data.score !== undefined ? data.score : 'N/A';
-            alert(`Quiz submitted successfully! Your score: ${score}/${{{ quiz.max_score }}}`);
+            alert(`Quiz submitted successfully! Your score: ${score}/{{ quiz.max_score }}`);
             window.location.href = '/student/dashboard';
         } else {
             alert('Error submitting quiz: ' + data.error);
