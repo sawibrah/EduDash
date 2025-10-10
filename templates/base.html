@@ -87,7 +87,11 @@
                                 {{ current_user.first_name or 'User' }}
                             </a>
                             <ul class="dropdown-menu">
-                                {% if current_user.role == 'student' %}
+                                {% if current_user.role == 'admin' %}
+                                    <li><a class="dropdown-item" href="{{ url_for('admin_dashboard') }}">
+                                        <i class="fas fa-user-shield me-2"></i>Admin Dashboard
+                                    </a></li>
+                                {% elif current_user.role == 'student' %}
                                     <li><a class="dropdown-item" href="{{ url_for('student_dashboard') }}">
                                         <i class="fas fa-tachometer-alt me-2"></i>Dashboard
                                     </a></li>

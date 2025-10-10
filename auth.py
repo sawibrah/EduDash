@@ -29,6 +29,10 @@ def require_role(role):
                 flash('Please log in to access this page.', 'warning')
                 return redirect(url_for('login'))
             
+            # Admin can access all routes
+            if current_user.role == 'admin':
+                return f(*args, **kwargs)
+            
             if current_user.role != role:
                 flash(f'Access denied. This page requires {role} privileges.', 'error')
                 return redirect(url_for('index'))

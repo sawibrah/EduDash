@@ -80,6 +80,8 @@ def login():
             
             if next_page:
                 return redirect(next_page)
+            elif user.role == 'admin':
+                return redirect(url_for('admin_dashboard'))
             elif user.role == 'student':
                 return redirect(url_for('student_dashboard'))
             else:
@@ -101,7 +103,9 @@ def logout():
 def index():
     if current_user.is_authenticated:
         # Redirect to appropriate dashboard based on role
-        if current_user.role == 'student':
+        if current_user.role == 'admin':
+            return redirect(url_for('admin_dashboard'))
+        elif current_user.role == 'student':
             return redirect(url_for('student_dashboard'))
         elif current_user.role == 'teacher':
             return redirect(url_for('teacher_dashboard'))
@@ -184,6 +188,58 @@ def teacher_dashboard():
                          exams=exams,
                          quizzes=quizzes,
                          total_students=total_students)
+
+@app.route('/admin/dashboard')
+@require_role('admin')
+def admin_dashboard():
+    # Get all users with their profiles
+    users = User.query.order_by(User.id.desc()).all()
+    
+    # Get statistics
+    total_users = User.query.count()
+    total_students = User.query.filter_by(role='student').count()
+    total_teachers = User.query.filter_by(role='teacher').count()
+    total_admins = User.query.filter_by(role='admin').count()
+    total_courses = Course.query.count()
+    total_exams = Exam.query.count()
+    total_quizzes = Quiz.query.count()
+    
+    return render_template('admin_dashboard.html',
+                         users=users,
+                         total_users=total_users,
+                         total_students=total_students,
+                         total_teachers=total_teachers,
+                         total_admins=total_admins,
+                         total_courses=total_courses,
+                         total_exams=total_exams,
+                         total_quizzes=total_quizzes)
+
+@app.route('/admin/user/<int:user_id>/promote', methods=['POST'])
+@require_role('admin')
+def promote_user(user_id):
+    user = User.query.get_or_404(user_id)
+    new_role = request.form.get('new_role')
+    
+    if new_role not in ['student', 'teacher', 'admin']:
+        flash('Invalid role specified.', 'error')
+        return redirect(url_for('admin_dashboard'))
+    
+    old_role = user.role
+    user.role = new_role
+    
+    # Create appropriate profile if promoting to teacher and doesn't have one
+    if new_role == 'teacher':
+        existing_teacher_profile = TeacherProfile.query.filter_by(user_id=user.id).first()
+        if not existing_teacher_profile:
+            teacher_profile = TeacherProfile()
+            teacher_profile.user_id = user.id
+            teacher_profile.employee_id = f"EMP{str(user.id).zfill(8)}"
+            teacher_profile.department = "General"
+            db.session.add(teacher_profile)
+    
+    db.session.commit()
+    flash(f'User {user.username} promoted from {old_role} to {new_role} successfully!', 'success')
+    return redirect(url_for('admin_dashboard'))
 
 def generate_5_slide_template(title="", programming_language=""):
     """Generate a 5-slide markdown template for courses"""
