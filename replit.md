@@ -15,6 +15,21 @@ EduPortal is a comprehensive Learning Management System (LMS) built with Flask t
 - Student enrollment system with course ID sharing and browsing options
 - Teacher classroom management with student enrollment tracking and removal capabilities
 
+**Quiz System Features:**
+- **Multiple Choice Quizzes** (default) - Teachers create MCQ quizzes with 5 default template questions
+  - Question template builder with 4 options per question (A-D)
+  - Automatic grading upon submission with instant score calculation
+  - Optional explanations for each question
+  - "Load Template" feature provides 5 pre-filled sample questions for quick start
+- **Coding Quizzes** (optional) - Programming challenges with Monaco code editor
+  - Language-specific starter code templates
+  - Expected output specification
+  - Manual grading by teachers
+- Timed quizzes with countdown timer and auto-submission
+- Due date support with access control
+- Student progress tracking (answered/total questions)
+- Submission tracking and duplicate prevention
+
 **Form-Based Authentication System:**
 - Custom user registration with username, email, and password
 - All new registrations default to student role (teachers require manual promotion by administrators)

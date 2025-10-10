@@ -1,0 +1,294 @@
+{% extends "base.html" %}
+
+{% block title %}{{ quiz.title }} - Multiple Choice Quiz{% endblock %}
+
+{% block head %}
+<style>
+    .quiz-timer {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1050;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 10px 15px;
+        border-radius: 20px;
+        font-weight: bold;
+    }
+    .question-card {
+        transition: all 0.3s ease;
+    }
+    .question-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+    }
+    .option-label {
+        cursor: pointer;
+        transition: all 0.2s ease;
+        padding: 12px;
+        border-radius: 8px;
+        border: 2px solid transparent;
+    }
+    .option-label:hover {
+        background-color: rgba(0, 123, 255, 0.1);
+        border-color: #007bff;
+    }
+    .option-input:checked + .option-label {
+        background-color: rgba(0, 123, 255, 0.2);
+        border-color: #007bff;
+        font-weight: 500;
+    }
+    .option-input {
+        display: none;
+    }
+    .progress-indicator {
+        position: sticky;
+        top: 20px;
+        z-index: 100;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Quiz Timer -->
+{% if quiz.time_limit %}
+<div class="quiz-timer">
+    <i class="fas fa-clock me-1"></i>
+    Time Left: <span id="quiz-timer">{{ quiz.time_limit }}:00</span>
+</div>
+{% endif %}
+
+<div class="container mt-4">
+    <div class="row">
+        <!-- Quiz Header -->
+        <div class="col-12">
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-list-check me-2"></i>{{ quiz.title }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            {% if quiz.description %}
+                                <p class="mb-2">{{ quiz.description }}</p>
+                            {% endif %}
+                            <p class="text-muted mb-0">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Answer all questions and click "Submit Quiz" when you're done.
+                            </p>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <div class="mb-2">
+                                <strong>Max Score:</strong> 
+                                <span class="badge bg-success">{{ quiz.max_score }} points</span>
+                            </div>
+                            {% if quiz.due_date %}
+                                <div class="mb-2">
+                                    <strong>Due:</strong> 
+                                    <small class="text-muted">{{ quiz.due_date.strftime('%Y-%m-%d %H:%M') }}</small>
+                                </div>
+                            {% endif %}
+                            <div id="progress-text" class="text-primary">
+                                <strong>Progress: <span id="answered-count">0</span>/<span id="total-count">0</span></strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Questions -->
+        <div class="col-12">
+            <form id="quiz-form">
+                <div id="questions-container">
+                    <!-- Questions will be loaded here by JavaScript -->
+                </div>
+
+                <!-- Submit Button -->
+                <div class="card mt-3">
+                    <div class="card-body text-center">
+                        <button type="submit" class="btn btn-primary btn-lg" id="submit-btn">
+                            <i class="fas fa-paper-plane me-2"></i>Submit Quiz
+                        </button>
+                        <p class="text-muted mt-2 mb-0">
+                            <i class="fas fa-exclamation-triangle me-1"></i>
+                            You cannot change your answers after submission.
+                        </p>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+const quizId = {{ quiz.id }};
+const questions = {{ quiz.questions_json | safe }};
+const timeLimit = {{ quiz.time_limit if quiz.time_limit else 0 }};
+let answers = {};
+let quizTimer = null;
+
+// Load questions on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadQuestions();
+    updateProgress();
+    
+    if (timeLimit > 0) {
+        startQuizTimer(timeLimit);
+    }
+});
+
+function loadQuestions() {
+    const container = document.getElementById('questions-container');
+    document.getElementById('total-count').textContent = questions.length;
+    
+    if (questions.length === 0) {
+        container.innerHTML = `
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                This quiz has no questions yet.
+            </div>
+        `;
+        document.getElementById('submit-btn').disabled = true;
+        return;
+    }
+    
+    questions.forEach((question, index) => {
+        const questionHtml = `
+            <div class="card question-card mb-3">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Question ${index + 1}</h5>
+                </div>
+                <div class="card-body">
+                    <p class="lead mb-3">${escapeHtml(question.question)}</p>
+                    <div class="options">
+                        ${question.options.map((option, optIdx) => `
+                            <div class="mb-2">
+                                <input type="radio" 
+                                       class="option-input" 
+                                       id="q${index}_opt${optIdx}" 
+                                       name="question_${index}" 
+                                       value="${optIdx}"
+                                       onchange="selectAnswer(${index}, ${optIdx})">
+                                <label class="option-label w-100" for="q${index}_opt${optIdx}">
+                                    <strong>${String.fromCharCode(65 + optIdx)}.</strong> ${escapeHtml(option)}
+                                </label>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+        container.insertAdjacentHTML('beforeend', questionHtml);
+    });
+}
+
+function selectAnswer(questionIndex, optionIndex) {
+    answers[questionIndex] = optionIndex;
+    updateProgress();
+}
+
+function updateProgress() {
+    const answeredCount = Object.keys(answers).length;
+    document.getElementById('answered-count').textContent = answeredCount;
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function startQuizTimer(minutes) {
+    let timeLeft = minutes * 60; // Convert to seconds
+    const timerElement = document.getElementById('quiz-timer');
+    
+    quizTimer = setInterval(() => {
+        const mins = Math.floor(timeLeft / 60);
+        const secs = timeLeft % 60;
+        timerElement.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        
+        if (timeLeft <= 0) {
+            clearInterval(quizTimer);
+            alert('Time is up! Your quiz will be automatically submitted.');
+            submitQuiz();
+        }
+        
+        timeLeft--;
+    }, 1000);
+}
+
+document.getElementById('quiz-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Check if all questions are answered
+    const answeredCount = Object.keys(answers).length;
+    const totalQuestions = questions.length;
+    
+    if (answeredCount < totalQuestions) {
+        const unanswered = totalQuestions - answeredCount;
+        if (!confirm(`You have ${unanswered} unanswered question(s). Submit anyway?`)) {
+            return;
+        }
+    } else {
+        if (!confirm('Are you sure you want to submit your quiz? You cannot change your answers after submission.')) {
+            return;
+        }
+    }
+    
+    submitQuiz();
+});
+
+function submitQuiz() {
+    // Disable submit button
+    const submitBtn = document.getElementById('submit-btn');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Submitting...';
+    
+    // Clear timer if running
+    if (quizTimer) {
+        clearInterval(quizTimer);
+    }
+    
+    // Submit to server
+    fetch(`/quiz/${quizId}/submit`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            answers: answers,
+            quiz_id: quizId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const score = data.score !== undefined ? data.score : 'N/A';
+            alert(`Quiz submitted successfully! Your score: ${score}/${{{ quiz.max_score }}}`);
+            window.location.href = '/student/dashboard';
+        } else {
+            alert('Error submitting quiz: ' + data.error);
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Submit Quiz';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error submitting quiz. Please try again.');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Submit Quiz';
+    });
+}
+
+// Warn before leaving page
+window.addEventListener('beforeunload', function(e) {
+    if (Object.keys(answers).length > 0) {
+        const message = 'Are you sure you want to leave? Your quiz progress may be lost.';
+        e.returnValue = message;
+        return message;
+    }
+});
+</script>
+{% endblock %}

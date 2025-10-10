@@ -1046,9 +1046,16 @@ def view_course_quizzes(course_id):
     quizzes = Quiz.query.filter_by(course_id=course_id).order_by(Quiz.created_at.desc()).all()
     return render_template('teacher_course_quizzes.html', course=course, quizzes=quizzes, now=datetime.now())
 
-@app.route('/teacher/course/<int:course_id>/create-quiz', methods=['GET', 'POST'])
+@app.route('/teacher/course/<int:course_id>/create-quiz', methods=['GET'])
 @require_role('teacher')
 def create_quiz(course_id):
+    course = Course.query.filter_by(id=course_id, teacher_id=current_user.id).first_or_404()
+    # Redirect to multiple choice quiz creation (default)
+    return redirect(url_for('create_mcq_quiz', course_id=course_id))
+
+@app.route('/teacher/course/<int:course_id>/create-mcq-quiz', methods=['GET', 'POST'])
+@require_role('teacher')
+def create_mcq_quiz(course_id):
     course = Course.query.filter_by(id=course_id, teacher_id=current_user.id).first_or_404()
     
     if request.method == 'POST':
@@ -1056,6 +1063,37 @@ def create_quiz(course_id):
         quiz.title = request.form.get('title')
         quiz.description = request.form.get('description')
         quiz.course_id = course_id
+        quiz.quiz_type = 'multiple_choice'
+        quiz.questions_json = request.form.get('questions_json', '[]')
+        quiz.max_score = int(request.form.get('max_score', 100))
+        quiz.time_limit = int(request.form.get('time_limit', 30))
+        
+        # Handle due date
+        due_date_str = request.form.get('due_date')
+        if due_date_str:
+            quiz.due_date = datetime.strptime(due_date_str, '%Y-%m-%dT%H:%M')
+        
+        quiz.is_active = request.form.get('is_active') == 'on'
+        
+        db.session.add(quiz)
+        db.session.commit()
+        
+        flash('Multiple choice quiz created successfully!', 'success')
+        return redirect(url_for('view_course_quizzes', course_id=course_id))
+    
+    return render_template('teacher_create_mcq_quiz.html', course=course)
+
+@app.route('/teacher/course/<int:course_id>/create-coding-quiz', methods=['GET', 'POST'])
+@require_role('teacher')
+def create_coding_quiz(course_id):
+    course = Course.query.filter_by(id=course_id, teacher_id=current_user.id).first_or_404()
+    
+    if request.method == 'POST':
+        quiz = Quiz()
+        quiz.title = request.form.get('title')
+        quiz.description = request.form.get('description')
+        quiz.course_id = course_id
+        quiz.quiz_type = 'coding'
         quiz.programming_language = request.form.get('programming_language') or course.programming_language
         quiz.starter_code = request.form.get('starter_code', '')
         quiz.expected_output = request.form.get('expected_output', '')
@@ -1073,7 +1111,7 @@ def create_quiz(course_id):
         db.session.add(quiz)
         db.session.commit()
         
-        flash('Quiz created successfully!', 'success')
+        flash('Coding quiz created successfully!', 'success')
         return redirect(url_for('view_course_quizzes', course_id=course_id))
     
     # Create default template values based on programming language
@@ -1338,7 +1376,11 @@ def take_quiz(quiz_id):
                              quiz=quiz, 
                              submission=existing_submission)
     
-    return render_template('student_take_quiz.html', quiz=quiz)
+    # Render different templates based on quiz type
+    if quiz.quiz_type == 'multiple_choice':
+        return render_template('student_take_mcq_quiz.html', quiz=quiz)
+    else:
+        return render_template('student_take_quiz.html', quiz=quiz)
 
 @app.route('/quiz/<int:quiz_id>/submit', methods=['POST'])
 @require_role('student')
@@ -1364,22 +1406,50 @@ def submit_quiz(quiz_id):
     if existing_submission:
         return jsonify({'success': False, 'error': 'Already submitted'})
     
-    # Get code from request
+    # Get submission data from request
     data = request.get_json()
-    code = data.get('code', '')
     
     # Create submission
     submission = CodeSubmission()
     submission.quiz_id = quiz_id
     submission.student_id = current_user.id
-    submission.code_content = code
     submission.submitted_at = datetime.now()
-    submission.status = 'submitted'
+    
+    # Handle different quiz types
+    if quiz.quiz_type == 'multiple_choice':
+        # Get student answers
+        answers = data.get('answers', {})
+        submission.answers_json = json.dumps(answers)
+        
+        # Auto-grade multiple choice
+        questions = json.loads(quiz.questions_json or '[]')
+        correct_count = 0
+        total_questions = len(questions)
+        
+        for idx, question in enumerate(questions):
+            student_answer = answers.get(str(idx))
+            correct_answer = question.get('correct_answer')
+            if student_answer is not None and student_answer == correct_answer:
+                correct_count += 1
+        
+        # Calculate score
+        if total_questions > 0:
+            submission.score = int((correct_count / total_questions) * quiz.max_score)
+        else:
+            submission.score = 0
+        
+        submission.status = 'graded'
+        submission.graded_at = datetime.now()
+    else:
+        # Handle coding quiz
+        code = data.get('code', '')
+        submission.code_content = code
+        submission.status = 'submitted'
     
     db.session.add(submission)
     db.session.commit()
     
-    return jsonify({'success': True, 'message': 'Code submitted successfully'})
+    return jsonify({'success': True, 'message': 'Quiz submitted successfully', 'score': submission.score})
 
 @app.route('/teacher/quiz/<int:quiz_id>/delete', methods=['POST'])
 @require_role('teacher')
