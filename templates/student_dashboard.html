@@ -267,6 +267,7 @@
                     <!-- Course ID Tab -->
                     <div class="tab-pane fade show active" id="course-id" role="tabpanel">
                         <form method="POST" action="{{ url_for('enroll_course') }}" class="mt-3">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                             <div class="mb-3">
                                 <label for="course_id" class="form-label">Course ID</label>
                                 <input type="text" class="form-control" name="course_id" id="course_id" 
@@ -371,6 +372,7 @@ function loadAvailableCourses() {
                                         ${course.estimated_hours ? `| <i class="fas fa-clock me-1"></i>${course.estimated_hours}h` : ''}
                                     </small>
                                     <form method="POST" action="{{ url_for('enroll_course') }}" class="d-inline">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                         <input type="hidden" name="course_id" value="${course.id}">
                                         <button type="submit" class="btn btn-sm btn-primary">
                                             <i class="fas fa-plus me-1"></i>Enroll
