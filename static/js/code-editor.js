@@ -297,10 +297,15 @@ public class Solution
         }
 
         try {
+            // Get CSRF token from meta tag or form
+            const csrfToken = document.querySelector('input[name="csrf_token"]')?.value || 
+                            document.querySelector('meta[name="csrf-token"]')?.content;
+            
             const response = await fetch(`/quiz/${quizId}/submit`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
                 },
                 body: JSON.stringify({
                     code: code,
