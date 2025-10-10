@@ -910,6 +910,18 @@ def update_exam(exam_id):
     flash('Exam updated successfully!', 'success')
     return redirect(url_for('view_course_exams', course_id=exam.course_id))
 
+@app.route('/teacher/exam/<int:exam_id>/toggle-status', methods=['POST'])
+@require_role('teacher')
+def toggle_exam_status(exam_id):
+    exam = Exam.query.get_or_404(exam_id)
+    course = Course.query.filter_by(id=exam.course_id, teacher_id=current_user.id).first_or_404()
+    
+    # Toggle the active status
+    exam.is_active = not exam.is_active
+    db.session.commit()
+    
+    return '', 204  # Return no content for AJAX request
+
 @app.route('/student/enroll', methods=['POST'])
 @require_role('student')
 def enroll_course():
