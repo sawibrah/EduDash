@@ -861,6 +861,52 @@ def create_exam():
     flash('Exam created successfully!', 'success')
     return redirect(url_for('view_course_exams', course_id=course_id))
 
+@app.route('/teacher/exam/<int:exam_id>/edit-mcq')
+@require_role('teacher')
+def show_edit_exam(exam_id):
+    exam = Exam.query.get_or_404(exam_id)
+    course = Course.query.filter_by(id=exam.course_id, teacher_id=current_user.id).first()
+    
+    if not course:
+        flash('You do not have permission to edit this exam.', 'error')
+        return redirect(url_for('teacher_dashboard'))
+    
+    return render_template('teacher_edit_exam.html', exam=exam, course=course)
+
+@app.route('/teacher/exam/<int:exam_id>/update', methods=['POST'])
+@require_role('teacher')
+def update_exam(exam_id):
+    exam = Exam.query.get_or_404(exam_id)
+    course = Course.query.filter_by(id=exam.course_id, teacher_id=current_user.id).first()
+    
+    if not course:
+        flash('You do not have permission to update this exam.', 'error')
+        return redirect(url_for('teacher_dashboard'))
+    
+    exam.title = request.form.get('title')
+    exam.description = request.form.get('description')
+    exam.questions_json = request.form.get('questions_json')
+    exam.max_score = int(request.form.get('max_score', 100))
+    exam.time_limit = int(request.form.get('time_limit', 60))
+    exam.is_active = request.form.get('is_active') == 'on'
+    
+    due_date_str = request.form.get('due_date')
+    if due_date_str:
+        try:
+            if 'T' in due_date_str:
+                exam.due_date = datetime.strptime(due_date_str, '%Y-%m-%dT%H:%M')
+            else:
+                exam.due_date = datetime.strptime(due_date_str, '%Y-%m-%d')
+        except ValueError:
+            flash('Invalid due date format.', 'error')
+            return redirect(url_for('show_edit_exam', exam_id=exam_id))
+    else:
+        exam.due_date = None
+    
+    db.session.commit()
+    flash('Exam updated successfully!', 'success')
+    return redirect(url_for('view_course_exams', course_id=exam.course_id))
+
 @app.route('/student/enroll', methods=['POST'])
 @require_role('student')
 def enroll_course():
