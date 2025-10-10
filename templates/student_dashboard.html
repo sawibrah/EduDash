@@ -42,8 +42,8 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
-                            <h6 class="card-title mb-0">Pending Assignments</h6>
-                            <h2 class="mb-0">{{ assignments|length }}</h2>
+                            <h6 class="card-title mb-0">Pending Exams</h6>
+                            <h2 class="mb-0">{{ exams|length }}</h2>
                         </div>
                         <div class="align-self-center">
                             <i class="fas fa-tasks fa-2x opacity-75"></i>
@@ -196,27 +196,27 @@
         </div>
     </div>
     
-    <!-- Upcoming Assignments -->
+    <!-- Upcoming Exams -->
     <div class="row">
         <div class="col-12 mb-4">
             <div class="card">
                 <div class="card-header">
                     <h5 class="mb-0">
-                        <i class="fas fa-clock me-2"></i>Upcoming Assignments
+                        <i class="fas fa-clock me-2"></i>Upcoming Exams
                     </h5>
                 </div>
                 <div class="card-body">
-                    {% if assignments %}
+                    {% if exams %}
                         <div class="list-group list-group-flush">
-                            {% for assignment in assignments %}
+                            {% for exam in exams %}
                                 <div class="list-group-item border-0 px-0">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div class="flex-grow-1">
-                                            <h6 class="mb-1">{{ assignment.title }}</h6>
-                                            <p class="mb-1 small text-muted">{{ assignment.course.title }}</p>
-                                            {% if assignment.due_date %}
+                                            <h6 class="mb-1">{{ exam.title }}</h6>
+                                            <p class="mb-1 small text-muted">{{ exam.course.title }}</p>
+                                            {% if exam.due_date %}
                                                 <small class="text-warning">
-                                                    <i class="fas fa-calendar me-1"></i>Due: {{ assignment.due_date.strftime('%b %d, %Y') }}
+                                                    <i class="fas fa-calendar me-1"></i>Due: {{ exam.due_date.strftime('%b %d, %Y') }}
                                                 </small>
                                             {% endif %}
                                         </div>
@@ -228,7 +228,7 @@
                     {% else %}
                         <div class="text-center py-3">
                             <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
-                            <p class="text-muted small mb-0">No pending assignments</p>
+                            <p class="text-muted small mb-0">No pending exams</p>
                         </div>
                     {% endif %}
                 </div>

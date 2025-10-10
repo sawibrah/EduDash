@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ course.title }} - Assignments - EduPortal{% endblock %}
+{% block title %}{{ course.title }} - Exams - EduPortal{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
@@ -8,15 +8,15 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="mb-1">
-                <i class="fas fa-tasks me-2"></i>Assignments for {{ course.title }}
+                <i class="fas fa-tasks me-2"></i>Exams for {{ course.title }}
             </h2>
             <p class="text-muted mb-0">
-                <i class="fas fa-clipboard-list me-1"></i>{{ assignments|length }} assignment{{ 's' if assignments|length != 1 else '' }} created
+                <i class="fas fa-clipboard-list me-1"></i>{{ exams|length }} exam{{ 's' if exams|length != 1 else '' }} created
             </p>
         </div>
         <div class="btn-group">
-            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createAssignmentModal">
-                <i class="fas fa-plus me-1"></i>New Assignment
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createExamModal">
+                <i class="fas fa-plus me-1"></i>New Exam
             </button>
             <a href="{{ url_for('view_course', course_id=course.id) }}" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left me-1"></i>Back to Course
@@ -59,47 +59,47 @@
         </div>
     </div>
 
-    <!-- Assignments List -->
+    <!-- Exams List -->
     <div class="row">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">
-                        <i class="fas fa-list me-2"></i>Course Assignments
+                        <i class="fas fa-list me-2"></i>Course Exams
                     </h5>
-                    {% if assignments %}
-                        <small class="text-muted">{{ assignments|length }} total</small>
+                    {% if exams %}
+                        <small class="text-muted">{{ exams|length }} total</small>
                     {% endif %}
                 </div>
                 <div class="card-body p-0">
-                    {% if assignments %}
+                    {% if exams %}
                         <div class="list-group list-group-flush">
-                            {% for assignment in assignments %}
+                            {% for exam in exams %}
                                 <div class="list-group-item">
                                     <div class="row align-items-center">
                                         <div class="col-md-8">
                                             <div class="d-flex align-items-start">
-                                                <div class="assignment-icon me-3 mt-1">
+                                                <div class="exam-icon me-3 mt-1">
                                                     <i class="fas fa-clipboard-check text-success fa-lg"></i>
                                                 </div>
                                                 <div class="flex-grow-1">
                                                     <h6 class="mb-1">
-                                                        <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#assignmentDetailModal{{ assignment.id }}">
-                                                            {{ assignment.title }}
+                                                        <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#examDetailModal{{ exam.id }}">
+                                                            {{ exam.title }}
                                                         </a>
                                                     </h6>
-                                                    {% if assignment.description %}
-                                                        <p class="text-muted mb-2 small">{{ assignment.description[:100] }}{% if assignment.description|length > 100 %}...{% endif %}</p>
+                                                    {% if exam.description %}
+                                                        <p class="text-muted mb-2 small">{{ exam.description[:100] }}{% if exam.description|length > 100 %}...{% endif %}</p>
                                                     {% endif %}
                                                     <div class="d-flex align-items-center gap-3">
                                                         <small class="text-muted">
                                                             <i class="fas fa-calendar-plus me-1"></i>
-                                                            Created: {{ assignment.created_at.strftime('%b %d, %Y') }}
+                                                            Created: {{ exam.created_at.strftime('%b %d, %Y') }}
                                                         </small>
-                                                        {% if assignment.due_date %}
+                                                        {% if exam.due_date %}
                                                             <small class="text-muted">
                                                                 <i class="fas fa-clock me-1"></i>
-                                                                Due: {{ assignment.due_date.strftime('%b %d, %Y at %I:%M %p') }}
+                                                                Due: {{ exam.due_date.strftime('%b %d, %Y at %I:%M %p') }}
                                                             </small>
                                                         {% endif %}
                                                     </div>
@@ -108,13 +108,13 @@
                                         </div>
                                         <div class="col-md-4 text-end">
                                             <div class="btn-group btn-group-sm">
-                                                <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#assignmentDetailModal{{ assignment.id }}">
+                                                <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#examDetailModal{{ exam.id }}">
                                                     <i class="fas fa-eye me-1"></i>View
                                                 </button>
-                                                <button type="button" class="btn btn-outline-primary" onclick="editAssignment({{ assignment.id }}, '{{ assignment.title|replace("'", "\\'") }}', '{{ (assignment.description or "")|replace("'", "\\'")|replace('\n', '\\n') }}', '{% if assignment.due_date %}{{ assignment.due_date.strftime("%B %d, %Y at %I:%M %p") }}{% endif %}')">
+                                                <button type="button" class="btn btn-outline-primary" onclick="editExam({{ exam.id }}, '{{ exam.title|replace("'", "\\'") }}', '{{ (exam.description or "")|replace("'", "\\'")|replace('\n', '\\n') }}', '{% if exam.due_date %}{{ exam.due_date.strftime("%B %d, %Y at %I:%M %p") }}{% endif %}')">
                                                     <i class="fas fa-edit me-1"></i>Edit
                                                 </button>
-                                                <button type="button" class="btn btn-outline-danger" onclick="deleteAssignment({{ assignment.id }}, '{{ assignment.title }}')">
+                                                <button type="button" class="btn btn-outline-danger" onclick="deleteExam({{ exam.id }}, '{{ exam.title }}')">
                                                     <i class="fas fa-trash me-1"></i>Delete
                                                 </button>
                                             </div>
@@ -122,13 +122,13 @@
                                     </div>
                                 </div>
 
-                                <!-- Assignment Detail Modal -->
-                                <div class="modal fade" id="assignmentDetailModal{{ assignment.id }}" tabindex="-1">
+                                <!-- Exam Detail Modal -->
+                                <div class="modal fade" id="examDetailModal{{ exam.id }}" tabindex="-1">
                                     <div class="modal-dialog modal-lg">
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h5 class="modal-title">
-                                                    <i class="fas fa-clipboard-check me-2"></i>{{ assignment.title }}
+                                                    <i class="fas fa-clipboard-check me-2"></i>{{ exam.title }}
                                                 </h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                             </div>
@@ -136,16 +136,16 @@
                                                 <div class="row mb-3">
                                                     <div class="col-md-6">
                                                         <strong>Created:</strong>
-                                                        <p class="text-muted">{{ assignment.created_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+                                                        <p class="text-muted">{{ exam.created_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <strong>Due Date:</strong>
                                                         <p class="text-muted">
-                                                            {% if assignment.due_date %}
-                                                                {{ assignment.due_date.strftime('%B %d, %Y at %I:%M %p') }}
-                                                                {% if assignment.due_date < now %}
+                                                            {% if exam.due_date %}
+                                                                {{ exam.due_date.strftime('%B %d, %Y at %I:%M %p') }}
+                                                                {% if exam.due_date < now %}
                                                                     <span class="badge bg-danger ms-2">Overdue</span>
-                                                                {% elif assignment.due_date.date() == now.date() %}
+                                                                {% elif exam.due_date.date() == now.date() %}
                                                                     <span class="badge bg-warning ms-2">Due Today</span>
                                                                 {% else %}
                                                                     <span class="badge bg-success ms-2">Upcoming</span>
@@ -158,16 +158,16 @@
                                                 </div>
                                                 
                                                 <div class="mb-3">
-                                                    <strong>Assignment Instructions:</strong>
-                                                    {% if assignment.description %}
+                                                    <strong>Exam Instructions:</strong>
+                                                    {% if exam.description %}
                                                         <div class="border rounded p-3 mt-2 bg-light">
-                                                            <pre class="mb-0" style="white-space: pre-wrap; font-family: inherit;">{{ assignment.description }}</pre>
+                                                            <pre class="mb-0" style="white-space: pre-wrap; font-family: inherit;">{{ exam.description }}</pre>
                                                         </div>
                                                     {% else %}
                                                         <div class="border rounded p-3 mt-2 bg-warning-subtle text-warning-emphasis">
                                                             <i class="fas fa-exclamation-triangle me-2"></i>
-                                                            <strong>No instructions provided.</strong> This assignment needs detailed instructions for students.
-                                                            <br><small>Click "Edit Assignment" to add assignment instructions and requirements.</small>
+                                                            <strong>No instructions provided.</strong> This exam needs detailed instructions for students.
+                                                            <br><small>Click "Edit Exam" to add exam instructions and requirements.</small>
                                                         </div>
                                                     {% endif %}
                                                 </div>
@@ -181,8 +181,8 @@
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                <button type="button" class="btn btn-primary" onclick="editAssignment({{ assignment.id }}, '{{ assignment.title|replace("'", "\\'") }}', '{{ (assignment.description or "")|replace("'", "\\'")|replace('\n', '\\n') }}', '{% if assignment.due_date %}{{ assignment.due_date.strftime("%B %d, %Y at %I:%M %p") }}{% endif %}')">
-                                                    <i class="fas fa-edit me-1"></i>Edit Assignment
+                                                <button type="button" class="btn btn-primary" onclick="editExam({{ exam.id }}, '{{ exam.title|replace("'", "\\'") }}', '{{ (exam.description or "")|replace("'", "\\'")|replace('\n', '\\n') }}', '{% if exam.due_date %}{{ exam.due_date.strftime("%B %d, %Y at %I:%M %p") }}{% endif %}')">
+                                                    <i class="fas fa-edit me-1"></i>Edit Exam
                                                 </button>
                                             </div>
                                         </div>
@@ -193,10 +193,10 @@
                     {% else %}
                         <div class="text-center py-5">
                             <i class="fas fa-clipboard fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">No Assignments Created</h5>
-                            <p class="text-muted mb-4">Create your first assignment to engage your students!</p>
-                            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createAssignmentModal">
-                                <i class="fas fa-plus me-1"></i>Create First Assignment
+                            <h5 class="text-muted">No Exams Created</h5>
+                            <p class="text-muted mb-4">Create your first exam to engage your students!</p>
+                            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createExamModal">
+                                <i class="fas fa-plus me-1"></i>Create First Exam
                             </button>
                         </div>
                     {% endif %}
@@ -206,28 +206,28 @@
     </div>
 </div>
 
-<!-- Create Assignment Modal -->
-<div class="modal fade" id="createAssignmentModal" tabindex="-1">
+<!-- Create Exam Modal -->
+<div class="modal fade" id="createExamModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="fas fa-plus me-2"></i>Create Assignment for {{ course.title }}
+                    <i class="fas fa-plus me-2"></i>Create Exam for {{ course.title }}
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form method="POST" action="{{ url_for('create_assignment') }}">
+            <form method="POST" action="{{ url_for('create_exam') }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <input type="hidden" name="course_id" value="{{ course.id }}">
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="assignment_title" class="form-label">Assignment Title</label>
-                        <input type="text" class="form-control" name="title" id="assignment_title" required>
+                        <label for="exam_title" class="form-label">Exam Title</label>
+                        <input type="text" class="form-control" name="title" id="exam_title" required>
                     </div>
                     <div class="mb-3">
-                        <label for="assignment_description" class="form-label">Assignment Instructions & Description</label>
-                        <textarea class="form-control" name="description" id="assignment_description" rows="6" placeholder="Provide detailed instructions for the assignment, including:&#10;• Objectives and learning goals&#10;• Step-by-step requirements&#10;• Submission guidelines&#10;• Evaluation criteria&#10;• Any resources or references needed"></textarea>
-                        <div class="form-text">This is where students will see the complete assignment details and instructions.</div>
+                        <label for="exam_description" class="form-label">Exam Instructions & Description</label>
+                        <textarea class="form-control" name="description" id="exam_description" rows="6" placeholder="Provide detailed instructions for the exam, including:&#10;• Objectives and learning goals&#10;• Step-by-step requirements&#10;• Submission guidelines&#10;• Evaluation criteria&#10;• Any resources or references needed"></textarea>
+                        <div class="form-text">This is where students will see the complete exam details and instructions.</div>
                     </div>
                     <div class="mb-3">
                         <label for="due_date" class="form-label">Due Date (Optional)</label>
@@ -238,7 +238,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-success">
-                        <i class="fas fa-plus me-1"></i>Create Assignment
+                        <i class="fas fa-plus me-1"></i>Create Exam
                     </button>
                 </div>
             </form>
@@ -246,29 +246,29 @@
     </div>
 </div>
 
-<!-- Edit Assignment Modal -->
-<div class="modal fade" id="editAssignmentModal" tabindex="-1">
+<!-- Edit Exam Modal -->
+<div class="modal fade" id="editExamModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="fas fa-edit me-2"></i>Edit Assignment
+                    <i class="fas fa-edit me-2"></i>Edit Exam
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form method="POST" action="" id="editAssignmentForm">
+            <form method="POST" action="" id="editExamForm">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                <input type="hidden" name="assignment_id" id="edit_assignment_id">
+                <input type="hidden" name="exam_id" id="edit_exam_id">
                 <input type="hidden" name="course_id" value="{{ course.id }}">
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="edit_assignment_title" class="form-label">Assignment Title</label>
-                        <input type="text" class="form-control" name="title" id="edit_assignment_title" required>
+                        <label for="edit_exam_title" class="form-label">Exam Title</label>
+                        <input type="text" class="form-control" name="title" id="edit_exam_title" required>
                     </div>
                     <div class="mb-3">
-                        <label for="edit_assignment_description" class="form-label">Assignment Instructions & Description</label>
-                        <textarea class="form-control" name="description" id="edit_assignment_description" rows="6" placeholder="Provide detailed instructions for the assignment, including:&#10;• Objectives and learning goals&#10;• Step-by-step requirements&#10;• Submission guidelines&#10;• Evaluation criteria&#10;• Any resources or references needed"></textarea>
-                        <div class="form-text">This is where students will see the complete assignment details and instructions.</div>
+                        <label for="edit_exam_description" class="form-label">Exam Instructions & Description</label>
+                        <textarea class="form-control" name="description" id="edit_exam_description" rows="6" placeholder="Provide detailed instructions for the exam, including:&#10;• Objectives and learning goals&#10;• Step-by-step requirements&#10;• Submission guidelines&#10;• Evaluation criteria&#10;• Any resources or references needed"></textarea>
+                        <div class="form-text">This is where students will see the complete exam details and instructions.</div>
                     </div>
                     <div class="mb-3">
                         <label for="edit_due_date" class="form-label">Due Date (Optional)</label>
@@ -288,14 +288,14 @@
 </div>
 
 <script>
-function editAssignment(assignmentId, title, description, dueDate) {
+function editExam(examId, title, description, dueDate) {
     // Set the form action to the correct edit URL
-    document.getElementById('editAssignmentForm').action = '/teacher/assignment/' + assignmentId + '/edit';
+    document.getElementById('editExamForm').action = '/teacher/exam/' + examId + '/edit';
     
-    // Populate the edit modal with current assignment data
-    document.getElementById('edit_assignment_id').value = assignmentId;
-    document.getElementById('edit_assignment_title').value = title;
-    document.getElementById('edit_assignment_description').value = description || '';
+    // Populate the edit modal with current exam data
+    document.getElementById('edit_exam_id').value = examId;
+    document.getElementById('edit_exam_title').value = title;
+    document.getElementById('edit_exam_description').value = description || '';
     
     // Format due date for datetime-local input
     if (dueDate && dueDate !== 'None') {
@@ -314,16 +314,16 @@ function editAssignment(assignmentId, title, description, dueDate) {
     }
     
     // Show the edit modal
-    const editModal = new bootstrap.Modal(document.getElementById('editAssignmentModal'));
+    const editModal = new bootstrap.Modal(document.getElementById('editExamModal'));
     editModal.show();
 }
 
-function deleteAssignment(assignmentId, title) {
-    if (confirm('Are you sure you want to delete the assignment "' + title + '"? This action cannot be undone.')) {
-        // Create a form and submit it to delete the assignment
+function deleteExam(examId, title) {
+    if (confirm('Are you sure you want to delete the exam "' + title + '"? This action cannot be undone.')) {
+        // Create a form and submit it to delete the exam
         const form = document.createElement('form');
         form.method = 'POST';
-        form.action = '/teacher/assignment/' + assignmentId + '/delete';
+        form.action = '/teacher/exam/' + examId + '/delete';
         
         // Add CSRF token if needed
         const csrfInput = document.createElement('input');
