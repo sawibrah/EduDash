@@ -274,6 +274,80 @@ def promote_user(user_id):
     flash(f'User {user.username} promoted from {old_role} to {new_role} successfully!', 'success')
     return redirect(request.referrer or url_for('admin_dashboard'))
 
+@app.route('/admin/user/<int:user_id>/reset-password', methods=['POST'])
+@require_role('admin')
+def admin_reset_password(user_id):
+    user = User.query.get_or_404(user_id)
+    new_password = request.form.get('new_password')
+    
+    if not new_password or len(new_password) < 6:
+        flash('Password must be at least 6 characters long.', 'error')
+        return redirect(request.referrer or url_for('admin_users'))
+    
+    user.set_password(new_password)
+    db.session.commit()
+    
+    flash(f'Password reset successfully for {user.username}. New password: {new_password}', 'success')
+    return redirect(request.referrer or url_for('admin_users'))
+
+@app.route('/admin/user/create', methods=['POST'])
+@require_role('admin')
+def admin_create_user():
+    username = request.form.get('username')
+    email = request.form.get('email')
+    password = request.form.get('password')
+    first_name = request.form.get('first_name')
+    last_name = request.form.get('last_name')
+    role = request.form.get('role', 'student')
+    
+    # Validation
+    if not all([username, email, password, first_name, last_name]):
+        flash('All fields are required.', 'error')
+        return redirect(url_for('admin_users'))
+    
+    if len(password) < 6:
+        flash('Password must be at least 6 characters long.', 'error')
+        return redirect(url_for('admin_users'))
+    
+    # Check if username or email already exists
+    if User.query.filter_by(username=username).first():
+        flash('Username already exists.', 'error')
+        return redirect(url_for('admin_users'))
+    
+    if User.query.filter_by(email=email).first():
+        flash('Email already exists.', 'error')
+        return redirect(url_for('admin_users'))
+    
+    # Create new user
+    new_user = User()
+    new_user.username = username
+    new_user.email = email
+    new_user.first_name = first_name
+    new_user.last_name = last_name
+    new_user.role = role
+    new_user.set_password(password)
+    
+    db.session.add(new_user)
+    db.session.flush()  # Get the user ID
+    
+    # Create appropriate profile
+    if role == 'student':
+        student_profile = StudentProfile()
+        student_profile.user_id = new_user.id
+        student_profile.student_id = f"STU{str(new_user.id).zfill(8)}"
+        student_profile.grade_level = "Not Specified"
+        db.session.add(student_profile)
+    elif role == 'teacher':
+        teacher_profile = TeacherProfile()
+        teacher_profile.user_id = new_user.id
+        teacher_profile.employee_id = f"EMP{str(new_user.id).zfill(8)}"
+        teacher_profile.department = "General"
+        db.session.add(teacher_profile)
+    
+    db.session.commit()
+    flash(f'User {username} created successfully as {role}!', 'success')
+    return redirect(url_for('admin_users'))
+
 @app.route('/admin/course/<int:course_id>/toggle-status', methods=['POST'])
 @require_role('admin')
 def admin_toggle_course_status(course_id):
