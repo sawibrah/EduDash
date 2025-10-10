@@ -28,7 +28,7 @@ EduPortal is a comprehensive Learning Management System (LMS) built with Flask t
   - Progress indicator showing answered/total questions
 
 **Quiz System Features:**
-- **Multiple Choice Quizzes** (default) - Teachers create MCQ quizzes with 5 default template questions
+- **Multiple Choice Quizzes** - Teachers create MCQ quizzes with rich content support
   - Rich content support in questions and options (images, code blocks, text)
   - Syntax highlighting for code snippets (Python, JavaScript, Java, C++, SQL, and more)
   - Image embedding in questions and answer options
@@ -37,14 +37,11 @@ EduPortal is a comprehensive Learning Management System (LMS) built with Flask t
   - Optional explanations for each question
   - "Load Template" feature provides 5 pre-filled sample questions for quick start
   - Backward compatibility with legacy text-only quizzes
-- **Coding Quizzes** (optional) - Programming challenges with Monaco code editor
-  - Language-specific starter code templates
-  - Expected output specification
-  - Manual grading by teachers
 - Timed quizzes with countdown timer and auto-submission
 - Due date support with access control
 - Student progress tracking (answered/total questions)
 - Submission tracking and duplicate prevention
+- Activation system - teachers control quiz visibility with instant toggle badges
 
 **Form-Based Authentication System:**
 - Custom user registration with username, email, and password
@@ -142,7 +139,23 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (October 2025)
 
-### Rich Content Support (Latest)
+### Coding Quiz Removal & Student Exam Access (Latest - Oct 10)
+- **Removed All Coding Quiz Functionality** - System now exclusively supports MCQ quizzes
+  - Deleted Monaco code editor integration and all coding quiz templates
+  - Removed coding quiz creation, editing, and student-taking routes
+  - Updated all references from "Code Quizzes" to "Quizzes" throughout the UI
+  - Simplified quiz system to focus on rich-content MCQ format only
+- **Student Exam Access Enhancement**
+  - Students can now take active exams directly from dashboard with "Take Exam" button
+  - Changed "Upcoming Exams" section to "Exams" for clarity
+  - Added filtering to hide already-submitted exams from student dashboard
+  - Exams only appear to students when activated by teachers
+- **Teacher Dashboard Updates**
+  - Updated quick stats to show "Quizzes" instead of "Code Quizzes"
+  - Updated "Create Quiz" button to create MCQ quizzes only
+  - Removed all code editor references and icons
+
+### Rich Content Support
 - **Exam System Enhancement** - Added rich content support to all exam templates
   - Teachers can now add images and code blocks to exam questions and options
   - Implemented syntax highlighting using Prism.js for 14+ programming languages

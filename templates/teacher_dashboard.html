@@ -58,11 +58,11 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
-                            <h6 class="card-title mb-0">Code Quizzes</h6>
+                            <h6 class="card-title mb-0">Quizzes</h6>
                             <h2 class="mb-0">{{ quizzes|length if quizzes else 0 }}</h2>
                         </div>
                         <div class="align-self-center">
-                            <i class="fas fa-code fa-2x opacity-75"></i>
+                            <i class="fas fa-clipboard-question fa-2x opacity-75"></i>
                         </div>
                     </div>
                 </div>
@@ -88,7 +88,7 @@
                             <i class="fas fa-file-alt me-2"></i>Create Exam
                         </button>
                         <button class="btn btn-info text-white" data-bs-toggle="modal" data-bs-target="#createQuizModal">
-                            <i class="fas fa-code me-2"></i>Create Code Quiz
+                            <i class="fas fa-clipboard-question me-2"></i>Create Quiz
                         </button>
                     </div>
                 </div>
@@ -409,14 +409,14 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="fas fa-code me-2"></i>Create Code Quiz
+                    <i class="fas fa-clipboard-question me-2"></i>Create Quiz
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle me-2"></i>
-                    Select a course to start creating a programming quiz with code editor
+                    Select a course to start creating a multiple-choice quiz
                 </div>
                 
                 {% if courses %}
