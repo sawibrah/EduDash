@@ -1262,238 +1262,6 @@ def create_mcq_quiz(course_id):
     
     return render_template('teacher_create_mcq_quiz.html', course=course)
 
-@app.route('/teacher/course/<int:course_id>/create-coding-quiz', methods=['GET', 'POST'])
-@require_role('teacher')
-def create_coding_quiz(course_id):
-    course = Course.query.filter_by(id=course_id, teacher_id=current_user.id).first_or_404()
-    
-    if request.method == 'POST':
-        quiz = Quiz()
-        quiz.title = request.form.get('title')
-        quiz.description = request.form.get('description')
-        quiz.course_id = course_id
-        quiz.quiz_type = 'coding'
-        quiz.programming_language = request.form.get('programming_language') or course.programming_language
-        quiz.starter_code = request.form.get('starter_code', '')
-        quiz.expected_output = request.form.get('expected_output', '')
-        quiz.instructions = request.form.get('instructions', '')
-        quiz.max_score = int(request.form.get('max_score', 100))
-        quiz.time_limit = int(request.form.get('time_limit', 60))
-        
-        # Handle due date
-        due_date_str = request.form.get('due_date')
-        if due_date_str:
-            quiz.due_date = datetime.strptime(due_date_str, '%Y-%m-%dT%H:%M')
-        
-        quiz.is_active = request.form.get('is_active') == 'on'
-        
-        db.session.add(quiz)
-        db.session.commit()
-        
-        flash('Coding quiz created successfully!', 'success')
-        return redirect(url_for('view_course_quizzes', course_id=course_id))
-    
-    # Create default template values based on programming language
-    lang = course.programming_language or 'Python'
-    lang_lower = lang.lower()
-    
-    if lang == 'Python':
-        default_instructions = """Write a function called 'fibonacci' that takes an integer n as input and returns the nth number in the Fibonacci sequence.
-
-Requirements:
-- Function should handle n >= 0
-- Use efficient algorithm
-- Include proper error handling
-
-Test cases:
-- fibonacci(0) should return 0
-- fibonacci(1) should return 1
-- fibonacci(5) should return 5"""
-        
-        default_starter_code = """# Provide starter code or function template for students
-
-def fibonacci(n):
-    # Your code here
-    pass
-
-# Test your function
-print(fibonacci(5))"""
-        
-        default_expected_output = "5"
-        
-    elif lang == 'JavaScript':
-        default_instructions = """Write a function called 'fibonacci' that takes an integer n as input and returns the nth number in the Fibonacci sequence.
-
-Requirements:
-- Function should handle n >= 0
-- Use efficient algorithm
-- Include proper error handling
-
-Test cases:
-- fibonacci(0) should return 0
-- fibonacci(1) should return 1
-- fibonacci(5) should return 5"""
-        
-        default_starter_code = """// Provide starter code or function template for students
-
-function fibonacci(n) {
-    // Your code here
-}
-
-// Test your function
-console.log(fibonacci(5));"""
-        
-        default_expected_output = "5"
-        
-    elif lang == 'Java':
-        default_instructions = """Write a method called 'fibonacci' that takes an integer n as input and returns the nth number in the Fibonacci sequence.
-
-Requirements:
-- Method should handle n >= 0
-- Use efficient algorithm
-- Include proper error handling
-
-Test cases:
-- fibonacci(0) should return 0
-- fibonacci(1) should return 1
-- fibonacci(5) should return 5"""
-        
-        default_starter_code = """// Provide starter code or method template for students
-
-public class Solution {
-    public static int fibonacci(int n) {
-        // Your code here
-        return 0;
-    }
-    
-    public static void main(String[] args) {
-        System.out.println(fibonacci(5));
-    }
-}"""
-        
-        default_expected_output = "5"
-        
-    elif lang == 'C++':
-        default_instructions = """Write a C++ function called 'fibonacci' that takes an integer n as input and returns the nth number in the Fibonacci sequence.
-
-Requirements:
-- Function should handle n >= 0
-- Use efficient algorithm
-- Include proper error handling
-
-Test cases:
-- fibonacci(0) should return 0
-- fibonacci(1) should return 1
-- fibonacci(5) should return 5"""
-        
-        default_starter_code = """// Provide starter code or function template for students
-#include <iostream>
-using namespace std;
-
-int fibonacci(int n) {
-    // Your code here
-    return 0;
-}
-
-int main() {
-    cout << fibonacci(5) << endl;
-    return 0;
-}"""
-        
-        default_expected_output = "5"
-        
-    elif lang == 'C#':
-        default_instructions = """Write a C# method called 'Fibonacci' that takes an integer n as input and returns the nth number in the Fibonacci sequence.
-
-Requirements:
-- Method should handle n >= 0
-- Use efficient algorithm
-- Include proper error handling
-
-Test cases:
-- Fibonacci(0) should return 0
-- Fibonacci(1) should return 1
-- Fibonacci(5) should return 5"""
-        
-        default_starter_code = """// Provide starter code or method template for students
-using System;
-
-class Program {
-    public static int Fibonacci(int n) {
-        // Your code here
-        return 0;
-    }
-    
-    static void Main() {
-        Console.WriteLine(Fibonacci(5));
-    }
-}"""
-        
-        default_expected_output = "5"
-        
-    else:
-        # Generic template for other languages
-        default_instructions = f"""Write a program in {lang} that solves a specific problem.
-
-Requirements:
-- Follow proper {lang} syntax
-- Include appropriate error handling
-- Test your solution thoroughly
-
-Provide clear implementation and test cases."""
-        
-        default_starter_code = f"""// {lang} code template
-// Write your solution here
-
-// Test your code"""
-        
-        default_expected_output = "Expected output here"
-    
-    # Pass default values to template
-    defaults = {
-        'instructions': default_instructions,
-        'starter_code': default_starter_code,
-        'expected_output': default_expected_output
-    }
-    
-    return render_template('teacher_create_quiz.html', course=course, defaults=defaults)
-
-@app.route('/teacher/quiz/<int:quiz_id>/edit', methods=['GET', 'POST'])
-@require_role('teacher')
-def edit_quiz(quiz_id):
-    quiz = Quiz.query.get_or_404(quiz_id)
-    course = Course.query.filter_by(id=quiz.course_id, teacher_id=current_user.id).first_or_404()
-    
-    # Redirect to appropriate edit page based on quiz type
-    if quiz.quiz_type == 'multiple_choice':
-        return redirect(url_for('edit_mcq_quiz', quiz_id=quiz_id))
-    
-    if request.method == 'POST':
-        quiz.title = request.form.get('title')
-        quiz.description = request.form.get('description')
-        quiz.programming_language = request.form.get('programming_language')
-        quiz.starter_code = request.form.get('starter_code', '')
-        quiz.expected_output = request.form.get('expected_output', '')
-        quiz.instructions = request.form.get('instructions', '')
-        quiz.max_score = int(request.form.get('max_score', 100))
-        quiz.time_limit = int(request.form.get('time_limit', 60))
-        
-        # Handle due date
-        due_date_str = request.form.get('due_date')
-        if due_date_str:
-            quiz.due_date = datetime.strptime(due_date_str, '%Y-%m-%dT%H:%M')
-        else:
-            quiz.due_date = None
-            
-        quiz.is_active = request.form.get('is_active') == 'on'
-        quiz.updated_at = datetime.now()
-        
-        db.session.commit()
-        flash('Quiz updated successfully!', 'success')
-        return redirect(url_for('view_course_quizzes', course_id=quiz.course_id))
-    
-    return render_template('teacher_edit_quiz.html', quiz=quiz, course=course)
-
 @app.route('/teacher/quiz/<int:quiz_id>/edit-mcq', methods=['GET', 'POST'])
 @require_role('teacher')
 def edit_mcq_quiz(quiz_id):
@@ -1649,11 +1417,8 @@ def take_quiz(quiz_id):
                              quiz=quiz, 
                              submission=existing_submission)
     
-    # Render different templates based on quiz type
-    if quiz.quiz_type == 'multiple_choice':
-        return render_template('student_take_mcq_quiz.html', quiz=quiz)
-    else:
-        return render_template('student_take_quiz.html', quiz=quiz)
+    # Render MCQ quiz template
+    return render_template('student_take_mcq_quiz.html', quiz=quiz)
 
 @app.route('/quiz/<int:quiz_id>/submit', methods=['POST'])
 @require_role('student')
@@ -1688,44 +1453,37 @@ def submit_quiz(quiz_id):
     submission.student_id = current_user.id
     submission.submitted_at = datetime.now()
     
-    # Handle different quiz types
-    if quiz.quiz_type == 'multiple_choice':
-        # Get student answers
-        answers = data.get('answers', {})
-        submission.answers_json = json.dumps(answers)
-        submission.code_content = ''  # MCQ doesn't use code
+    # Get student answers
+    answers = data.get('answers', {})
+    submission.answers_json = json.dumps(answers)
+    submission.code_content = ''  # MCQ doesn't use code
+    
+    # Auto-grade multiple choice
+    questions = json.loads(quiz.questions_json or '[]')
+    correct_count = 0
+    total_questions = len(questions)
+    
+    for idx, question in enumerate(questions):
+        student_answer = answers.get(str(idx))
+        correct_answer = question.get('correct_answer')
         
-        # Auto-grade multiple choice
-        questions = json.loads(quiz.questions_json or '[]')
-        correct_count = 0
-        total_questions = len(questions)
-        
-        for idx, question in enumerate(questions):
-            student_answer = answers.get(str(idx))
-            correct_answer = question.get('correct_answer')
-            
-            # Convert correct_answer to index if it's a letter (A=0, B=1, C=2, D=3)
-            if isinstance(correct_answer, str) and len(correct_answer) == 1:
-                correct_answer_idx = ord(correct_answer.upper()) - ord('A')
-            else:
-                correct_answer_idx = correct_answer
-            
-            if student_answer is not None and student_answer == correct_answer_idx:
-                correct_count += 1
-        
-        # Calculate score
-        if total_questions > 0:
-            submission.score = int((correct_count / total_questions) * quiz.max_score)
+        # Convert correct_answer to index if it's a letter (A=0, B=1, C=2, D=3)
+        if isinstance(correct_answer, str) and len(correct_answer) == 1:
+            correct_answer_idx = ord(correct_answer.upper()) - ord('A')
         else:
-            submission.score = 0
+            correct_answer_idx = correct_answer
         
-        submission.status = 'graded'
-        submission.graded_at = datetime.now()
+        if student_answer is not None and student_answer == correct_answer_idx:
+            correct_count += 1
+    
+    # Calculate score
+    if total_questions > 0:
+        submission.score = int((correct_count / total_questions) * quiz.max_score)
     else:
-        # Handle coding quiz
-        code = data.get('code', '')
-        submission.code_content = code
-        submission.status = 'submitted'
+        submission.score = 0
+    
+    submission.status = 'graded'
+    submission.graded_at = datetime.now()
     
     db.session.add(submission)
     db.session.commit()
