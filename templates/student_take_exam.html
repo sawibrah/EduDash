@@ -1,0 +1,471 @@
+{% extends "base.html" %}
+
+{% block title %}{{ exam.title }} - Exam{% endblock %}
+
+{% block head %}
+<!-- Prism.js for syntax highlighting -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-ruby.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+
+<style>
+    .exam-timer {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1050;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 10px 15px;
+        border-radius: 20px;
+        font-weight: bold;
+    }
+    
+    .exam-timer.warning {
+        background: rgba(220, 53, 69, 0.9);
+        animation: pulse 1s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.8; }
+    }
+    
+    .question-card {
+        transition: all 0.3s ease;
+    }
+    
+    .question-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+    }
+    
+    .option-label {
+        cursor: pointer;
+        transition: all 0.2s ease;
+        padding: 12px;
+        border-radius: 8px;
+        border: 2px solid transparent;
+        display: block;
+    }
+    
+    .option-label:hover {
+        background-color: rgba(0, 123, 255, 0.1);
+        border-color: #007bff;
+    }
+    
+    .option-input:checked + .option-label {
+        background-color: rgba(0, 123, 255, 0.2);
+        border-color: #007bff;
+        font-weight: 500;
+    }
+    
+    .option-input {
+        display: none;
+    }
+    
+    .question-content,
+    .option-content {
+        margin-bottom: 1rem;
+    }
+    
+    .question-image,
+    .option-image {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin: 10px 0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .question-code,
+    .option-code {
+        margin: 10px 0;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .question-code pre,
+    .option-code pre {
+        margin: 0;
+        padding: 1rem;
+        background-color: #2d2d2d;
+        border-radius: 8px;
+    }
+    
+    .question-code code,
+    .option-code code {
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+    
+    .code-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: #6c757d;
+        margin-bottom: 0.25rem;
+        font-weight: 600;
+    }
+    
+    .progress-indicator {
+        position: sticky;
+        top: 20px;
+        z-index: 100;
+    }
+    
+    .option-container {
+        margin-bottom: 0.75rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Exam Timer -->
+{% if exam.time_limit %}
+<div class="exam-timer" id="exam-timer-display">
+    <i class="fas fa-clock me-1"></i>
+    Time Left: <span id="exam-timer">{{ exam.time_limit }}:00</span>
+</div>
+{% endif %}
+
+<div class="container mt-4">
+    <div class="row">
+        <!-- Exam Header -->
+        <div class="col-12">
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-file-alt me-2"></i>{{ exam.title }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            {% if exam.description %}
+                                <p class="mb-2">{{ exam.description }}</p>
+                            {% endif %}
+                            <p class="text-muted mb-0">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Answer all questions carefully and click "Submit Exam" when you're done.
+                            </p>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <div class="mb-2">
+                                <strong>Max Score:</strong> 
+                                <span class="badge bg-success">{{ exam.max_score }} points</span>
+                            </div>
+                            {% if exam.due_date %}
+                                <div class="mb-2">
+                                    <strong>Due:</strong> 
+                                    <small class="text-muted">{{ exam.due_date.strftime('%Y-%m-%d %H:%M') }}</small>
+                                </div>
+                            {% endif %}
+                            <div id="progress-text" class="text-primary">
+                                <strong>Progress: <span id="answered-count">0</span>/<span id="total-count">0</span></strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Questions -->
+        <div class="col-12">
+            <form id="exam-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div id="questions-container">
+                    <!-- Questions will be loaded here by JavaScript -->
+                </div>
+
+                <!-- Submit Button -->
+                <div class="card mt-3">
+                    <div class="card-body text-center">
+                        <button type="submit" class="btn btn-primary btn-lg" id="submit-btn">
+                            <i class="fas fa-paper-plane me-2"></i>Submit Exam
+                        </button>
+                        <p class="text-muted mt-2 mb-0">
+                            <i class="fas fa-exclamation-triangle me-1"></i>
+                            You cannot change your answers after submission.
+                        </p>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+const examId = {{ exam.id }};
+const questions = {{ exam.questions_json | safe }};
+const timeLimit = {{ exam.time_limit if exam.time_limit else 0 }};
+const csrfToken = "{{ csrf_token() }}";
+let answers = {};
+let examTimer = null;
+
+// Load questions on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadQuestions();
+    updateProgress();
+    
+    if (timeLimit > 0) {
+        startExamTimer(timeLimit);
+    }
+});
+
+function loadQuestions() {
+    const container = document.getElementById('questions-container');
+    document.getElementById('total-count').textContent = questions.length;
+    
+    if (questions.length === 0) {
+        container.innerHTML = `
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                This exam has no questions yet.
+            </div>
+        `;
+        document.getElementById('submit-btn').disabled = true;
+        return;
+    }
+    
+    questions.forEach((question, index) => {
+        const questionHtml = createQuestionHtml(question, index);
+        container.insertAdjacentHTML('beforeend', questionHtml);
+    });
+    
+    // Highlight all code blocks after rendering
+    if (typeof Prism !== 'undefined') {
+        Prism.highlightAll();
+    }
+}
+
+function createQuestionHtml(question, index) {
+    let questionContentHtml = '';
+    
+    // Question text
+    if (question.question) {
+        questionContentHtml += `<p class="lead mb-3">${escapeHtml(question.question)}</p>`;
+    }
+    
+    // Question image
+    if (question.question_image) {
+        questionContentHtml += `
+            <div class="question-image-container">
+                <img src="${escapeHtml(question.question_image)}" alt="Question image" class="question-image">
+            </div>
+        `;
+    }
+    
+    // Question code
+    if (question.question_code) {
+        const language = question.question_code_language || 'plaintext';
+        questionContentHtml += `
+            <div class="question-code">
+                <div class="code-label">${escapeHtml(language)}</div>
+                <pre><code class="language-${escapeHtml(language)}">${escapeHtml(question.question_code)}</code></pre>
+            </div>
+        `;
+    }
+    
+    // Options
+    let optionsHtml = '';
+    if (question.options && Array.isArray(question.options)) {
+        optionsHtml = question.options.map((option, optIdx) => {
+            return createOptionHtml(option, index, optIdx);
+        }).join('');
+    }
+    
+    return `
+        <div class="card question-card mb-3">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Question ${index + 1}</h5>
+            </div>
+            <div class="card-body">
+                <div class="question-content">
+                    ${questionContentHtml}
+                </div>
+                <div class="options">
+                    ${optionsHtml}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function createOptionHtml(option, questionIndex, optionIndex) {
+    let optionContentHtml = '';
+    
+    // Option text
+    if (option.text) {
+        optionContentHtml += `<div class="option-text">${escapeHtml(option.text)}</div>`;
+    }
+    
+    // Option image
+    if (option.image) {
+        optionContentHtml += `
+            <div class="option-image-container mt-2">
+                <img src="${escapeHtml(option.image)}" alt="Option image" class="option-image">
+            </div>
+        `;
+    }
+    
+    // Option code
+    if (option.code) {
+        const language = option.code_language || 'plaintext';
+        optionContentHtml += `
+            <div class="option-code mt-2">
+                <div class="code-label">${escapeHtml(language)}</div>
+                <pre><code class="language-${escapeHtml(language)}">${escapeHtml(option.code)}</code></pre>
+            </div>
+        `;
+    }
+    
+    const optionLetter = String.fromCharCode(65 + optionIndex);
+    
+    return `
+        <div class="option-container">
+            <input type="radio" 
+                   class="option-input" 
+                   id="q${questionIndex}_opt${optionIndex}" 
+                   name="question_${questionIndex}" 
+                   value="${optionIndex}"
+                   onchange="selectAnswer(${questionIndex}, ${optionIndex})">
+            <label class="option-label" for="q${questionIndex}_opt${optionIndex}">
+                <div class="d-flex align-items-start">
+                    <strong class="me-2">${optionLetter}.</strong>
+                    <div class="flex-grow-1 option-content">
+                        ${optionContentHtml}
+                    </div>
+                </div>
+            </label>
+        </div>
+    `;
+}
+
+function selectAnswer(questionIndex, optionIndex) {
+    answers[questionIndex] = optionIndex;
+    updateProgress();
+}
+
+function updateProgress() {
+    const answeredCount = Object.keys(answers).length;
+    document.getElementById('answered-count').textContent = answeredCount;
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function startExamTimer(minutes) {
+    let timeLeft = minutes * 60; // Convert to seconds
+    const timerElement = document.getElementById('exam-timer');
+    const timerDisplay = document.getElementById('exam-timer-display');
+    
+    examTimer = setInterval(() => {
+        const mins = Math.floor(timeLeft / 60);
+        const secs = timeLeft % 60;
+        timerElement.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        
+        // Add warning style when less than 5 minutes
+        if (timeLeft <= 300 && !timerDisplay.classList.contains('warning')) {
+            timerDisplay.classList.add('warning');
+        }
+        
+        if (timeLeft <= 0) {
+            clearInterval(examTimer);
+            alert('Time is up! Your exam will be automatically submitted.');
+            submitExam();
+        }
+        
+        timeLeft--;
+    }, 1000);
+}
+
+document.getElementById('exam-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Check if all questions are answered
+    const answeredCount = Object.keys(answers).length;
+    const totalQuestions = questions.length;
+    
+    if (answeredCount < totalQuestions) {
+        const unanswered = totalQuestions - answeredCount;
+        if (!confirm(`You have ${unanswered} unanswered question(s). Submit anyway?`)) {
+            return;
+        }
+    } else {
+        if (!confirm('Are you sure you want to submit your exam? You cannot change your answers after submission.')) {
+            return;
+        }
+    }
+    
+    submitExam();
+});
+
+function submitExam() {
+    // Disable submit button
+    const submitBtn = document.getElementById('submit-btn');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Submitting...';
+    
+    // Clear timer if running
+    if (examTimer) {
+        clearInterval(examTimer);
+    }
+    
+    // Submit to server
+    fetch(`/student/exam/${examId}/submit`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify({
+            answers: answers,
+            exam_id: examId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const score = data.score !== undefined ? data.score : 'N/A';
+            alert(`Exam submitted successfully! Your score: ${score}/{{ exam.max_score }}`);
+            window.location.href = '/student/dashboard';
+        } else {
+            alert('Error submitting exam: ' + (data.message || 'Unknown error'));
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Submit Exam';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error submitting exam. Please try again.');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Submit Exam';
+    });
+}
+
+// Warn before leaving page
+window.addEventListener('beforeunload', function(e) {
+    if (Object.keys(answers).length > 0) {
+        const message = 'Are you sure you want to leave? Your exam progress may be lost.';
+        e.returnValue = message;
+        return message;
+    }
+});
+</script>
+{% endblock %}

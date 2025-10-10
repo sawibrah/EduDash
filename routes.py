@@ -941,6 +941,106 @@ def enroll_course():
     flash(f'Successfully enrolled in {course.title}!', 'success')
     return redirect(url_for('student_dashboard'))
 
+@app.route('/student/exam/<int:exam_id>/take')
+@require_role('student')
+def student_take_exam(exam_id):
+    exam = Exam.query.get_or_404(exam_id)
+    
+    # Check if student is enrolled in the course
+    enrollment = Enrollment.query.filter_by(
+        student_id=current_user.id,
+        course_id=exam.course_id
+    ).first()
+    
+    if not enrollment:
+        flash('You must be enrolled in this course to take the exam.', 'error')
+        return redirect(url_for('student_dashboard'))
+    
+    # Check if exam is active
+    if not exam.is_active:
+        flash('This exam is not currently active.', 'warning')
+        return redirect(url_for('student_dashboard'))
+    
+    # Check if already submitted
+    existing_submission = ExamSubmission.query.filter_by(
+        exam_id=exam_id,
+        student_id=current_user.id
+    ).first()
+    
+    if existing_submission:
+        flash('You have already submitted this exam.', 'info')
+        return redirect(url_for('student_dashboard'))
+    
+    course = Course.query.get(exam.course_id)
+    return render_template('student_take_exam.html', exam=exam, course=course)
+
+@app.route('/student/exam/<int:exam_id>/submit', methods=['POST'])
+@require_role('student')
+def student_submit_exam(exam_id):
+    exam = Exam.query.get_or_404(exam_id)
+    
+    # Check if student is enrolled
+    enrollment = Enrollment.query.filter_by(
+        student_id=current_user.id,
+        course_id=exam.course_id
+    ).first()
+    
+    if not enrollment:
+        return jsonify({'success': False, 'message': 'Not enrolled in this course'}), 403
+    
+    # Check if already submitted
+    existing_submission = ExamSubmission.query.filter_by(
+        exam_id=exam_id,
+        student_id=current_user.id
+    ).first()
+    
+    if existing_submission:
+        return jsonify({'success': False, 'message': 'Already submitted'}), 400
+    
+    # Get answers from request
+    data = request.get_json() if request.is_json else None
+    if not data:
+        return jsonify({'success': False, 'message': 'No data provided'}), 400
+    
+    answers = data.get('answers', {})
+    
+    # Parse questions and calculate score
+    import json
+    questions = json.loads(exam.questions_json) if exam.questions_json else []
+    
+    score = 0
+    total_questions = len(questions)
+    
+    for idx, question in enumerate(questions):
+        student_answer = answers.get(str(idx))
+        correct_answer = question.get('correct_answer', 0)
+        
+        if student_answer is not None and int(student_answer) == int(correct_answer):
+            score += 1
+    
+    # Calculate percentage score
+    percentage_score = int((score / total_questions * exam.max_score)) if total_questions > 0 else 0
+    
+    # Create submission
+    submission = ExamSubmission()
+    submission.exam_id = exam_id
+    submission.student_id = current_user.id
+    submission.answers_json = json.dumps(answers)
+    submission.score = percentage_score
+    submission.status = 'graded'
+    submission.submitted_at = datetime.now()
+    submission.graded_at = datetime.now()
+    
+    db.session.add(submission)
+    db.session.commit()
+    
+    return jsonify({
+        'success': True,
+        'score': percentage_score,
+        'total': exam.max_score,
+        'message': f'Exam submitted successfully! You scored {percentage_score}/{exam.max_score}'
+    })
+
 @app.route('/teacher/course/<int:course_id>/remove-student/<string:student_id>', methods=['POST'])
 @require_role('teacher')
 def remove_student(course_id, student_id):
