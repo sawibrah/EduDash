@@ -34,8 +34,8 @@ localPort = 5000
 externalPort = 80
 
 [[ports]]
-localPort = 37691
-externalPort = 3000
+localPort = 34921
+externalPort = 3001
 
 [agent]
 integrations = ["flask_authentication:1.0.0", "python_log_in_with_replit:1.0.0"]

@@ -1518,7 +1518,14 @@ def submit_quiz(quiz_id):
         for idx, question in enumerate(questions):
             student_answer = answers.get(str(idx))
             correct_answer = question.get('correct_answer')
-            if student_answer is not None and student_answer == correct_answer:
+            
+            # Convert correct_answer to index if it's a letter (A=0, B=1, C=2, D=3)
+            if isinstance(correct_answer, str) and len(correct_answer) == 1:
+                correct_answer_idx = ord(correct_answer.upper()) - ord('A')
+            else:
+                correct_answer_idx = correct_answer
+            
+            if student_answer is not None and student_answer == correct_answer_idx:
                 correct_count += 1
         
         # Calculate score
