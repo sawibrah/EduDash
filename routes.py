@@ -1416,6 +1416,20 @@ def reset_quiz_submissions(quiz_id):
     flash(f'Reset complete! {deleted_count} submission(s) cleared. Students can now retake this quiz.', 'success')
     return redirect(url_for('view_quiz_submissions', quiz_id=quiz.id))
 
+@app.route('/teacher/quiz/<int:quiz_id>/toggle-status', methods=['POST'])
+@require_role('teacher')
+def toggle_quiz_status(quiz_id):
+    quiz = Quiz.query.get_or_404(quiz_id)
+    course = Course.query.filter_by(id=quiz.course_id, teacher_id=current_user.id).first_or_404()
+    
+    # Toggle the active status
+    quiz.is_active = not quiz.is_active
+    db.session.commit()
+    
+    status_text = 'activated' if quiz.is_active else 'deactivated'
+    flash(f'Quiz "{quiz.title}" has been {status_text}.', 'success')
+    return redirect(url_for('view_course_quizzes', course_id=course.id))
+
 # Student Quiz Routes
 @app.route('/quiz/<int:quiz_id>')
 @require_role('student')
