@@ -128,6 +128,10 @@ def student_dashboard():
         Exam.is_active == True
     ).all() if course_ids else []
     
+    # Filter out exams already submitted
+    submitted_exam_ids = [s.exam_id for s in ExamSubmission.query.filter_by(student_id=current_user.id).all()]
+    exams = [e for e in exams if e.id not in submitted_exam_ids]
+    
     # Sort exams by due date
     exams.sort(key=lambda x: x.due_date if x.due_date else datetime.max)
     
