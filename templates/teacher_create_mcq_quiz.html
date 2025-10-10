@@ -22,7 +22,7 @@
                 </div>
                 <div class="card-body">
                     <form method="POST" id="quiz-form">
-                        {{ csrf_token() }}
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                         <input type="hidden" name="quiz_type" value="multiple_choice">
                         <input type="hidden" name="questions_json" id="questions_json">
                         
