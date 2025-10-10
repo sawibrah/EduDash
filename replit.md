@@ -15,12 +15,28 @@ EduPortal is a comprehensive Learning Management System (LMS) built with Flask t
 - Student enrollment system with course ID sharing and browsing options
 - Teacher classroom management with student enrollment tracking and removal capabilities
 
+**Exam System Features:**
+- **MCQ Format Exams** - Teachers create comprehensive exams with multiple-choice questions
+  - Rich content support in questions and options (images, code blocks, text)
+  - Syntax highlighting for code snippets (Python, JavaScript, Java, C++, SQL, and more)
+  - Image embedding in questions and answer options
+  - Automatic grading with instant score calculation
+  - Optional explanations for correct answers
+  - Timed exams with countdown timer and auto-submission
+  - Due date enforcement with access control
+  - Submission tracking and duplicate prevention
+  - Progress indicator showing answered/total questions
+
 **Quiz System Features:**
 - **Multiple Choice Quizzes** (default) - Teachers create MCQ quizzes with 5 default template questions
+  - Rich content support in questions and options (images, code blocks, text)
+  - Syntax highlighting for code snippets (Python, JavaScript, Java, C++, SQL, and more)
+  - Image embedding in questions and answer options
   - Question template builder with 4 options per question (A-D)
   - Automatic grading upon submission with instant score calculation
   - Optional explanations for each question
   - "Load Template" feature provides 5 pre-filled sample questions for quick start
+  - Backward compatibility with legacy text-only quizzes
 - **Coding Quizzes** (optional) - Programming challenges with Monaco code editor
   - Language-specific starter code templates
   - Expected output specification
@@ -126,6 +142,20 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (October 2025)
 
+### Rich Content Support (Latest)
+- **Exam System Enhancement** - Added rich content support to all exam templates
+  - Teachers can now add images and code blocks to exam questions and options
+  - Implemented syntax highlighting using Prism.js for 14+ programming languages
+  - Created new exam creation, editing, and student-taking templates with rich content UI
+  - Toggle buttons for adding/removing images and code snippets in questions and options
+  - Automatic grading system compatible with rich content format
+- **Quiz System Enhancement** - Extended rich content support to MCQ quizzes
+  - Quiz creation and editing templates now support images and code blocks
+  - Student quiz-taking interface displays rich content with syntax highlighting
+  - Backward compatibility maintained for legacy text-only quizzes
+  - Updated "Load Template" feature with sample questions showing rich content usage
+  - Enhanced question builder with toggle controls for images and code snippets
+
 ### Security Enhancements
 - Removed arbitrary role switching functionality to prevent privilege escalation
 - Added global CSRF protection for all POST requests
@@ -143,7 +173,11 @@ Preferred communication style: Simple, everyday language.
 - Fixed template profile access (removed array indexing)
 - Fixed CodeSubmission model field reference (code -> code_content)
 - Fixed course_id variable scoping in quiz deletion
+- Aligned error response format (data.message vs data.error) across exam/quiz templates
+- Fixed JSON parsing for stored questions_json in edit templates
+- Added missing course_id hidden fields in exam creation forms
 
 ### UX Improvements
 - Restored smooth animations and transitions in base template
 - Improved responsive design for better user experience
+- Enhanced exam and quiz interfaces with intuitive rich content controls
