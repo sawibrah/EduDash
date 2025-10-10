@@ -6,6 +6,7 @@ from auth import require_login, require_role
 from forms import RegistrationForm, LoginForm, ProfileForm
 from models import User, StudentProfile, TeacherProfile, Course, Enrollment, Assignment, Quiz, CodeSubmission
 from datetime import datetime
+import json
 import markdown
 import bleach
 import weasyprint
