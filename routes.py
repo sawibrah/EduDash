@@ -236,8 +236,11 @@ def admin_dashboard():
 @app.route('/admin/users')
 @require_role('admin')
 def admin_users():
-    # Get all users with pagination-ready query
-    users = User.query.order_by(User.created_at.desc()).all()
+    # Get all users with eager loading of profiles to show dual-role admins
+    users = User.query.options(
+        joinedload(User.teacher_profile),
+        joinedload(User.student_profile)
+    ).order_by(User.created_at.desc()).all()
     return render_template('admin_users.html', users=users)
 
 @app.route('/admin/courses')
@@ -346,6 +349,36 @@ def admin_create_user():
     
     db.session.commit()
     flash(f'User {username} created successfully as {role}!', 'success')
+    return redirect(url_for('admin_users'))
+
+@app.route('/admin/user/<int:user_id>/toggle-teacher-capability', methods=['POST'])
+@require_role('admin')
+def admin_toggle_teacher_capability(user_id):
+    user = User.query.get_or_404(user_id)
+    
+    # Only allow toggling teacher capability for admin users
+    if user.role != 'admin':
+        flash('Can only toggle teacher capability for admin users.', 'error')
+        return redirect(url_for('admin_users'))
+    
+    # Check if user already has TeacherProfile
+    teacher_profile = TeacherProfile.query.filter_by(user_id=user.id).first()
+    
+    if teacher_profile:
+        # Remove teacher capability
+        db.session.delete(teacher_profile)
+        db.session.commit()
+        flash(f'Teacher access removed from {user.username}.', 'success')
+    else:
+        # Grant teacher capability
+        teacher_profile = TeacherProfile()
+        teacher_profile.user_id = user.id
+        teacher_profile.employee_id = f"EMP{str(user.id).zfill(8)}"
+        teacher_profile.department = "Administration"
+        db.session.add(teacher_profile)
+        db.session.commit()
+        flash(f'Teacher access granted to {user.username}. They can now create and manage courses.', 'success')
+    
     return redirect(url_for('admin_users'))
 
 @app.route('/admin/course/<int:course_id>/toggle-status', methods=['POST'])

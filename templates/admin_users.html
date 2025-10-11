@@ -61,6 +61,11 @@
                             <td>
                                 {% if user.role == 'admin' %}
                                     <span class="badge bg-danger">Admin</span>
+                                    {% if user.teacher_profile %}
+                                        <span class="badge bg-success ms-1" title="Has teacher access">
+                                            <i class="fas fa-chalkboard-teacher"></i> Teacher
+                                        </span>
+                                    {% endif %}
                                 {% elif user.role == 'teacher' %}
                                     <span class="badge bg-success">Teacher</span>
                                 {% else %}
@@ -110,6 +115,28 @@
                                                 </button>
                                             </form>
                                         </li>
+                                        {% endif %}
+                                        {% if user.role == 'admin' %}
+                                        <li><hr class="dropdown-divider"></li>
+                                        {% if user.teacher_profile %}
+                                        <li>
+                                            <form method="POST" action="{{ url_for('admin_toggle_teacher_capability', user_id=user.id) }}" style="display: inline;">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                                <button type="submit" class="dropdown-item text-warning">
+                                                    <i class="fas fa-times-circle me-2"></i>Remove Teacher Access
+                                                </button>
+                                            </form>
+                                        </li>
+                                        {% else %}
+                                        <li>
+                                            <form method="POST" action="{{ url_for('admin_toggle_teacher_capability', user_id=user.id) }}" style="display: inline;">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                                <button type="submit" class="dropdown-item text-success">
+                                                    <i class="fas fa-plus-circle me-2"></i>Grant Teacher Access
+                                                </button>
+                                            </form>
+                                        </li>
+                                        {% endif %}
                                         {% endif %}
                                     </ul>
                                 </div>

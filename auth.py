@@ -29,14 +29,20 @@ def require_role(role):
                 flash('Please log in to access this page.', 'warning')
                 return redirect(url_for('login'))
             
-            # Admin can access all routes
-            if current_user.role == 'admin':
+            # Check if user has the required role
+            if current_user.role == role:
                 return f(*args, **kwargs)
             
-            if current_user.role != role:
-                flash(f'Access denied. This page requires {role} privileges.', 'error')
+            # Special case: Allow dual-role admins (admin + TeacherProfile) to access teacher routes
+            if role == 'teacher' and current_user.role == 'admin' and current_user.teacher_profile:
+                return f(*args, **kwargs)
+            
+            # Admin-only routes are restricted to admins
+            if role == 'admin' and current_user.role != 'admin':
+                flash(f'Access denied. This page requires admin privileges.', 'error')
                 return redirect(url_for('index'))
             
-            return f(*args, **kwargs)
+            flash(f'Access denied. This page requires {role} privileges.', 'error')
+            return redirect(url_for('index'))
         return decorated_function
     return decorator
