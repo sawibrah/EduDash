@@ -15,6 +15,7 @@ class User(UserMixin, db.Model):
     last_name = db.Column(db.String(50), nullable=False)
     role = db.Column(db.String(20), nullable=False)  # 'student' or 'teacher'
     active = db.Column(db.Boolean, default=True)
+    password_change_required = db.Column(db.Boolean, default=False)  # Force password change on next login
     created_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
     
