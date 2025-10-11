@@ -1005,15 +1005,20 @@ def student_download_course_pdf(course_id):
         return redirect(url_for('student_dashboard'))
 
 @app.route('/course/<int:course_id>/slides')
-@require_role('student')
+@require_login
 def view_course_slides(course_id):
-    # Only students can view slides - check enrollment
-    enrollment = Enrollment.query.filter_by(course_id=course_id, student_id=current_user.id).first()
-    if not enrollment:
-        flash('You are not enrolled in this course.', 'error')
-        return redirect(url_for('student_dashboard'))
+    # Check if user has access to view slides
+    if current_user.role == 'teacher':
+        # Teachers can view their own course slides
+        course = Course.query.filter_by(id=course_id, teacher_id=current_user.id).first_or_404()
+    else:
+        # Students must be enrolled to view slides
+        enrollment = Enrollment.query.filter_by(course_id=course_id, student_id=current_user.id).first()
+        if not enrollment:
+            flash('You are not enrolled in this course.', 'error')
+            return redirect(url_for('student_dashboard'))
+        course = Course.query.get_or_404(course_id)
     
-    course = Course.query.get_or_404(course_id)
     return render_template('course_slides.html', course=course)
 
 @app.route('/course/<int:course_id>/slides/data')

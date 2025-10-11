@@ -5,6 +5,7 @@ EduPortal is a comprehensive Flask-based Learning Management System (LMS) design
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
+Teachers must retain slide view access to preview and adjust content for students.
 
 ## System Architecture
 
