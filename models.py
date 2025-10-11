@@ -31,10 +31,10 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
 
     def is_student(self):
-        return self.role == 'student'
+        return self.role == 'student' or (self.role == 'admin' and hasattr(self, 'student_profile') and self.student_profile is not None)
     
     def is_teacher(self):
-        return self.role == 'teacher'
+        return self.role == 'teacher' or (self.role == 'admin' and hasattr(self, 'teacher_profile') and self.teacher_profile is not None)
 
 # (IMPORTANT) This table is mandatory for Replit Auth, don't drop it.
 # Keep OAuth table but update for integer foreign keys (legacy support)
