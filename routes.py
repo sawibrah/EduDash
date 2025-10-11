@@ -808,19 +808,22 @@ def delete_course(course_id):
 @require_login
 def download_course_slides(course_id):
     # Check access permissions
-    if current_user.role == 'teacher':
+    if current_user.is_teacher():
         course = Course.query.filter_by(id=course_id, teacher_id=current_user.id).first_or_404()
-    else:
+    elif current_user.is_student():
         # Student access - check enrollment
         enrollment = Enrollment.query.filter_by(course_id=course_id, student_id=current_user.id).first()
         if not enrollment:
             flash('You are not enrolled in this course.', 'error')
             return redirect(url_for('student_dashboard'))
         course = Course.query.get_or_404(course_id)
+    else:
+        flash('Access denied.', 'error')
+        return redirect(url_for('index'))
     
     if not course.uploaded_file_path or not os.path.exists(course.uploaded_file_path):
         flash('No slide file available for this course.', 'error')
-        if current_user.role == 'teacher':
+        if current_user.is_teacher():
             return redirect(url_for('view_course', course_id=course.id))
         else:
             return redirect(url_for('student_dashboard'))
@@ -831,19 +834,22 @@ def download_course_slides(course_id):
 @require_login
 def view_course_file(course_id):
     # Check access permissions
-    if current_user.role == 'teacher':
+    if current_user.is_teacher():
         course = Course.query.filter_by(id=course_id, teacher_id=current_user.id).first_or_404()
-    else:
+    elif current_user.is_student():
         # Student access - check enrollment
         enrollment = Enrollment.query.filter_by(course_id=course_id, student_id=current_user.id).first()
         if not enrollment:
             flash('You are not enrolled in this course.', 'error')
             return redirect(url_for('student_dashboard'))
         course = Course.query.get_or_404(course_id)
+    else:
+        flash('Access denied.', 'error')
+        return redirect(url_for('index'))
     
     if not course.uploaded_file_path or not os.path.exists(course.uploaded_file_path):
         flash('No slide file available for this course.', 'error')
-        if current_user.role == 'teacher':
+        if current_user.is_teacher():
             return redirect(url_for('view_course', course_id=course.id))
         else:
             return redirect(url_for('student_dashboard'))
@@ -1008,16 +1014,19 @@ def student_download_course_pdf(course_id):
 @require_login
 def view_course_slides(course_id):
     # Check if user has access to view slides
-    if current_user.role == 'teacher':
-        # Teachers can view their own course slides
+    if current_user.is_teacher():
+        # Teachers (including admin-teachers) can view their own course slides
         course = Course.query.filter_by(id=course_id, teacher_id=current_user.id).first_or_404()
-    else:
+    elif current_user.is_student():
         # Students must be enrolled to view slides
         enrollment = Enrollment.query.filter_by(course_id=course_id, student_id=current_user.id).first()
         if not enrollment:
             flash('You are not enrolled in this course.', 'error')
             return redirect(url_for('student_dashboard'))
         course = Course.query.get_or_404(course_id)
+    else:
+        flash('Access denied.', 'error')
+        return redirect(url_for('index'))
     
     return render_template('course_slides.html', course=course)
 
