@@ -28,6 +28,18 @@ def allowed_file(filename):
 def make_session_permanent():
     session.permanent = True
 
+# Check for password change requirement
+@app.before_request
+def check_password_change_required():
+    # Skip check for certain routes
+    exempt_routes = ['change_password', 'logout', 'static']
+    
+    if current_user.is_authenticated and current_user.password_change_required:
+        # Allow access to change password page and logout
+        if request.endpoint not in exempt_routes:
+            flash('You must change your password before continuing.', 'warning')
+            return redirect(url_for('change_password'))
+
 # Authentication Routes
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -75,6 +87,12 @@ def login():
         user = User.query.filter_by(username=form.username.data).first()
         if user and user.check_password(form.password.data):
             login_user(user)
+            
+            # Check if password change is required
+            if user.password_change_required:
+                flash('You must change your password before continuing.', 'warning')
+                return redirect(url_for('change_password'))
+            
             next_page = request.args.get('next')
             flash(f'Welcome back, {user.first_name}!', 'success')
             
@@ -98,6 +116,35 @@ def logout():
     logout_user()
     flash(f'You have been logged out, {user_name}. See you next time!', 'info')
     return redirect(url_for('index'))
+
+@app.route('/change-password', methods=['GET', 'POST'])
+@require_login
+def change_password():
+    from forms import ChangePasswordForm
+    
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        # Verify current password
+        if not current_user.check_password(form.current_password.data):
+            flash('Current password is incorrect.', 'error')
+            return render_template('change_password.html', form=form, required=current_user.password_change_required)
+        
+        # Update password and clear the requirement flag
+        current_user.set_password(form.new_password.data)
+        current_user.password_change_required = False
+        db.session.commit()
+        
+        flash('Password changed successfully!', 'success')
+        
+        # Redirect to appropriate dashboard based on role
+        if current_user.role == 'admin':
+            return redirect(url_for('admin_dashboard'))
+        elif current_user.role == 'student':
+            return redirect(url_for('student_dashboard'))
+        else:
+            return redirect(url_for('teacher_dashboard'))
+    
+    return render_template('change_password.html', form=form, required=current_user.password_change_required)
 
 @app.route('/')
 def index():
