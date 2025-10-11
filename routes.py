@@ -288,9 +288,10 @@ def admin_reset_password(user_id):
         return redirect(request.referrer or url_for('admin_users'))
     
     user.set_password(new_password)
+    user.password_change_required = True  # Force password change on next login
     db.session.commit()
     
-    flash(f'Password reset successfully for {user.username}. New password: {new_password}', 'success')
+    flash(f'Password reset successfully for {user.username}. New password: {new_password}. User must change password on next login.', 'success')
     return redirect(request.referrer or url_for('admin_users'))
 
 @app.route('/admin/user/create', methods=['POST'])
@@ -329,6 +330,7 @@ def admin_create_user():
     new_user.last_name = last_name
     new_user.role = role
     new_user.set_password(password)
+    new_user.password_change_required = True  # Force password change on first login
     
     db.session.add(new_user)
     db.session.flush()  # Get the user ID
