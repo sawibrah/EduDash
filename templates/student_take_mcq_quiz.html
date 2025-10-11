@@ -101,6 +101,7 @@
         <!-- Questions -->
         <div class="col-12">
             <form id="quiz-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <div id="questions-container">
                     <!-- Questions will be loaded here by JavaScript -->
                 </div>
@@ -307,10 +308,12 @@ function submitQuiz() {
     }
     
     // Submit to server
+    const csrfToken = document.querySelector('input[name="csrf_token"]').value;
     fetch(`/quiz/${quizId}/submit`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
         },
         body: JSON.stringify({
             answers: answers,

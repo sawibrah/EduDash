@@ -1701,7 +1701,6 @@ def take_quiz(quiz_id):
 
 @app.route('/quiz/<int:quiz_id>/submit', methods=['POST'])
 @require_role('student')
-@csrf.exempt
 def submit_quiz(quiz_id):
     quiz = Quiz.query.get_or_404(quiz_id)
     
