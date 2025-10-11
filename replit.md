@@ -50,6 +50,10 @@ EduPortal is a comprehensive Learning Management System (LMS) built with Flask t
 - Role-specific profile creation during registration (StudentProfile/TeacherProfile)
 - Database-driven user management with password hashing and validation
 - Global CSRF protection via Flask-WTF for security
+- **Forced Password Change** - Users created by admins or with reset passwords must change password on first login
+  - Password change requirement enforced by middleware on all routes except change password and logout
+  - Users cannot access any other pages until password is changed
+  - Secure password verification before allowing password update
 
 ## User Preferences
 
@@ -143,7 +147,22 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (October 2025)
 
-### Admin Course Management & User Administration (Latest - Oct 11)
+### Forced Password Change & Dual-Role Admin System (Latest - Oct 11)
+- **Forced Password Change** - Admin-created users and password reset users must change password on first login
+  - Added `password_change_required` flag to User model
+  - Middleware enforces password change requirement on all routes except change password, logout, and static
+  - Users are locked out of all features until password is changed
+  - Secure password verification before allowing password update
+  - Custom change password template with required/optional UI states
+- **Dual-Role Admin System** - Admins can now have teacher capabilities
+  - Admins with TeacherProfile can access both admin and teacher dashboards
+  - Dashboard switcher navigation appears only for dual-role users
+  - Admin users page shows dual-role badge for admins with teacher access
+  - Admins can grant or remove teacher access from other admins
+  - Authorization logic updated to allow dual-role admins to access teacher routes
+  - Admin-only users cannot access teacher features
+
+### Admin Course Management & User Administration (Oct 11)
 - **Admin Teacher Capabilities** - Admins can now create and manage courses like teachers
   - Admins automatically receive TeacherProfile when promoted or created
   - Teacher dashboard and all course management features accessible to admins
