@@ -14,6 +14,7 @@
                 </div>
                 <div class="card-body">
                     <form method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                         <div class="row">
                             <!-- Basic Information -->
                             <div class="col-md-6">
@@ -310,6 +311,13 @@ function generateTemplate() {
     form.method = 'POST';
     form.action = '';
     form.style.display = 'none';
+    
+    // Add CSRF token
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = 'csrf_token';
+    csrfInput.value = '{{ csrf_token() }}';
+    form.appendChild(csrfInput);
     
     // Add form fields
     const titleInput = document.createElement('input');
