@@ -162,6 +162,17 @@ def student_dashboard():
 @app.route('/teacher/dashboard')
 @require_role('teacher')
 def teacher_dashboard():
+    # Ensure admin users have a TeacherProfile (for existing admins)
+    if current_user.role == 'admin':
+        existing_teacher_profile = TeacherProfile.query.filter_by(user_id=current_user.id).first()
+        if not existing_teacher_profile:
+            teacher_profile = TeacherProfile()
+            teacher_profile.user_id = current_user.id
+            teacher_profile.employee_id = f"EMP{str(current_user.id).zfill(8)}"
+            teacher_profile.department = "Administration"
+            db.session.add(teacher_profile)
+            db.session.commit()
+    
     # Get teacher's courses with eager loading to avoid N+1 queries
     courses = Course.query.options(
         joinedload(Course.enrollments)
@@ -260,14 +271,14 @@ def promote_user(user_id):
     old_role = user.role
     user.role = new_role
     
-    # Create appropriate profile if promoting to teacher and doesn't have one
-    if new_role == 'teacher':
+    # Create appropriate profile if promoting to teacher/admin and doesn't have one
+    if new_role in ['teacher', 'admin']:
         existing_teacher_profile = TeacherProfile.query.filter_by(user_id=user.id).first()
         if not existing_teacher_profile:
             teacher_profile = TeacherProfile()
             teacher_profile.user_id = user.id
             teacher_profile.employee_id = f"EMP{str(user.id).zfill(8)}"
-            teacher_profile.department = "General"
+            teacher_profile.department = "Administration" if new_role == 'admin' else "General"
             db.session.add(teacher_profile)
     
     db.session.commit()
@@ -337,11 +348,11 @@ def admin_create_user():
         student_profile.student_id = f"STU{str(new_user.id).zfill(8)}"
         student_profile.grade_level = "Not Specified"
         db.session.add(student_profile)
-    elif role == 'teacher':
+    elif role in ['teacher', 'admin']:
         teacher_profile = TeacherProfile()
         teacher_profile.user_id = new_user.id
         teacher_profile.employee_id = f"EMP{str(new_user.id).zfill(8)}"
-        teacher_profile.department = "General"
+        teacher_profile.department = "Administration" if role == 'admin' else "General"
         db.session.add(teacher_profile)
     
     db.session.commit()

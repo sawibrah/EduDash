@@ -65,12 +65,16 @@ Preferred communication style: Simple, everyday language.
 ### Authentication & Authorization
 - **Form-Based Authentication** with custom registration and login forms using Flask-WTF
 - **Flask-Login** manages user sessions and login state
-- **Role-Based Access Control** with decorator-based route protection (`@require_login`, `@require_role`)
+- **Three-Tier Role System** with decorator-based route protection (`@require_login`, `@require_role`)
+  - **Admin**: Full platform access including user management, course oversight, and teacher capabilities
+  - **Teacher**: Course creation, content management, assessment creation, and student grading
+  - **Student**: Course enrollment, content viewing, and assessment taking
+- **Admin Teacher Capabilities**: Admins automatically receive TeacherProfile to manage courses like teachers
 - **Password Security** using Werkzeug's password hashing with secure defaults
 - **Session Management** with persistent login sessions and mandatory SESSION_SECRET enforcement
 - **User Registration** with validation for unique usernames/emails and password strength
-- **Secure Registration** - All new users register as students; teacher role requires administrator promotion
-- **Role-Specific Profiles** automatically created during registration with one-to-one user relationships
+- **Secure Registration** - All new users register as students; teacher/admin roles require administrator promotion
+- **Role-Specific Profiles** automatically created during registration and role changes with one-to-one user relationships
 
 ### Database Architecture
 - **SQLAlchemy ORM** with declarative base model structure
@@ -139,7 +143,23 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (October 2025)
 
-### Coding Quiz Removal & Student Exam Access (Latest - Oct 10)
+### Admin Course Management & User Administration (Latest - Oct 11)
+- **Admin Teacher Capabilities** - Admins can now create and manage courses like teachers
+  - Admins automatically receive TeacherProfile when promoted or created
+  - Teacher dashboard and all course management features accessible to admins
+  - Existing admins get TeacherProfile created automatically when accessing teacher routes
+  - Admin-created courses appear in their teacher dashboard for management
+- **User Management Enhancements**
+  - Admins can create new users directly with any role (student/teacher/admin)
+  - Password reset functionality allows admins to reset any user's password
+  - User creation modal with all required fields and role selection
+  - Password reset modal with confirmation and new password display
+- **Bug Fixes**
+  - Fixed CSRF token missing error in course template generation feature
+  - Fixed course creation preview not updating when typing content
+  - Wrapped JavaScript in DOMContentLoaded for proper initialization
+
+### Coding Quiz Removal & Student Exam Access (Oct 10)
 - **Removed All Coding Quiz Functionality** - System now exclusively supports MCQ quizzes
   - Deleted Monaco code editor integration and all coding quiz templates
   - Removed coding quiz creation, editing, and student-taking routes
