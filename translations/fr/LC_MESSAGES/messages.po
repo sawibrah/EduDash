@@ -1,0 +1,412 @@
+# French translations for EduPortal
+# Copyright (C) 2024 EduPortal
+# This file is distributed under the same license as the EduPortal package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: EduPortal 1.0\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "EduPortal"
+msgstr "EduPortail"
+
+msgid "Dashboard"
+msgstr "Tableau de bord"
+
+msgid "Login"
+msgstr "Connexion"
+
+msgid "Register"
+msgstr "S'inscrire"
+
+msgid "Sign Up"
+msgstr "S'inscrire"
+
+msgid "Logout"
+msgstr "Déconnexion"
+
+msgid "Sign In"
+msgstr "Se connecter"
+
+msgid "Welcome Back"
+msgstr "Bon retour"
+
+msgid "Sign in to continue your learning journey"
+msgstr "Connectez-vous pour continuer votre parcours d'apprentissage"
+
+msgid "Username"
+msgstr "Nom d'utilisateur"
+
+msgid "Enter your username"
+msgstr "Entrez votre nom d'utilisateur"
+
+msgid "Password"
+msgstr "Mot de passe"
+
+msgid "Enter your password"
+msgstr "Entrez votre mot de passe"
+
+msgid "Don't have an account?"
+msgstr "Vous n'avez pas de compte ?"
+
+msgid "Create Account"
+msgstr "Créer un compte"
+
+msgid "Admin Dashboard"
+msgstr "Tableau de bord administrateur"
+
+msgid "Teacher Dashboard"
+msgstr "Tableau de bord enseignant"
+
+msgid "Empowering education through technology."
+msgstr "Renforcer l'éducation par la technologie."
+
+# Dashboard translations
+msgid "Welcome to your dashboard"
+msgstr "Bienvenue sur votre tableau de bord"
+
+msgid "Total Courses"
+msgstr "Total des cours"
+
+msgid "Active Exams"
+msgstr "Examens actifs"
+
+msgid "Pending Assignments"
+msgstr "Devoirs en attente"
+
+msgid "Recent Activity"
+msgstr "Activité récente"
+
+msgid "Quick Actions"
+msgstr "Actions rapides"
+
+msgid "View All Courses"
+msgstr "Voir tous les cours"
+
+msgid "Create New Course"
+msgstr "Créer un nouveau cours"
+
+msgid "Manage Students"
+msgstr "Gérer les étudiants"
+
+msgid "View Reports"
+msgstr "Voir les rapports"
+
+msgid "Total Students"
+msgstr "Total des étudiants"
+
+msgid "Total Teachers"
+msgstr "Total des enseignants"
+
+msgid "Total Administrators"
+msgstr "Total des administrateurs"
+
+msgid "Total Exams"
+msgstr "Total des examens"
+
+msgid "Total Quizzes"
+msgstr "Total des quiz"
+
+msgid "Total Enrollments"
+msgstr "Total des inscriptions"
+
+msgid "Total Exam Submissions"
+msgstr "Total des soumissions d'examens"
+
+msgid "Total Quiz Submissions"
+msgstr "Total des soumissions de quiz"
+
+msgid "Active Courses"
+msgstr "Cours actifs"
+
+msgid "Recent Courses"
+msgstr "Cours récents"
+
+msgid "Recent Enrollments"
+msgstr "Inscriptions récentes"
+
+msgid "Welcome back, %(name)s!"
+msgstr "Bon retour, %(name)s !"
+
+msgid "Total Users"
+msgstr "Total des utilisateurs"
+
+msgid "Platform accounts"
+msgstr "Comptes de plateforme"
+
+msgid "Students"
+msgstr "Étudiants"
+
+msgid "enrollments"
+msgstr "inscriptions"
+
+msgid "Teachers"
+msgstr "Enseignants"
+
+msgid "courses"
+msgstr "cours"
+
+msgid "Active Courses"
+msgstr "Cours actifs"
+
+msgid "of %(total)s total"
+msgstr "sur %(total)s au total"
+
+msgid "Exams"
+msgstr "Examens"
+
+msgid "submissions"
+msgstr "soumissions"
+
+msgid "Quizzes"
+msgstr "Quiz"
+
+msgid "Administrators"
+msgstr "Administrateurs"
+
+msgid "Platform admins"
+msgstr "Administrateurs de plateforme"
+
+msgid "Recent Courses"
+msgstr "Cours récents"
+
+msgid "All Courses"
+msgstr "Tout les cours"
+
+# Student Dashboard translations
+msgid "Student Dashboard"
+msgstr "Tableau de bord étudiant"
+
+msgid "Enrolled Courses"
+msgstr "Cours inscrits"
+
+msgid "Pending Exams"
+msgstr "Examens en attente"
+
+msgid "Available Quizzes"
+msgstr "Quiz disponibles"
+
+msgid "My Courses"
+msgstr "Mes cours"
+
+msgid "Enroll in Course"
+msgstr "S'inscrire au cours"
+
+# User Management translations
+msgid "User Management"
+msgstr "Gestion des utilisateurs"
+
+msgid "Manage all platform users"
+msgstr "Gérer tous les utilisateurs de la plateforme"
+
+msgid "Create New User"
+msgstr "Créer un nouvel utilisateur"
+
+msgid "All Users"
+msgstr "Tous les utilisateurs"
+
+msgid "All"
+msgstr "Tous"
+
+msgid "Students"
+msgstr "Étudiants"
+
+msgid "Admins"
+msgstr "Administrateurs"
+
+msgid "Test User Login"
+msgstr "Connexion utilisateur de test"
+
+msgid "Quick access for development testing"
+msgstr "Accès rapide pour les tests de développement"
+
+msgid "Teacher Account"
+msgstr "Compte enseignant"
+
+msgid "Login as Teacher"
+msgstr "Se connecter en tant qu'enseignant"
+
+msgid "You must change your password before continuing."
+msgstr "Vous devez changer votre mot de passe avant de continuer."
+
+msgid "Registration successful! Welcome, %(user.first_name)s!"
+msgstr "Inscription réussie ! Bienvenue, %(user.first_name)s !"
+
+msgid "Invalid username or password."
+msgstr "Nom d'utilisateur ou mot de passe invalide."
+
+msgid "Password changed successfully!"
+msgstr "Mot de passe changé avec succès !"
+
+msgid "Course title is required."
+msgstr "Le titre du cours est requis."
+
+msgid "Course updated successfully!"
+msgstr "Cours mis à jour avec succès !"
+
+msgid "Access denied."
+msgstr "Accès refusé."
+
+msgid "No slide file available for this course."
+msgstr "Aucun fichier de diapositive disponible pour ce cours."
+
+msgid "PDF generated successfully!"
+msgstr "PDF généré avec succès !"
+
+msgid "Exam created successfully!"
+msgstr "Examen créé avec succès !"
+
+msgid "Browse Courses"
+msgstr "Parcourir les Cours"
+
+msgid "By Course ID"
+msgstr "Par ID du Cours"
+
+msgid "Course ID"
+msgstr "ID du Cours"
+
+msgid "Ask your teacher for the course ID to enroll directly."
+msgstr "Demandez à votre professeur l'ID du cours pour vous inscrire directement."
+
+msgid "Enter course ID provided by your teacher"
+msgstr "Entrez l'ID du cours fourni par votre enseignant"
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "Enroll Now"
+msgstr "Inscrivez-vous maintenat"
+
+msgid "Search courses by title, language, or difficulty..."
+msgstr "Recherchez des cours par titre, langue ou difficulté..."
+
+msgid "No courses available"
+msgstr "Pas cours disponible pour le moment"
+
+msgid "No courses enrolled yet"
+msgstr "Aucun cours inscrit le moment"
+
+msgid "Check back later for new courses!"
+msgstr "Revenez plut tard pour découvrir de nouveaux cours!"
+
+msgid "No exams available"
+msgstr "Pas d'examens disponible"
+
+msgid "No description available"
+msgstr "Pas de description disponible"
+
+msgid "Type in the content area to see live preview..."
+msgstr "Tapez dans la zone de contenu pour voir l'aperçu en direct..."
+
+msgid "Your Course Title"
+msgstr "Titre de votre cours"
+
+msgid "Type content to see slide breakdown..."
+msgstr "Tapez le contenu pour voir la répartition des diapositives..."
+
+msgid "File size exceeds 50MB limit. Please choose a smaller file."
+msgstr "La taille du fichier dépasse 50MB. Veuillez choisir un fichier plus petit."
+
+msgid "Switch to Admin"
+msgstr "Passer à Admin"
+
+msgid "Create Exam"
+msgstr "Créer un examen"
+
+msgid "Create Quiz"
+msgstr "Créer Quiz"
+
+msgid "No courses created yet"
+msgstr "Aucun cours créé pour le moment"
+
+msgid "Create your first course to get started!"
+msgstr "Créez votre premier cour pour commencer!"
+
+msgid "Create Course"
+msgstr "Créer Cours"
+
+msgid "Recent Exams"
+msgstr "Examens récents"
+
+msgid "Exam"
+msgstr "Examen"
+
+msgid "Inactive"
+msgstr "Inactif"
+
+msgid "View"
+msgstr "Vue"
+
+msgid "Edit"
+msgstr "Modifier"
+
+msgid "No exams created yet"
+msgstr "Aucun examen créé pour le moment"
+
+
+
+msgid "Create exams for your courses to engage students!"
+msgstr "Create exams for your courses to engage students!"
+
+msgid "Recent Quizzes"
+msgstr "Recent Quizzes"
+
+msgid "Quiz"
+msgstr "Quiz"
+
+msgid "Course"
+msgstr "Course"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Actions"
+msgstr "Actions"
+
+msgid "Active"
+msgstr "Active"
+
+msgid "No quizzes created yet"
+msgstr "No quizzes created yet"
+
+msgid "Create quizzes to test student knowledge!"
+msgstr "Create quizzes to test student knowledge!"
+
+msgid "Select Course for New Exam"
+msgstr "Select Course for New Exam"
+
+msgid "Select a course"
+msgstr "Select a course"
+
+msgid "Continue"
+msgstr "Continue"
+
+msgid "Please select a course"
+msgstr "Please select a course"
+
+msgid "This action cannot be undone!"
+msgstr "This action cannot be undone!"
+
+msgid "Are you sure you want to delete the course"
+msgstr "Are you sure you want to delete the course"
+
+msgid "This will permanently delete:"
+msgstr "This will permanently delete:"
+
+msgid "Yes, Delete Course"
+msgstr "Yes, Delete Course"
+
+msgid "Select a course to start creating a multiple-choice quiz"
+msgstr "Select a course to start creating a multiple-choice quiz"
+
+msgid "Create Quiz for this Course"
+msgstr "Create Quiz for this Course"
+
+msgid "Create a course first before adding quizzes"
+msgstr "Create a course first before adding quizzes"
+
+msgid "Close"
+msgstr "Close"

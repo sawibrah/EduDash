@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Create Exam - {{ course.title }}{% endblock %}
+{% block title %}{{ _('Create Exam') }} - {{ course.title }}{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
@@ -9,17 +9,17 @@
             <div class="card">
                 <div class="card-header bg-success text-white">
                     <h4 class="mb-0">
-                        <i class="fas fa-file-alt me-2"></i>Create Exam
+                        <i class="fas fa-file-alt me-2"></i>{{ _('Create Exam') }}
                     </h4>
-                    <nav aria-label="breadcrumb" class="mt-2">
-                        <ol class="breadcrumb breadcrumb-light mb-0">
-                            <li class="breadcrumb-item"><a href="{{ url_for('teacher_dashboard') }}" class="text-white-50">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a href="{{ url_for('view_course', course_id=course.id) }}" class="text-white-50">{{ course.title }}</a></li>
-                            <li class="breadcrumb-item"><a href="{{ url_for('view_course_exams', course_id=course.id) }}" class="text-white-50">Exams</a></li>
-                            <li class="breadcrumb-item active text-white">Create Exam</li>
-                        </ol>
-                    </nav>
                 </div>
+                <nav aria-label="breadcrumb" class="mt-2">
+                    <ol class="breadcrumb breadcrumb-light mb-0">
+                        <li class="breadcrumb-item"><a href="{{ url_for('teacher_dashboard') }}" class="text-white-50">{{ _('Dashboard') }}</a></li>
+                        <li class="breadcrumb-item"><a href="{{ url_for('view_course', course_id=course.id) }}" class="text-white-50">{{ course.title }}</a></li>
+                        <li class="breadcrumb-item"><a href="{{ url_for('view_course_exams', course_id=course.id) }}" class="text-white-50">{{ _('Exams') }}</a></li>
+                        <li class="breadcrumb-item active text-white">{{ _('Create Exam') }}</li>
+                    </ol>
+                </nav>
                 <div class="card-body">
                     <form method="POST" action="{{ url_for('create_exam') }}" id="exam-form">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
@@ -29,37 +29,37 @@
                         <div class="row">
                             <!-- Basic Exam Information -->
                             <div class="col-md-6">
-                                <h5 class="border-bottom pb-2 mb-3">Basic Information</h5>
+                                <h5 class="border-bottom pb-2 mb-3">{{ _('Basic Information') }}</h5>
                                 <div class="mb-3">
-                                    <label for="title" class="form-label">Exam Title *</label>
+                                    <label for="title" class="form-label">{{ _('Exam Title') }} *</label>
                                     <input type="text" class="form-control" name="title" id="title" required
-                                           placeholder="e.g., Mid-Term Exam - Python Programming">
+                                           placeholder="{{ _('e.g., Mid-Term Exam - Python Programming') }}">
                                 </div>
                                 
                                 <div class="mb-3">
-                                    <label for="description" class="form-label">Description</label>
+                                    <label for="description" class="form-label">{{ _('Description') }}</label>
                                     <textarea class="form-control" name="description" id="description" rows="3"
-                                              placeholder="Brief description of exam topics..."></textarea>
+                                              placeholder="{{ _('Brief description of exam topics...') }}"></textarea>
                                 </div>
                             </div>
 
                             <!-- Exam Settings -->
                             <div class="col-md-6">
-                                <h5 class="border-bottom pb-2 mb-3">Exam Settings</h5>
+                                <h5 class="border-bottom pb-2 mb-3">{{ _('Exam Settings') }}</h5>
                                 <div class="mb-3">
-                                    <label for="max_score" class="form-label">Maximum Score</label>
+                                    <label for="max_score" class="form-label">{{ _('Maximum Score') }}</label>
                                     <input type="number" class="form-control" name="max_score" id="max_score" 
                                            value="100" min="1" max="1000">
                                 </div>
                                 
                                 <div class="mb-3">
-                                    <label for="time_limit" class="form-label">Time Limit (minutes)</label>
+                                    <label for="time_limit" class="form-label">{{ _('Time Limit (minutes)') }}</label>
                                     <input type="number" class="form-control" name="time_limit" id="time_limit" 
                                            value="60" min="5" max="300">
                                 </div>
                                 
                                 <div class="mb-3">
-                                    <label for="due_date" class="form-label">Due Date (Optional)</label>
+                                    <label for="due_date" class="form-label">{{ _('Due Date (Optional)') }}</label>
                                     <input type="datetime-local" class="form-control" name="due_date" id="due_date">
                                 </div>
                                 
@@ -67,8 +67,8 @@
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="is_active" id="is_active" checked>
                                         <label class="form-check-label" for="is_active">
-                                            <strong>Exam is Active</strong>
-                                            <br><small class="text-muted">Students can access and submit this exam</small>
+                                            <strong>{{ _('Exam is Active') }}</strong>
+                                            <br><small class="text-muted">{{ _('Students can access and submit this exam') }}</small>
                                         </label>
                                     </div>
                                 </div>
@@ -78,14 +78,14 @@
                         <!-- Questions Section -->
                         <div class="mt-4">
                             <div class="border-bottom pb-2 mb-3">
-                                <h5 class="mb-0">Questions</h5>
+                                <h5 class="mb-0">{{ _('Questions') }}</h5>
                             </div>
                             
                             <div class="alert alert-info mb-3">
                                 <i class="fas fa-lightbulb me-2"></i>
-                                <strong>Rich Content Support:</strong> You can add text, images, and code blocks to questions and options.
+                                <strong>{{ _('Rich Content Support:') }}</strong> {{ _('You can add text, images, and code blocks to questions and options.') }}
                                 <button type="button" class="btn btn-sm btn-success ms-2" onclick="loadTemplate()">
-                                    <i class="fas fa-magic me-1"></i>Load Template
+                                    <i class="fas fa-magic me-1"></i>{{ _('Load Template') }}
                                 </button>
                             </div>
                             
@@ -95,7 +95,7 @@
                             
                             <div class="mt-3">
                                 <button type="button" class="btn btn-success" onclick="addQuestion()">
-                                    <i class="fas fa-plus me-1"></i>Add Question
+                                    <i class="fas fa-plus me-1"></i>{{ _('Add Question') }}
                                 </button>
                             </div>
                         </div>
@@ -104,10 +104,10 @@
                         <div class="mt-4 pt-3 border-top">
                             <div class="d-flex gap-2">
                                 <button type="submit" class="btn btn-success">
-                                    <i class="fas fa-save me-1"></i>Create Exam
+                                    <i class="fas fa-save me-1"></i>{{ _('Create Exam') }}
                                 </button>
                                 <a href="{{ url_for('view_course_exams', course_id=course.id) }}" class="btn btn-secondary">
-                                    <i class="fas fa-times me-1"></i>Cancel
+                                    <i class="fas fa-times me-1"></i>{{ _('Cancel') }}
                                 </a>
                             </div>
                         </div>
@@ -252,7 +252,7 @@ function addQuestion(templateData = null) {
         <div class="card mb-3" id="${questionId}" data-question-index="${questions.length - 1}">
             <div class="card-header bg-light">
                 <div class="d-flex justify-content-between align-items-center">
-                    <strong>Question ${questionCount}</strong>
+                    <strong>{{ _('Question') }} ${questionCount}</strong>
                     <button type="button" class="btn btn-sm btn-danger" onclick="removeQuestion('${questionId}')">
                         <i class="fas fa-trash"></i>
                     </button>
@@ -260,7 +260,7 @@ function addQuestion(templateData = null) {
             </div>
             <div class="card-body">
                 <div class="mb-3">
-                    <label class="form-label">Question Text *</label>
+                    <label class="form-label">{{ _('Question Text') }} *</label>
                     <textarea class="form-control question-text" rows="2" required
                               onchange="updateQuestion('${questionId}')">${questionData.question}</textarea>
                 </div>
@@ -268,15 +268,15 @@ function addQuestion(templateData = null) {
                 <!-- Question Rich Content -->
                 <div class="mb-3">
                     <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleQuestionImage('${questionId}')">
-                        <i class="fas fa-image"></i> Add Image URL
+                        <i class="fas fa-image"></i> {{ _('Add Image URL') }}
                     </button>
                     <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleQuestionCode('${questionId}')">
-                        <i class="fas fa-code"></i> Add Code Block
+                        <i class="fas fa-code"></i> {{ _('Add Code Block') }}
                     </button>
                     
                     <div id="${questionId}-image-section" class="content-toggle" style="display: ${questionData.question_image ? 'block' : 'none'}">
                         <input type="text" class="form-control question-image mt-2" 
-                               placeholder="Image URL" value="${questionData.question_image || ''}"
+                               placeholder="{{ _('Image URL') }}" value="${questionData.question_image || ''}"
                                onchange="updateQuestion('${questionId}')">
                         ${questionData.question_image ? `<img src="${questionData.question_image}" class="img-preview">` : ''}
                     </div>
@@ -290,12 +290,12 @@ function addQuestion(templateData = null) {
                             <option value="sql" ${questionData.question_code_language === 'sql' ? 'selected' : ''}>SQL</option>
                         </select>
                         <textarea class="form-control question-code mt-2" rows="3"
-                                  placeholder="Code snippet..." onchange="updateQuestion('${questionId}')">${questionData.question_code || ''}</textarea>
+                                  placeholder="{{ _('Code snippet...') }}" onchange="updateQuestion('${questionId}')">${questionData.question_code || ''}</textarea>
                     </div>
                 </div>
                 
                 <div class="mb-3">
-                    <label class="form-label">Answer Options *</label>
+                    <label class="form-label">{{ _('Answer Options') }} *</label>
                     ${questionData.options.map((opt, idx) => {
                         const optId = `${questionId}-opt${idx}`;
                         return `
@@ -307,10 +307,10 @@ function addQuestion(templateData = null) {
                                                name="correct_${questionId}" value="${idx}" 
                                                ${idx === questionData.correct_answer ? 'checked' : ''}
                                                onchange="updateQuestion('${questionId}')"
-                                               title="Mark as correct answer">
+                                               title="{{ _('Mark as correct answer') }}">
                                     </div>
                                     <input type="text" class="form-control option-text" 
-                                           placeholder="Option ${String.fromCharCode(65 + idx)}" 
+                                           placeholder="{{ _('Option') }} ${String.fromCharCode(65 + idx)}" 
                                            value="${opt.text || ''}" required
                                            onchange="updateQuestion('${questionId}')">
                                 </div>
@@ -324,7 +324,7 @@ function addQuestion(templateData = null) {
                                 </div>
                                 <div id="${optId}-image" style="display: ${opt.image ? 'block' : 'none'}">
                                     <input type="text" class="form-control option-image mt-2" 
-                                           placeholder="Image URL" value="${opt.image || ''}"
+                                           placeholder="{{ _('Image URL') }}" value="${opt.image || ''}"
                                            onchange="updateQuestion('${questionId}')">
                                 </div>
                                 <div id="${optId}-code" style="display: ${opt.code ? 'block' : 'none'}">
@@ -344,10 +344,10 @@ function addQuestion(templateData = null) {
                 </div>
                 
                 <div class="mb-3">
-                    <label class="form-label">Explanation (Optional)</label>
+                    <label class="form-label">{{ _('Explanation') }} ({{ _('Optional') }})</label>
                     <textarea class="form-control explanation-text" rows="2" 
                               onchange="updateQuestion('${questionId}')"
-                              placeholder="Explain why this answer is correct...">${questionData.explanation || ''}</textarea>
+                              placeholder="{{ _('Explain why this answer is correct...') }}}">${questionData.explanation || ''}</textarea>
                 </div>
             </div>
         </div>

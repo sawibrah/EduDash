@@ -36,6 +36,22 @@ class User(UserMixin, db.Model):
     def is_teacher(self):
         return self.role == 'teacher' or (self.role == 'admin' and hasattr(self, 'teacher_profile') and self.teacher_profile is not None)
 
+    #def is_admin(self):
+    #    return self.role == 'admin'
+#
+    #@staticmethod
+    #def teacher_query():
+    #    # Returns all users who are teachers or admins with teacher_profile
+    #    return User.query.filter(
+    #        (User.role == 'teacher') |
+    #        ((User.role == 'admin') & (User.teacher_profile != None))
+    #    )
+#
+    #@staticmethod
+    #def admin_query():
+    #    # Returns all users who are admins
+    #    return User.query.filter(User.role == 'admin')
+
 # (IMPORTANT) This table is mandatory for Replit Auth, don't drop it.
 # Keep OAuth table but update for integer foreign keys (legacy support)
 class OAuth(OAuthConsumerMixin, db.Model):

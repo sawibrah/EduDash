@@ -8,9 +8,9 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="mb-1">
-                <i class="fas fa-tachometer-alt me-2 text-primary"></i>Student Dashboard
+                <i class="fas fa-tachometer-alt me-2 text-primary"></i>{{ _('Student Dashboard') }}
             </h2>
-            <p class="text-muted mb-0">Welcome back, {{ current_user.first_name or 'Student' }}!</p>
+            <p class="text-muted mb-0">{{ _('Welcome back, %(name)s!', name=current_user.first_name or 'Student') }}</p>
         </div>
         <div class="text-end">
             {% if current_user.student_profile %}
@@ -26,7 +26,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
-                            <h6 class="card-title mb-0">Enrolled Courses</h6>
+                            <h6 class="card-title mb-0">{{ _('Enrolled Courses') }}</h6>
                             <h2 class="mb-0">{{ courses|length }}</h2>
                         </div>
                         <div class="align-self-center">
@@ -42,7 +42,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
-                            <h6 class="card-title mb-0">Pending Exams</h6>
+                            <h6 class="card-title mb-0">{{ _('Pending Exams') }}</h6>
                             <h2 class="mb-0">{{ exams|length }}</h2>
                         </div>
                         <div class="align-self-center">
@@ -58,7 +58,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
-                            <h6 class="card-title mb-0">Available Quizzes</h6>
+                            <h6 class="card-title mb-0">{{ _('Available Quizzes') }}</h6>
                             <h2 class="mb-0">{{ quizzes|length if quizzes else 0 }}</h2>
                         </div>
                         <div class="align-self-center">
@@ -76,10 +76,10 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">
-                        <i class="fas fa-graduation-cap me-2"></i>My Courses
+                        <i class="fas fa-graduation-cap me-2"></i>{{ _('My Courses') }}
                     </h5>
                     <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#enrollModal">
-                        <i class="fas fa-plus me-1"></i>Enroll in Course
+                        <i class="fas fa-plus me-1"></i>{{ _('Enroll in Course') }}
                     </button>
                 </div>
                 <div class="card-body">
@@ -100,7 +100,7 @@
                                                     {% endif %}
                                                 </div>
                                             </div>
-                                            <p class="card-text small text-muted">{{ (course.description[:100] + '...') if course.description and course.description|length > 100 else (course.description or 'No description available') }}</p>
+                                            <p class="card-text small text-muted">{{ (course.description[:100] + '...') if course.description and course.description|length > 100 else (course.description or _('No description available')) }}</p>
                                             <p class="card-text">
                                                 <small class="text-muted">
                                                     <i class="fas fa-user me-1"></i>{{ course.teacher.first_name }} {{ course.teacher.last_name }}
@@ -130,7 +130,7 @@
                     {% else %}
                         <div class="text-center py-4">
                             <i class="fas fa-book-open fa-3x text-muted mb-3"></i>
-                            <h6 class="text-muted">No courses enrolled yet</h6>
+                            <h6 class="text-muted">{{_('No courses enrolled yet')}}</h6>
                             <p class="text-muted small">Enroll in your first course to get started!</p>
                             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#enrollModal">
                                 <i class="fas fa-plus me-1"></i>Enroll Now
@@ -146,7 +146,7 @@
             <div class="card h-100">
                 <div class="card-header">
                     <h5 class="mb-0">
-                        <i class="fas fa-clipboard-question me-2"></i>Available Quizzes
+                        <i class="fas fa-clipboard-question me-2"></i>{{ _('Available Quizzes') }}
                     </h5>
                 </div>
                 <div class="card-body">
@@ -202,7 +202,7 @@
             <div class="card">
                 <div class="card-header">
                     <h5 class="mb-0">
-                        <i class="fas fa-clipboard-list me-2"></i>Exams
+                        <i class="fas fa-clipboard-list me-2"></i>{{ _('Exams') }}
                     </h5>
                 </div>
                 <div class="card-body">
@@ -230,7 +230,7 @@
                     {% else %}
                         <div class="text-center py-3">
                             <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
-                            <p class="text-muted small mb-0">No exams available</p>
+                            <p class="text-muted small mb-0">{{_('No exams available')}}</p>
                         </div>
                     {% endif %}
                 </div>
@@ -245,7 +245,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="fas fa-graduation-cap me-2"></i>Enroll in Course
+                    <i class="fas fa-graduation-cap me-2"></i>{{ _('Enroll in Course') }}
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
@@ -254,12 +254,12 @@
                 <ul class="nav nav-tabs" id="enrollTabs" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="course-id-tab" data-bs-toggle="tab" data-bs-target="#course-id" type="button" role="tab">
-                            <i class="fas fa-key me-1"></i>By Course ID
+                            <i class="fas fa-key me-1"></i>{{_('By Course ID')}}
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="browse-courses-tab" data-bs-toggle="tab" data-bs-target="#browse-courses" type="button" role="tab">
-                            <i class="fas fa-search me-1"></i>Browse Courses
+                            <i class="fas fa-search me-1"></i>{{_('Browse Courses')}}
                         </button>
                     </li>
                 </ul>
@@ -271,18 +271,18 @@
                         <form method="POST" action="{{ url_for('enroll_course') }}" class="mt-3">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                             <div class="mb-3">
-                                <label for="course_id" class="form-label">Course ID</label>
+                                <label for="course_id" class="form-label">{{_('Course ID')}}</label>
                                 <input type="text" class="form-control" name="course_id" id="course_id" 
-                                       placeholder="Enter course ID provided by your teacher" required>
+                                       placeholder="{{_('Enter course ID provided by your teacher')}}" required>
                                 <div class="form-text">
                                     <i class="fas fa-info-circle me-1"></i>
-                                    Ask your teacher for the course ID to enroll directly.
+                                    {{_('Ask your teacher for the course ID to enroll directly.')}}
                                 </div>
                             </div>
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{_('Cancel')}}</button>
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-plus me-1"></i>Enroll Now
+                                    <i class="fas fa-plus me-1"></i>{{_('Enroll Now')}}
                                 </button>
                             </div>
                         </form>
@@ -293,7 +293,7 @@
                         <div class="mt-3">
                             <div class="mb-3">
                                 <input type="text" class="form-control" id="courseSearch" 
-                                       placeholder="Search courses by title, language, or difficulty...">
+                                       placeholder="{{_('Search courses by title, language, or difficulty...')}}">
                             </div>
                             <div id="availableCourses" class="row">
                                 <!-- Courses will be loaded here -->
@@ -346,8 +346,8 @@ function loadAvailableCourses() {
                 container.innerHTML = `
                     <div class="col-12 text-center py-4">
                         <i class="fas fa-book-open fa-3x text-muted mb-3"></i>
-                        <h6 class="text-muted">No courses available</h6>
-                        <p class="text-muted small">Check back later for new courses!</p>
+                        <h6 class="text-muted">{{_('No courses available')}}</h6>
+                        <p class="text-muted small">{{_('Check back later for new courses!')}}</p>
                     </div>
                 `;
                 return;
@@ -363,7 +363,7 @@ function loadAvailableCourses() {
                                     <h6 class="card-title mb-0 course-title">${course.title}</h6>
                                     <small class="text-muted">ID: ${course.id}</small>
                                 </div>
-                                <p class="card-text small text-muted">${course.description || 'No description available'}</p>
+                                <p class="card-text small text-muted">${course.description || _('No description available')}</p>
                                 <div class="mb-2">
                                     ${course.programming_language ? `<span class="badge bg-info me-1 course-language">${course.programming_language}</span>` : ''}
                                     ${course.difficulty_level ? `<span class="badge bg-secondary course-difficulty">${course.difficulty_level}</span>` : ''}

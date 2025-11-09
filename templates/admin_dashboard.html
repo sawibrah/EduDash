@@ -8,9 +8,9 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="mb-1">
-                <i class="fas fa-user-shield me-2 text-danger"></i>Admin Dashboard
+                <i class="fas fa-user-shield me-2 text-danger"></i>{{ _('Admin Dashboard') }}
             </h2>
-            <p class="text-muted mb-0">Welcome back, {{ current_user.first_name or 'Admin' }}!</p>
+            <p class="text-muted mb-0">{{ _('Welcome back, %(name)s!', name=current_user.first_name or 'Admin') }}</p>
         </div>
         <div class="btn-group">
             {% if current_user.teacher_profile %}
@@ -34,9 +34,9 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
-                            <h6 class="card-title mb-0">Total Users</h6>
+                            <h6 class="card-title mb-0">{{ _('Total Users') }}</h6>
                             <h2 class="mb-0">{{ total_users }}</h2>
-                            <small class="opacity-75">Platform accounts</small>
+                            <small class="opacity-75">{{ _('Platform accounts') }}</small>
                         </div>
                         <div class="align-self-center">
                             <i class="fas fa-users fa-2x opacity-75"></i>
@@ -51,9 +51,9 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
-                            <h6 class="card-title mb-0">Students</h6>
+                            <h6 class="card-title mb-0">{{ _('Students') }}</h6>
                             <h2 class="mb-0">{{ total_students }}</h2>
-                            <small class="opacity-75">{{ total_enrollments }} enrollments</small>
+                            <small class="opacity-75">{{ total_enrollments }} {{ _('enrollments') }}</small>
                         </div>
                         <div class="align-self-center">
                             <i class="fas fa-user-graduate fa-2x opacity-75"></i>
@@ -68,9 +68,9 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
-                            <h6 class="card-title mb-0">Teachers</h6>
+                            <h6 class="card-title mb-0">{{ _('Teachers') }}</h6>
                             <h2 class="mb-0">{{ total_teachers }}</h2>
-                            <small class="opacity-75">{{ total_courses }} courses</small>
+                            <small class="opacity-75">{{ total_courses }} {{ _('courses') }}</small>
                         </div>
                         <div class="align-self-center">
                             <i class="fas fa-chalkboard-teacher fa-2x opacity-75"></i>
@@ -85,9 +85,9 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
-                            <h6 class="card-title mb-0">Active Courses</h6>
+                            <h6 class="card-title mb-0">{{ _('Active Courses') }}</h6>
                             <h2 class="mb-0">{{ active_courses }}</h2>
-                            <small>of {{ total_courses }} total</small>
+                            <small>{{ _('of %(total)s total', total=total_courses) }}</small>
                         </div>
                         <div class="align-self-center">
                             <i class="fas fa-book fa-2x opacity-75"></i>
@@ -105,9 +105,9 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
-                            <h6 class="card-title mb-0">Exams</h6>
+                            <h6 class="card-title mb-0">{{ _('Exams') }}</h6>
                             <h2 class="mb-0">{{ total_exams }}</h2>
-                            <small class="opacity-75">{{ total_exam_submissions }} submissions</small>
+                            <small class="opacity-75">{{ total_exam_submissions }} {{ _('submissions') }}</small>
                         </div>
                         <div class="align-self-center">
                             <i class="fas fa-clipboard-list fa-2x opacity-75"></i>
@@ -122,9 +122,9 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
-                            <h6 class="card-title mb-0">Quizzes</h6>
+                            <h6 class="card-title mb-0">{{ _('Quizzes') }}</h6>
                             <h2 class="mb-0">{{ total_quizzes }}</h2>
-                            <small class="opacity-75">{{ total_quiz_submissions }} submissions</small>
+                            <small class="opacity-75">{{ total_quiz_submissions }} {{ _('submissions') }}</small>
                         </div>
                         <div class="align-self-center">
                             <i class="fas fa-clipboard-question fa-2x opacity-75"></i>
@@ -139,9 +139,9 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
-                            <h6 class="card-title mb-0">Administrators</h6>
+                            <h6 class="card-title mb-0">{{ _('Administrators') }}</h6>
                             <h2 class="mb-0">{{ total_admins }}</h2>
-                            <small class="opacity-75">Platform admins</small>
+                            <small class="opacity-75">{{ _('Platform admins') }}</small>
                         </div>
                         <div class="align-self-center">
                             <i class="fas fa-user-shield fa-2x opacity-75"></i>
@@ -158,7 +158,7 @@
             <div class="card h-100">
                 <div class="card-header">
                     <h5 class="mb-0">
-                        <i class="fas fa-book me-2"></i>Recent Courses
+                        <i class="fas fa-book me-2"></i>{{ _('Recent Courses') }}
                     </h5>
                 </div>
                 <div class="card-body">
@@ -199,7 +199,7 @@
             <div class="card h-100">
                 <div class="card-header">
                     <h5 class="mb-0">
-                        <i class="fas fa-user-plus me-2"></i>Recent Enrollments
+                        <i class="fas fa-user-plus me-2"></i>{{ _('Recent Enrollments') }}
                     </h5>
                 </div>
                 <div class="card-body">

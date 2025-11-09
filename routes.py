@@ -3,13 +3,14 @@ from flask_login import current_user, login_user, logout_user
 from sqlalchemy.orm import joinedload
 from app import app, db, csrf
 from auth import require_login, require_role
+from flask_babel import gettext, ngettext
 from forms import RegistrationForm, LoginForm, ProfileForm
 from models import User, StudentProfile, TeacherProfile, Course, Enrollment, Exam, ExamSubmission, Quiz, CodeSubmission
 from datetime import datetime
 import json
 import markdown
 import bleach
-import weasyprint
+#import weasyprint
 import os
 from werkzeug.utils import secure_filename
 
@@ -1801,6 +1802,23 @@ def delete_quiz(quiz_id):
     
     return redirect(url_for('view_course_quizzes', course_id=course_id))
 
+# Language switching routes
+@app.route('/set_language/<language>')
+def set_language(language=None):
+    if language and language in app.config['LANGUAGES']:
+        session['language'] = language
+    return redirect(request.referrer or url_for('index'))
+
+@app.route('/language')
+def language():
+    current_lang = session.get('language', 'en')
+    return jsonify({
+        'current': current_lang,
+        'available': list(app.config['LANGUAGES'].keys())
+    })
+
+# Language detection is handled in app.py with babel.localeselector
+
 @app.errorhandler(403)
 def forbidden(error):
     return render_template('403.html'), 403
@@ -1808,3 +1826,25 @@ def forbidden(error):
 @app.errorhandler(404)
 def not_found(error):
     return render_template('404.html'), 404
+
+@app.route('/admin/user/<int:user_id>/delete', methods=['POST'])
+@require_role('admin')
+def admin_delete_user(user_id):
+    user = User.query.get_or_404(user_id)
+    try:
+        # Delete related enrollments first
+        Enrollment.query.filter_by(student_id=user.id).delete()
+        # Delete related profiles
+        student_profile = StudentProfile.query.filter_by(user_id=user.id).first()
+        if student_profile:
+            db.session.delete(student_profile)
+        teacher_profile = TeacherProfile.query.filter_by(user_id=user.id).first()
+        if teacher_profile:
+            db.session.delete(teacher_profile)
+        db.session.delete(user)
+        db.session.commit()
+        flash(f"User '{user.username}' deleted successfully!", 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error deleting user: {str(e)}", 'error')
+    return redirect(url_for('admin_users'))

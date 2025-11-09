@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_wtf.csrf import CSRFProtect
+from flask_babel import Babel
 import logging
 
 # Configure logging
@@ -23,6 +24,27 @@ if not os.environ.get("SESSION_SECRET"):
 
 app.secret_key = os.environ.get("SESSION_SECRET")
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1) # needed for url_for to generate with https
+
+# Configure Babel
+app.config['LANGUAGES'] = {
+    'en': 'English',
+    'fr': 'Français'
+}
+app.config['BABEL_DEFAULT_LOCALE'] = 'en'
+app.config['BABEL_DEFAULT_TIMEZONE'] = 'UTC'
+
+babel = Babel()
+
+def get_locale():
+    # Check if user has set a language preference
+    from flask import session, request
+    if 'language' in session:
+        return session['language']
+    # Try to get language from request headers
+    return request.accept_languages.best_match(app.config['LANGUAGES'].keys())
+
+# Initialize Babel with the app
+babel.init_app(app, locale_selector=get_locale)
 
 # Enable CSRF protection globally
 csrf = CSRFProtect(app)

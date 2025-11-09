@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Create Programming Course - EduPortal{% endblock %}
+{% block title %}{{ _('Create Programming Course') }} - EduPortal{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
@@ -9,7 +9,7 @@
             <div class="card">
                 <div class="card-header bg-success text-white">
                     <h4 class="mb-0">
-                        <i class="fas fa-plus me-2"></i>Create New Programming Course
+                        <i class="fas fa-plus me-2"></i>{{ _('Create New Programming Course') }}
                     </h4>
                 </div>
                 <div class="card-body">
@@ -18,18 +18,18 @@
                         <div class="row">
                             <!-- Basic Information -->
                             <div class="col-md-6">
-                                <h5 class="border-bottom pb-2 mb-3">Basic Information</h5>
+                                <h5 class="border-bottom pb-2 mb-3">{{ _('Basic Information') }}</h5>
                                 <div class="mb-3">
-                                    <label for="title" class="form-label">Course Title *</label>
+                                    <label for="title" class="form-label">{{ _('Course Title') }} *</label>
                                     <input type="text" class="form-control" name="title" id="title" required
-                                           placeholder="e.g., Advanced Python for Data Science"
+                                           placeholder="{{ _('e.g., Advanced Python for Data Science') }}"
                                            value="{{ title if title else '' }}">
                                 </div>
                                 
                                 <div class="mb-3">
-                                    <label for="programming_language" class="form-label">Programming Language</label>
+                                    <label for="programming_language" class="form-label">{{ _('Programming Language') }}</label>
                                     <select class="form-select" name="programming_language" id="programming_language">
-                                        <option value="">Select Language</option>
+                                        <option value="">{{ _('Select Language') }}</option>
                                         <option value="Python" {% if programming_language == 'Python' %}selected{% endif %}>Python</option>
                                         <option value="JavaScript" {% if programming_language == 'JavaScript' %}selected{% endif %}>JavaScript</option>
                                         <option value="Java" {% if programming_language == 'Java' %}selected{% endif %}>Java</option>
@@ -47,70 +47,70 @@
                                 </div>
                                 
                                 <div class="mb-3">
-                                    <label for="difficulty_level" class="form-label">Difficulty Level</label>
+                                    <label for="difficulty_level" class="form-label">{{ _('Difficulty Level') }}</label>
                                     <select class="form-select" name="difficulty_level" id="difficulty_level">
-                                        <option value="">Select Level</option>
-                                        <option value="Beginner">Beginner</option>
-                                        <option value="Intermediate">Intermediate</option>
-                                        <option value="Advanced">Advanced</option>
+                                        <option value="">{{ _('Select Level') }}</option>
+                                        <option value="Beginner">{{ _('Beginner') }}</option>
+                                        <option value="Intermediate">{{ _('Intermediate') }}</option>
+                                        <option value="Advanced">{{ _('Advanced') }}</option>
                                     </select>
                                 </div>
                                 
                                 <div class="mb-3">
-                                    <label for="estimated_hours" class="form-label">Estimated Hours</label>
+                                    <label for="estimated_hours" class="form-label">{{ _('Estimated Hours') }}</label>
                                     <input type="number" class="form-control" name="estimated_hours" id="estimated_hours" min="1" max="500"
-                                           placeholder="e.g., 40">
+                                           placeholder="{{ _('e.g., 40') }}">
                                 </div>
                                 
                                 <div class="mb-3">
-                                    <label for="course_status" class="form-label">Status</label>
+                                    <label for="course_status" class="form-label">{{ _('Status') }}</label>
                                     <select class="form-select" name="course_status" id="course_status">
-                                        <option value="draft">Draft</option>
-                                        <option value="published">Published</option>
+                                        <option value="draft">{{ _('Draft') }}</option>
+                                        <option value="published">{{ _('Published') }}</option>
                                     </select>
                                 </div>
                             </div>
                             
                             <!-- Course Details -->
                             <div class="col-md-6">
-                                <h5 class="border-bottom pb-2 mb-3">Course Details</h5>
+                                <h5 class="border-bottom pb-2 mb-3">{{ _('Course Details') }}</h5>
                                 <div class="mb-3">
-                                    <label for="description" class="form-label">Short Description</label>
+                                    <label for="description" class="form-label">{{ _('Short Description') }}</label>
                                     <textarea class="form-control" name="description" id="description" rows="3"
-                                              placeholder="Brief description of the course..."></textarea>
+                                              placeholder="{{ _('Brief description of the course...') }}"></textarea>
                                 </div>
                                 
                                 <div class="mb-3">
-                                    <label for="prerequisites" class="form-label">Prerequisites</label>
+                                    <label for="prerequisites" class="form-label">{{ _('Prerequisites') }}</label>
                                     <textarea class="form-control" name="prerequisites" id="prerequisites" rows="3"
-                                              placeholder="List any required knowledge or prior courses..."></textarea>
+                                              placeholder="{{ _('List any required knowledge or prior courses...') }}"></textarea>
                                 </div>
                                 
                                 <div class="mb-3">
-                                    <label for="learning_objectives" class="form-label">Learning Objectives</label>
+                                    <label for="learning_objectives" class="form-label">{{ _('Learning Objectives') }}</label>
                                     <textarea class="form-control" name="learning_objectives" id="learning_objectives" rows="4"
-                                              placeholder="What will students learn? List key objectives..."></textarea>
+                                              placeholder="{{ _('What will students learn? List key objectives...') }}"></textarea>
                                 </div>
                             </div>
                         </div>
                         
                         <!-- Content Display Selection -->
                         <div class="mt-4">
-                            <h5 class="border-bottom pb-2 mb-3">Content Display Settings</h5>
+                            <h5 class="border-bottom pb-2 mb-3">{{ _('Content Display Settings') }}</h5>
                             <div class="mb-3">
-                                <label class="form-label">What should students see when viewing slides?</label>
+                                <label class="form-label">{{ _('What should students see when viewing slides?') }}</label>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="content_display_type" 
                                            id="display_markdown" value="markdown" checked>
                                     <label class="form-check-label" for="display_markdown">
-                                        <strong>Markdown Content</strong> - Convert markdown text to interactive slides
+                                        <strong>{{ _('Markdown Content') }}</strong> - {{ _('Convert markdown text to interactive slides') }}
                                     </label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="content_display_type" 
                                            id="display_uploaded" value="uploaded_file">
                                     <label class="form-check-label" for="display_uploaded">
-                                        <strong>Uploaded Slides</strong> - Show uploaded PDF/PPTX file for download
+                                        <strong>{{ _('Uploaded Slides') }}</strong> - {{ _('Show uploaded PDF/PPTX file for download') }}
                                     </label>
                                 </div>
                             </div>
@@ -118,15 +118,15 @@
 
                         <!-- File Upload Section -->
                         <div class="mt-4">
-                            <h5 class="border-bottom pb-2 mb-3">Course Slides Upload</h5>
+                            <h5 class="border-bottom pb-2 mb-3">{{ _('Course Slides Upload') }}</h5>
                             <div class="mb-3">
-                                <label for="slide_file" class="form-label">Upload Course Slides (PDF or PPTX)</label>
+                                <label for="slide_file" class="form-label">{{ _('Upload Course Slides (PDF or PPTX)') }}</label>
                                 <input type="file" class="form-control" name="slide_file" id="slide_file" 
                                        accept=".pdf,.pptx" onchange="displayFileInfo()">
                                 <div class="form-text">
                                     <small>
                                         <i class="fas fa-info-circle me-1"></i>
-                                        Upload your course presentation slides. Supported formats: PDF, PowerPoint (PPTX). Max size: 50MB.
+                                        {{ _('Upload your course presentation slides. Supported formats: PDF, PowerPoint (PPTX). Max size: 50MB.') }}
                                     </small>
                                 </div>
                                 <div id="file-info" class="mt-2" style="display: none;">
@@ -140,7 +140,7 @@
 
                         <!-- Course Content Editor -->
                         <div class="mt-4">
-                            <h5 class="border-bottom pb-2 mb-3">Course Content (Markdown)</h5>
+                            <h5 class="border-bottom pb-2 mb-3">{{ _('Course Content (Markdown)') }}</h5>
                             
                             <!-- Template Generation Section -->
                             <div class="mb-4">
@@ -148,10 +148,10 @@
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div>
                                             <i class="fas fa-magic me-2"></i>
-                                            <strong>Quick Start:</strong> Generate a professional 5-slide template to get started faster
+                                            <strong>{{ _('Quick Start:') }}</strong> {{ _('Generate a professional 5-slide template to get started faster') }}
                                         </div>
                                         <button type="button" class="btn btn-sm btn-primary" onclick="generateTemplate()">
-                                            <i class="fas fa-wand-magic me-1"></i>Generate 5-Slide Template
+                                            <i class="fas fa-wand-magic me-1"></i>{{ _('Generate 5-Slide Template') }}
                                         </button>
                                     </div>
                                 </div>
@@ -159,18 +159,18 @@
                             
                             <div class="row">
                                 <div class="col-lg-6">
-                                    <label for="content" class="form-label">Markdown Content</label>
+                                    <label for="content" class="form-label">{{ _('Markdown Content') }}</label>
                                     <textarea class="form-control" name="content" id="content" rows="20" 
-                                              placeholder="# Course Introduction
+                                              placeholder="# {{ _('Course Introduction') }}
 
-Welcome to this programming course!
+{{ _('Welcome to this programming course!') }}
 
-## Module 1: Getting Started
+## {{ _('Module 1: Getting Started') }}
 
-### What you'll learn:
-- Basic concepts
-- Setting up environment
-- First program
+### {{ _('What you\'ll learn:') }}
+- {{ _('Basic concepts') }}
+- {{ _('Setting up environment') }}
+- {{ _('First program') }}
 
 ```python
 def hello_world():
@@ -179,42 +179,42 @@ def hello_world():
 hello_world()
 ```
 
-## Module 2: Advanced Topics
+## {{ _('Module 2: Advanced Topics') }}
 
 ...">{{ template_content if template_content else '' }}</textarea>
                                     <div class="form-text">
                                         <small>
-                                            <strong>Markdown Tips:</strong> Use # for headings, ``` for code blocks, 
-                                            ** for bold, * for italic, - for lists.
+                                            <strong>{{ _('Markdown Tips:') }}</strong> {{ _('Use # for headings, ``` for code blocks, 
+                                            ** for bold, * for italic, - for lists.') }}
                                         </small>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <label class="form-label">Live Preview</label>
+                                        <label class="form-label">{{ _('Live Preview') }}</label>
                                         <div class="btn-group btn-group-sm">
                                             <button type="button" class="btn btn-outline-primary active" id="preview-tab" onclick="showPreview('preview')">
-                                                <i class="fas fa-eye me-1"></i>Preview
+                                                <i class="fas fa-eye me-1"></i>{{ _('Preview') }}
                                             </button>
                                             <button type="button" class="btn btn-outline-info" id="slides-tab" onclick="showPreview('slides')">
-                                                <i class="fas fa-play me-1"></i>Slides
+                                                <i class="fas fa-play me-1"></i>{{ _('Slides') }}
                                             </button>
                                         </div>
                                     </div>
                                     
                                     <!-- Markdown Preview -->
                                     <div class="border p-3 bg-light" style="height: 400px; overflow-y: auto;" id="markdown-preview">
-                                        <em class="text-muted">Type in the content area to see live preview...</em>
+                                        <em class="text-muted">{{ _('Type in the content area to see live preview...') }}</em>
                                     </div>
                                     
                                     <!-- Slides Preview -->
                                     <div class="border p-3 bg-dark text-white" style="height: 400px; overflow-y: auto; display: none;" id="slides-preview">
                                         <div class="text-center">
                                             <i class="fas fa-play fa-2x mb-3"></i>
-                                            <h6>Slides Preview</h6>
-                                            <p class="small">Shows how content will appear as presentation slides</p>
+                                            <h6>{{ _('Slides Preview') }}</h6>
+                                            <p class="small">{{ _('Shows how content will appear as presentation slides') }}</p>
                                             <div id="slides-content" class="text-start mt-3">
-                                                <em class="text-muted">Type content to see slide breakdown...</em>
+                                                <em class="text-muted">{{ _('Type content to see slide breakdown...') }}</em>
                                             </div>
                                         </div>
                                     </div>
@@ -227,10 +227,10 @@ hello_world()
                             <div class="col-12">
                                 <div class="d-flex justify-content-between">
                                     <a href="{{ url_for('teacher_dashboard') }}" class="btn btn-secondary">
-                                        <i class="fas fa-arrow-left me-2"></i>Cancel
+                                        <i class="fas fa-arrow-left me-2"></i>{{ _('Cancel') }}
                                     </a>
                                     <button type="submit" class="btn btn-success">
-                                        <i class="fas fa-save me-2"></i>Create Course
+                                        <i class="fas fa-save me-2"></i>{{ _('Create Course') }}
                                     </button>
                                 </div>
                             </div>
@@ -251,210 +251,217 @@ hello_world()
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/scala.min.js"></script>
 
+{% set js_type_in_content = _('Type in the content area to see live preview...') %}
+{% set js_your_course_title = _('Your Course Title') %}
+{% set js_type_content_slide = _('Type content to see slide breakdown...') %}
+{% set js_file_size_error = _('File size exceeds 50MB limit. Please choose a smaller file.') %}
+
 <script>
-// Wait for DOM to be fully loaded
-document.addEventListener('DOMContentLoaded', function() {
-    // Configure marked to use highlight.js (compatible with both old and new versions)
-    if (typeof marked !== 'undefined') {
-        if (marked.setOptions) {
-            marked.setOptions({
-                highlight: function(code, lang) {
-                    if (lang && hljs.getLanguage(lang)) {
-                        try {
-                            return hljs.highlight(code, { language: lang }).value;
-                        } catch (err) {}
+    const TYPE_IN_CONTENT = "{{ js_type_in_content }}";
+    const YOUR_COURSE_TITLE = "{{ js_your_course_title }}";
+    const TYPE_CONTENT_SLIDE = "{{ js_type_content_slide }}";
+    const FILE_SIZE_ERROR = "{{ js_file_size_error }}";
+
+    // Wait for DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        // Configure marked to use highlight.js (compatible with both old and new versions)
+        if (typeof marked !== 'undefined') {
+            if (marked.setOptions) {
+                marked.setOptions({
+                    highlight: function(code, lang) {
+                        if (lang && hljs.getLanguage(lang)) {
+                            try {
+                                return hljs.highlight(code, { language: lang }).value;
+                            } catch (err) {}
+                        }
+                        return hljs.highlightAuto(code).value;
                     }
-                    return hljs.highlightAuto(code).value;
-                }
-            });
-        }
-    }
-
-    // Live markdown preview
-    const contentTextarea = document.getElementById('content');
-    const previewDiv = document.getElementById('markdown-preview');
-
-    function updatePreview() {
-        const markdown = contentTextarea.value;
-        if (markdown.trim()) {
-            // Support both marked.parse() and marked() for compatibility
-            const html = marked.parse ? marked.parse(markdown) : marked(markdown);
-            previewDiv.innerHTML = html;
-            // Re-highlight code blocks
-            previewDiv.querySelectorAll('pre code').forEach((block) => {
-                hljs.highlightElement(block);
-            });
-        } else {
-            previewDiv.innerHTML = '<em class="text-muted">Type in the content area to see live preview...</em>';
-        }
-    }
-
-    // Preview mode switching
-    window.showPreview = function(mode) {
-        const previewTab = document.getElementById('preview-tab');
-        const slidesTab = document.getElementById('slides-tab');
-        const markdownPreview = document.getElementById('markdown-preview');
-        const slidesPreview = document.getElementById('slides-preview');
-        
-        if (mode === 'preview') {
-            previewTab.classList.add('active');
-            slidesTab.classList.remove('active');
-            markdownPreview.style.display = 'block';
-            slidesPreview.style.display = 'none';
-        } else if (mode === 'slides') {
-            previewTab.classList.remove('active');
-            slidesTab.classList.add('active');
-            markdownPreview.style.display = 'none';
-            slidesPreview.style.display = 'block';
-            updateSlidesPreview();
-        }
-    }
-
-    // Generate 5-slide template
-    window.generateTemplate = function() {
-        const title = document.getElementById('title').value || 'Your Course Title';
-        const programmingLanguage = document.getElementById('programming_language').value || '';
-        
-        // Create a form to submit template generation request
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '';
-        form.style.display = 'none';
-        
-        // Add CSRF token
-        const csrfInput = document.createElement('input');
-        csrfInput.type = 'hidden';
-        csrfInput.name = 'csrf_token';
-        csrfInput.value = '{{ csrf_token() }}';
-        form.appendChild(csrfInput);
-        
-        // Add form fields
-        const titleInput = document.createElement('input');
-        titleInput.name = 'title';
-        titleInput.value = title;
-        form.appendChild(titleInput);
-        
-        const langInput = document.createElement('input');
-        langInput.name = 'programming_language';
-        langInput.value = programmingLanguage;
-        form.appendChild(langInput);
-        
-        const templateInput = document.createElement('input');
-        templateInput.name = 'use_5_slide_template';
-        templateInput.value = '1';
-        form.appendChild(templateInput);
-        
-        document.body.appendChild(form);
-        form.submit();
-    }
-
-    // Update slides preview
-    function updateSlidesPreview() {
-        const markdown = contentTextarea.value;
-        const slidesContent = document.getElementById('slides-content');
-        
-        if (!markdown.trim()) {
-            slidesContent.innerHTML = '<em class="text-muted">Type content to see slide breakdown...</em>';
-            return;
-        }
-        
-        // Split by main headings to show slide structure
-        const lines = markdown.split('\n');
-        let slides = [];
-        let currentSlide = [];
-        
-        for (let line of lines) {
-            if (line.startsWith('# ') || line.startsWith('## ')) {
-                if (currentSlide.length > 0) {
-                    slides.push(currentSlide.join('\n'));
-                    currentSlide = [];
-                }
-                currentSlide.push(line);
-            } else {
-                currentSlide.push(line);
+                });
             }
         }
-        
-        if (currentSlide.length > 0) {
-            slides.push(currentSlide.join('\n'));
-        }
-        
-        // Display slide breakdown
-        let slidesHtml = `<div class="small mb-3">📊 <strong>${slides.length} slides</strong> will be generated</div>`;
-        
-        slides.forEach((slide, index) => {
-            const firstLine = slide.split('\n')[0];
-            const title = firstLine.replace(/^#+\s*/, '') || `Slide ${index + 1}`;
-            const lineCount = slide.split('\n').filter(line => line.trim()).length;
-            
-            slidesHtml += `
-                <div class="border border-secondary rounded p-2 mb-2">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <strong>🎯 ${title}</strong>
-                        <small class="text-muted">${lineCount} lines</small>
-                    </div>
-                </div>
-            `;
-        });
-        
-        slidesContent.innerHTML = slidesHtml;
-    }
 
-    // Update preview on input
-    contentTextarea.addEventListener('input', function() {
-        updatePreview();
-        // Also update slides preview if it's active
-        if (document.getElementById('slides-tab').classList.contains('active')) {
-            updateSlidesPreview();
-        }
-    });
+        // Live markdown preview
+        const contentTextarea = document.getElementById('content');
+        const previewDiv = document.getElementById('markdown-preview');
 
-    // Tab support in textarea
-    contentTextarea.addEventListener('keydown', function(e) {
-        if (e.key === 'Tab') {
-            e.preventDefault();
-            const start = this.selectionStart;
-            const end = this.selectionEnd;
+        function updatePreview() {
+            const markdown = contentTextarea.value;
+            if (markdown.trim()) {
+                const html = marked.parse ? marked.parse(markdown) : marked(markdown);
+                previewDiv.innerHTML = html;
+                previewDiv.querySelectorAll('pre code').forEach((block) => {
+                    hljs.highlightElement(block);
+                });
+            } else {
+                previewDiv.innerHTML = `<em class="text-muted">${TYPE_IN_CONTENT}</em>`;
+            }
+        }
+
+        // Preview mode switching
+        window.showPreview = function(mode) {
+            const previewTab = document.getElementById('preview-tab');
+            const slidesTab = document.getElementById('slides-tab');
+            const markdownPreview = document.getElementById('markdown-preview');
+            const slidesPreview = document.getElementById('slides-preview');
             
-            // Insert tab character
-            this.value = this.value.substring(0, start) + '    ' + this.value.substring(end);
-            
-            // Move cursor
-            this.selectionStart = this.selectionEnd = start + 4;
-            
-            // Update previews
-            updatePreview();
-            if (document.getElementById('slides-tab').classList.contains('active')) {
+            if (mode === 'preview') {
+                previewTab.classList.add('active');
+                slidesTab.classList.remove('active');
+                markdownPreview.style.display = 'block';
+                slidesPreview.style.display = 'none';
+            } else if (mode === 'slides') {
+                previewTab.classList.remove('active');
+                slidesTab.classList.add('active');
+                markdownPreview.style.display = 'none';
+                slidesPreview.style.display = 'block';
                 updateSlidesPreview();
             }
         }
-    });
 
-    // File upload feedback
-    window.displayFileInfo = function() {
-        const fileInput = document.getElementById('slide_file');
-        const fileInfo = document.getElementById('file-info');
-        const fileDetails = document.getElementById('file-details');
-        
-        if (fileInput.files.length > 0) {
-            const file = fileInput.files[0];
-            const fileSize = (file.size / (1024 * 1024)).toFixed(2); // Size in MB
-            const fileType = file.name.split('.').pop().toUpperCase();
+        // Generate 5-slide template
+        window.generateTemplate = function() {
+            const title = document.getElementById('title').value || YOUR_COURSE_TITLE;
+            const programmingLanguage = document.getElementById('programming_language').value || '';
             
-            fileDetails.textContent = `Selected: ${file.name} (${fileType}, ${fileSize} MB)`;
-            fileInfo.style.display = 'block';
+            // Create a form to submit template generation request
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '';
+            form.style.display = 'none';
             
-            // Check file size
-            if (file.size > 50 * 1024 * 1024) { // 50MB limit
-                fileInfo.innerHTML = '<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-1"></i>File size exceeds 50MB limit. Please choose a smaller file.</div>';
-            }
-        } else {
-            fileInfo.style.display = 'none';
+            // Add CSRF token
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrf_token';
+            csrfInput.value = '{{ csrf_token() }}';
+            form.appendChild(csrfInput);
+            
+            // Add form fields
+            const titleInput = document.createElement('input');
+            titleInput.name = 'title';
+            titleInput.value = title;
+            form.appendChild(titleInput);
+            
+            const langInput = document.createElement('input');
+            langInput.name = 'programming_language';
+            langInput.value = programmingLanguage;
+            form.appendChild(langInput);
+            
+            const templateInput = document.createElement('input');
+            templateInput.name = 'use_5_slide_template';
+            templateInput.value = '1';
+            form.appendChild(templateInput);
+            
+            document.body.appendChild(form);
+            form.submit();
         }
-    }
 
-    // Initialize highlight.js
-    hljs.highlightAll();
-});
+        // Update slides preview
+        function updateSlidesPreview() {
+            const markdown = contentTextarea.value;
+            const slidesContent = document.getElementById('slides-content');
+            if (!markdown.trim()) {
+                slidesContent.innerHTML = `<em class="text-muted">${TYPE_CONTENT_SLIDE}</em>`;
+                return;
+            }
+            
+            // Split by main headings to show slide structure
+            const lines = markdown.split('\n');
+            let slides = [];
+            let currentSlide = [];
+            
+            for (let line of lines) {
+                if (line.startsWith('# ') || line.startsWith('## ')) {
+                    if (currentSlide.length > 0) {
+                        slides.push(currentSlide.join('\n'));
+                        currentSlide = [];
+                    }
+                    currentSlide.push(line);
+                } else {
+                    currentSlide.push(line);
+                }
+            }
+            
+            if (currentSlide.length > 0) {
+                slides.push(currentSlide.join('\n'));
+            }
+            
+            // Display slide breakdown
+            let slidesHtml = `<div class="small mb-3">📊 <strong>${slides.length} slides</strong> {{ _('will be generated') }}</div>`;
+            
+            slides.forEach((slide, index) => {
+                const firstLine = slide.split('\n')[0];
+                const title = firstLine.replace(/^#+\s*/, '') || `{{ _('Slide') }} ${index + 1}`;
+                const lineCount = slide.split('\n').filter(line => line.trim()).length;
+                
+                slidesHtml += `
+                    <div class="border border-secondary rounded p-2 mb-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <strong>🎯 ${title}</strong>
+                            <small class="text-muted">${lineCount} {{ _('lines') }}</small>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            slidesContent.innerHTML = slidesHtml;
+        }
+
+        // Update preview on input
+        contentTextarea.addEventListener('input', function() {
+            updatePreview();
+            // Also update slides preview if it's active
+            if (document.getElementById('slides-tab').classList.contains('active')) {
+                updateSlidesPreview();
+            }
+        });
+
+        // Tab support in textarea
+        contentTextarea.addEventListener('keydown', function(e) {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const start = this.selectionStart;
+                const end = this.selectionEnd;
+                
+                // Insert tab character
+                this.value = this.value.substring(0, start) + '    ' + this.value.substring(end);
+                
+                // Move cursor
+                this.selectionStart = this.selectionEnd = start + 4;
+                
+                // Update previews
+                updatePreview();
+                if (document.getElementById('slides-tab').classList.contains('active')) {
+                    updateSlidesPreview();
+                }
+            }
+        });
+
+        // File upload feedback
+        window.displayFileInfo = function() {
+            const fileInput = document.getElementById('slide_file');
+            const fileInfo = document.getElementById('file-info');
+            const fileDetails = document.getElementById('file-details');
+            
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const fileSize = (file.size / (1024 * 1024)).toFixed(2); // Size in MB
+                const fileType = file.name.split('.').pop().toUpperCase();
+                
+                fileDetails.textContent = `{{ _('Selected:') }} ${file.name} (${fileType}, ${fileSize} MB)`;
+                fileInfo.style.display = 'block';
+                
+                // Check file size
+                if (file.size > 50 * 1024 * 1024) { // 50MB limit
+                    fileInfo.innerHTML = '<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-1"></i>' + FILE_SIZE_ERROR + '</div>';
+                }
+            } else {
+                fileInfo.style.display = 'none';
+            }
+        }
+
+        // Initialize highlight.js
+        hljs.highlightAll();
+    });
 </script>
 {% endblock %}
