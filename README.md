@@ -1,5 +1,14 @@
 # EduPortal
 
+## Documentation
+
+| Document | Audience |
+|----------|----------|
+| [QUICK_START.md](QUICK_START.md) | First-time run, demo logins, common fixes |
+| [docs/USERS_AND_ROLES.md](docs/USERS_AND_ROLES.md) | **Students, teachers, admins:** what each role can do |
+| [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | Contributors: blueprints, tests, i18n, optional PDF/OAuth |
+| [FIXES_SUMMARY.md](FIXES_SUMMARY.md) | Detailed changelog-style fix notes |
+
 ## Overview
 EduPortal is a comprehensive Flask-based Learning Management System (LMS) designed to facilitate educational interactions with role-based access for students and teachers. It features course management, assignment tracking, and user authentication via Replit's OAuth. The platform offers tailored dashboards for different roles. Key capabilities include enhanced programming course features with rich content support (Markdown, Reveal.js, PDF generation), a robust MCQ-based exam system with automatic grading and rich content, and a similar rich-content quiz system. The system also includes a custom form-based authentication system with secure user registration, password management, and a three-tier role system (Admin, Teacher, Student). The business vision is to provide an intuitive and secure educational platform with advanced content delivery and assessment tools.
 
@@ -32,7 +41,7 @@ Teachers must retain slide view access to preview and adjust content for student
 - **Role-Specific Dashboards** and responsive design.
 
 ### Application Structure
-- **Factory Pattern** for app creation.
+- **Single `Flask` app** in `app.py` with **blueprints** for routes (see [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)).
 - **Proxy Fix Middleware**, database connection pooling, and logging.
 
 ### Security Measures
@@ -41,7 +50,6 @@ Teachers must retain slide view access to preview and adjust content for student
 - **Production:** set a strong, unique `SESSION_SECRET` environment variable. The app falls back to a development default only when `SESSION_SECRET` is unset; never deploy with that default.
 - **Google OAuth (optional):** if `GOOGLE_OAUTH_CLIENT_ID` and `GOOGLE_OAUTH_CLIENT_SECRET` are set, the Google blueprint is mounted under `/oauth/google/`. Register the authorized redirect URI Google shows (for example `http://127.0.0.1:5000/oauth/google/google/authorized`) in the Google Cloud Console.
 - **File Upload Security** with size/extension validation.
-- **Mandatory SESSION_SECRET** and environment variable configuration.
 - **Input Validation** and strong password enforcement.
 
 ### Feature Specifications
@@ -71,12 +79,15 @@ Teachers must retain slide view access to preview and adjust content for student
 - **Flask-WTF**
 - **Bleach**
 - **Markdown**
-- **WeasyPrint**
+- **WeasyPrint** (optional; see `requirements-pdf.txt` and [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md))
 - **PyJWT**
 - **Werkzeug**
 - **OAuthLib**
 
 ### Environment Configuration
-- **SESSION_SECRET** (required)
-- **DATABASE_URL**
-- **Debug Mode**
+- **SESSION_SECRET** — required for **production**; optional in development (see `app.py` fallback).
+- **DATABASE_URL** — optional; defaults to SQLite under `instance/`.
+- **Debug Mode** — controlled when running `main.py` (`debug=True` for local dev only).
+
+### Optional: PDF stack
+- **WeasyPrint** is not installed by default. Use `requirements-pdf.txt` or `uv sync --extra pdf` (see [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)).

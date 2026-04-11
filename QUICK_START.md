@@ -1,5 +1,9 @@
 # EduDash - Quick Start Guide
 
+**Contributors:** for blueprints, pytest, Babel, and optional WeasyPrint / Google OAuth, see [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
+
+**Roles (student / teacher / admin):** see [docs/USERS_AND_ROLES.md](docs/USERS_AND_ROLES.md).
+
 ## All Fixes Have Been Applied ✅
 
 The EduDash application has been fixed and is ready to run. All startup errors have been resolved.
