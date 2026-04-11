@@ -1,55 +1,53 @@
 {% extends "base.html" %}
 
-{% block title %}{{ quiz.title }} - Submissions{% endblock %}
+{% block title %}{{ quiz.title }} - {{ _('Submissions') }}{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="row">
         <div class="col-12">
-            <!-- Header -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h2>
-                        <i class="fas fa-paper-plane me-2"></i>Quiz Submissions
+                        <i class="fas fa-paper-plane me-2"></i>{{ _('Quiz Submissions') }}
                     </h2>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ url_for('teacher_dashboard') }}">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a href="{{ url_for('view_course', course_id=course.id) }}">{{ course.title }}</a></li>
-                            <li class="breadcrumb-item"><a href="{{ url_for('view_course_quizzes', course_id=course.id) }}">Quizzes</a></li>
+                            <li class="breadcrumb-item"><a href="{{ url_for('teacher.teacher_dashboard') }}">{{ _('Dashboard') }}</a></li>
+                            <li class="breadcrumb-item"><a href="{{ url_for('teacher.view_course', course_id=course.id) }}">{{ course.title }}</a></li>
+                            <li class="breadcrumb-item"><a href="{{ url_for('teacher.view_course_quizzes', course_id=course.id) }}">{{ _('Quizzes') }}</a></li>
                             <li class="breadcrumb-item active" aria-current="page">{{ quiz.title }}</li>
                         </ol>
                     </nav>
                 </div>
                 {% if submissions %}
                 <div>
-                    <form method="POST" action="{{ url_for('reset_quiz_submissions', quiz_id=quiz.id) }}" 
-                          onsubmit="return confirm('⚠️ WARNING: This will delete ALL {{ submissions|length }} submission(s) and allow students to retake this quiz. This action cannot be undone. Are you sure?')">
+                    <form method="POST" action="{{ url_for('teacher.reset_quiz_submissions', quiz_id=quiz.id) }}" 
+                          id="resetQuizSubmissionsForm">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                         <button type="submit" class="btn btn-warning">
-                            <i class="fas fa-redo me-1"></i>Reset All Submissions
+                            <i class="fas fa-redo me-1"></i>{{ _('Reset All Submissions') }}
                         </button>
                     </form>
                 </div>
                 {% endif %}
             </div>
 
-            <!-- Quiz Info Card -->
             <div class="card mb-4">
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-8">
                             <h5 class="card-title">{{ quiz.title }}</h5>
-                            <p class="text-muted mb-1">{{ quiz.description or 'No description' }}</p>
+                            <p class="text-muted mb-1">{{ quiz.description or _('No description') }}</p>
                         </div>
                         <div class="col-md-4">
                             <div class="row text-center">
                                 <div class="col-6">
-                                    <h6 class="text-muted mb-0">Total Submissions</h6>
+                                    <h6 class="text-muted mb-0">{{ _('Total Submissions') }}</h6>
                                     <h4 class="text-primary">{{ submissions|length }}</h4>
                                 </div>
                                 <div class="col-6">
-                                    <h6 class="text-muted mb-0">Average Score</h6>
+                                    <h6 class="text-muted mb-0">{{ _('Average Score') }}</h6>
                                     <h4 class="text-success">
                                         {% set graded_submissions = submissions | selectattr('status', 'equalto', 'graded') | list %}
                                         {% if graded_submissions %}
@@ -65,11 +63,10 @@
                 </div>
             </div>
 
-            <!-- Submissions List -->
             <div class="card">
                 <div class="card-header">
                     <h5 class="mb-0">
-                        <i class="fas fa-list me-2"></i>Student Submissions
+                        <i class="fas fa-list me-2"></i>{{ _('Student Submissions') }}
                     </h5>
                 </div>
                 <div class="card-body">
@@ -78,12 +75,12 @@
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th>Student</th>
-                                        <th>Submitted</th>
-                                        <th>Language</th>
-                                        <th>Status</th>
-                                        <th>Score</th>
-                                        <th>Actions</th>
+                                        <th>{{ _('Student') }}</th>
+                                        <th>{{ _('Submitted') }}</th>
+                                        <th>{{ _('Language') }}</th>
+                                        <th>{{ _('Status') }}</th>
+                                        <th>{{ _('Score') }}</th>
+                                        <th>{{ _('Actions') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -91,7 +88,7 @@
                                     <tr>
                                         <td>
                                             <div class="fw-medium">
-                                                {{ submission.student.first_name or 'Unknown' }} {{ submission.student.last_name or 'Student' }}
+                                                {{ submission.student.first_name or _('Unknown') }} {{ submission.student.last_name or _('Student') }}
                                             </div>
                                             <small class="text-muted">{{ submission.student.email }}</small>
                                         </td>
@@ -114,7 +111,7 @@
                                                 </div>
                                                 <small class="text-muted">{{ "%.1f"|format(submission.score / quiz.max_score * 100) }}%</small>
                                             {% else %}
-                                                <span class="text-muted">Not graded</span>
+                                                <span class="text-muted">{{ _('Not graded') }}</span>
                                             {% endif %}
                                         </td>
                                         <td>
@@ -128,7 +125,7 @@
                                                     data-output="{{ submission.output or '' }}"
                                                     data-score="{{ submission.score or '' }}"
                                                     data-feedback="{{ submission.feedback or '' }}">
-                                                <i class="fas fa-eye me-1"></i>View & Grade
+                                                <i class="fas fa-eye me-1"></i>{{ _('View & Grade') }}
                                             </button>
                                         </td>
                                     </tr>
@@ -139,8 +136,8 @@
                     {% else %}
                         <div class="text-center py-5">
                             <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                            <h6 class="text-muted">No submissions yet</h6>
-                            <p class="text-muted small">Students will need to complete the quiz for submissions to appear here.</p>
+                            <h6 class="text-muted">{{ _('No submissions yet') }}</h6>
+                            <p class="text-muted small">{{ _('Students will need to complete the quiz for submissions to appear here.') }}</p>
                         </div>
                     {% endif %}
                 </div>
@@ -149,26 +146,25 @@
     </div>
 </div>
 
-<!-- View & Grade Submission Modal -->
 <div class="modal fade" id="viewSubmissionModal" tabindex="-1" aria-labelledby="viewSubmissionModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="viewSubmissionModalLabel">
-                    <i class="fas fa-code me-2"></i>Code Submission - <span id="modalStudentName"></span>
+                    <i class="fas fa-code me-2"></i>{{ _('Code Submission') }} - <span id="modalStudentName"></span>
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _('Close') }}"></button>
             </div>
             <div class="modal-body">
                 <div class="row">
                     <div class="col-lg-8">
-                        <h6>Submitted Code:</h6>
+                        <h6>{{ _('Submitted Code:') }}</h6>
                         <div class="border rounded p-3 mb-3" style="background: #f8f9fa; max-height: 400px; overflow-y: auto;">
                             <pre><code id="modalCode"></code></pre>
                         </div>
                         
                         <div id="modalOutputSection" style="display: none;">
-                            <h6>Program Output:</h6>
+                            <h6>{{ _('Program Output:') }}</h6>
                             <div class="border rounded p-3" style="background: #000; color: #fff; max-height: 200px; overflow-y: auto;">
                                 <pre id="modalOutput"></pre>
                             </div>
@@ -178,20 +174,20 @@
                     <div class="col-lg-4">
                         <form id="gradeSubmissionForm" method="POST">
                             <div class="mb-3">
-                                <label for="score" class="form-label">Score (out of {{ quiz.max_score }})</label>
+                                <label for="score" class="form-label">{{ _('Score (out of %(max)s)', max=quiz.max_score) }}</label>
                                 <input type="number" class="form-control" name="score" id="modalScore" 
                                        min="0" max="{{ quiz.max_score }}" step="1">
                             </div>
                             
                             <div class="mb-3">
-                                <label for="feedback" class="form-label">Feedback for Student</label>
+                                <label for="feedback" class="form-label">{{ _('Feedback for Student') }}</label>
                                 <textarea class="form-control" name="feedback" id="modalFeedback" rows="6"
-                                          placeholder="Provide constructive feedback on the student's code..."></textarea>
+                                          placeholder="{{ _('Provide constructive feedback on the student code...') }}"></textarea>
                             </div>
                             
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-success">
-                                    <i class="fas fa-star me-1"></i>Save Grade & Feedback
+                                    <i class="fas fa-star me-1"></i>{{ _('Save Grade & Feedback') }}
                                 </button>
                             </div>
                         </form>
@@ -203,11 +199,16 @@
 </div>
 
 <script>
-// Handle submission modal
+const RESET_QUIZ_MSG = {{ _('This will delete ALL %(n)s submission(s) and allow students to retake this quiz. This cannot be undone. Continue?', n=submissions|length)|tojson }};
+
+document.getElementById('resetQuizSubmissionsForm')?.addEventListener('submit', function(e) {
+    if (!confirm(RESET_QUIZ_MSG)) e.preventDefault();
+});
+
 document.addEventListener('DOMContentLoaded', function() {
-    const modal = document.getElementById('viewSubmissionModal');
-    if (modal) {
-        modal.addEventListener('show.bs.modal', function(event) {
+    const viewSubmissionModal = document.getElementById('viewSubmissionModal');
+    if (viewSubmissionModal) {
+        viewSubmissionModal.addEventListener('show.bs.modal', function(event) {
             const button = event.relatedTarget;
             const submissionId = button.getAttribute('data-submission-id');
             const studentName = button.getAttribute('data-student-name');
@@ -217,24 +218,20 @@ document.addEventListener('DOMContentLoaded', function() {
             const score = button.getAttribute('data-score');
             const feedback = button.getAttribute('data-feedback');
             
-            // Update modal content
             document.getElementById('modalStudentName').textContent = studentName;
-            document.getElementById('modalCode').textContent = code;
-            document.getElementById('modalScore').value = score;
-            document.getElementById('modalFeedback').value = feedback;
+            document.getElementById('modalCode').textContent = code || '';
+            document.getElementById('gradeSubmissionForm').action = `/teacher/submission/${submissionId}/grade`;
             
-            // Show output section if there's output
             const outputSection = document.getElementById('modalOutputSection');
-            const outputElement = document.getElementById('modalOutput');
             if (output && output.trim()) {
-                outputElement.textContent = output;
+                document.getElementById('modalOutput').textContent = output;
                 outputSection.style.display = 'block';
             } else {
                 outputSection.style.display = 'none';
             }
             
-            // Set form action
-            document.getElementById('gradeSubmissionForm').action = `/teacher/submission/${submissionId}/grade`;
+            document.getElementById('modalScore').value = score || '';
+            document.getElementById('modalFeedback').value = feedback || '';
         });
     }
 });

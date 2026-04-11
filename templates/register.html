@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Create Account - EduPortal{% endblock %}
+{% block title %}{{ _('Create Account') }} - {{ _('EduPortal') }}{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -9,12 +9,12 @@
             <div class="card shadow-lg border-0 mt-4">
                 <div class="card-header bg-primary text-white text-center py-4">
                     <h3 class="mb-0">
-                        <i class="fas fa-user-plus me-2"></i>Create Your Account
+                        <i class="fas fa-user-plus me-2"></i>{{ _('Create Your Account') }}
                     </h3>
                 </div>
                 <div class="card-body p-5">
                     <p class="text-center text-muted mb-4">
-                        Join EduPortal and start your learning journey today!
+                        {{ _('Join EduPortal and start your learning journey today!') }}
                     </p>
                     
                     <form method="POST">
@@ -47,7 +47,7 @@
                         
                         <div class="mb-3">
                             {{ form.username.label(class="form-label") }}
-                            {{ form.username(class="form-control", placeholder="Choose a unique username") }}
+                            {{ form.username(class="form-control", placeholder=_('Choose a unique username')) }}
                             {% if form.username.errors %}
                                 <div class="text-danger small mt-1">
                                     {% for error in form.username.errors %}
@@ -59,7 +59,7 @@
                         
                         <div class="mb-3">
                             {{ form.email.label(class="form-label") }}
-                            {{ form.email(class="form-control", placeholder="your.email@example.com") }}
+                            {{ form.email(class="form-control", placeholder=_('your.email@example.com')) }}
                             {% if form.email.errors %}
                                 <div class="text-danger small mt-1">
                                     {% for error in form.email.errors %}
@@ -96,7 +96,7 @@
                         
                         <div class="alert alert-info mb-3">
                             <i class="fas fa-info-circle me-2"></i>
-                            All new accounts are created as <strong>Student</strong> accounts. If you need teacher access, please contact an administrator after registration.
+                            {{ _('All new accounts are created as <strong>Student</strong> accounts. If you need teacher access, please contact an administrator after registration.')|safe }}
                         </div>
                         
                         <div class="mb-3">
@@ -111,8 +111,8 @@
                     
                     <div class="text-center mt-4">
                         <p class="text-muted">
-                            Already have an account? 
-                            <a href="{{ url_for('login') }}" class="text-primary">Sign In</a>
+                            {{ _('Already have an account?') }}
+                            <a href="{{ url_for('auth.login') }}" class="text-primary">{{ _('Sign In') }}</a>
                         </p>
                     </div>
                 </div>

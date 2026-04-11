@@ -23,18 +23,17 @@ $ uv run python main.py   # python main.py
 
 # Run this in Python shell after starting the app
 from app import app, db
-from models import User, TeacherProfile
-from werkzeug.security import generate_password_hash
+from models import User
 
 with app.app_context():
     admin = User(
         username='admin',
         email='admin@example.com',
-        password_hash=generate_password_hash('admin'),
         first_name='Admin',
         last_name='User',
-        role='admin'
+        role='admin',
     )
+    admin.set_password('changeme-before-production')
     db.session.add(admin)
     db.session.commit()
 

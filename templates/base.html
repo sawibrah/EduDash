@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ session.language or 'en' }}" data-bs-theme="dark">
+<html lang="{{ session.get('language', 'fr') }}" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -87,7 +87,7 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">
+            <a class="navbar-brand fw-bold" href="{{ url_for('main.index') }}">
                 <i class="fas fa-graduation-cap me-2"></i>{{ _('EduPortal') }}
             </a>
             
@@ -101,13 +101,13 @@
                     <li class="nav-item dropdown language-switcher">
                         <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
                             <i class="fas fa-globe me-1"></i>
-                            {% if session.language == 'fr' %}Français{% else %}English{% endif %}
+                            {% if session.get('language', 'fr') == 'fr' %}Français{% else %}English{% endif %}
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="{{ url_for('set_language', language='en') }}">
+                            <li><a class="dropdown-item" href="{{ url_for('main.set_language', language='en') }}">
                                 <i class="flag-icon flag-icon-us me-2"></i>English
                             </a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('set_language', language='fr') }}">
+                            <li><a class="dropdown-item" href="{{ url_for('main.set_language', language='fr') }}">
                                 <i class="flag-icon flag-icon-fr me-2"></i>Français
                             </a></li>
                         </ul>
@@ -117,47 +117,47 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
                                 {% if current_user.profile_image_url %}
-                                    <img src="{{ current_user.profile_image_url }}" alt="Profile" class="rounded-circle me-2" style="width: 24px; height: 24px; object-fit: cover;">
+                                    <img src="{{ current_user.profile_image_url }}" alt="{{ _('Profile') }}" class="rounded-circle me-2" style="width: 24px; height: 24px; object-fit: cover;">
                                 {% else %}
                                     <i class="fas fa-user-circle me-2"></i>
                                 {% endif %}
-                                {{ current_user.first_name or 'User' }}
+                                {{ current_user.first_name or _('User') }}
                             </a>
                             <ul class="dropdown-menu">
                                 {% if current_user.role == 'admin' and current_user.teacher_profile %}
-                                    <li><a class="dropdown-item" href="{{ url_for('admin_dashboard') }}">
+                                    <li><a class="dropdown-item" href="{{ url_for('admin.admin_dashboard') }}">
                                         <i class="fas fa-user-shield me-2"></i>{{ _('Admin Dashboard') }}
                                     </a></li>
-                                    <li><a class="dropdown-item" href="{{ url_for('teacher_dashboard') }}">
+                                    <li><a class="dropdown-item" href="{{ url_for('teacher.teacher_dashboard') }}">
                                         <i class="fas fa-chalkboard-teacher me-2"></i>{{ _('Teacher Dashboard') }}
                                     </a></li>
                                 {% elif current_user.role == 'admin' %}
-                                    <li><a class="dropdown-item" href="{{ url_for('admin_dashboard') }}">
+                                    <li><a class="dropdown-item" href="{{ url_for('admin.admin_dashboard') }}">
                                         <i class="fas fa-user-shield me-2"></i>{{ _('Admin Dashboard') }}
                                     </a></li>
                                 {% elif current_user.role == 'student' %}
-                                    <li><a class="dropdown-item" href="{{ url_for('student_dashboard') }}">
+                                    <li><a class="dropdown-item" href="{{ url_for('student.student_dashboard') }}">
                                         <i class="fas fa-tachometer-alt me-2"></i>{{ _('Dashboard') }}
                                     </a></li>
                                 {% elif current_user.role == 'teacher' %}
-                                    <li><a class="dropdown-item" href="{{ url_for('teacher_dashboard') }}">
+                                    <li><a class="dropdown-item" href="{{ url_for('teacher.teacher_dashboard') }}">
                                         <i class="fas fa-tachometer-alt me-2"></i>{{ _('Dashboard') }}
                                     </a></li>
                                 {% endif %}
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{{ url_for('logout') }}">
+                                <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">
                                     <i class="fas fa-sign-out-alt me-2"></i>{{ _('Logout') }}
                                 </a></li>
                             </ul>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('login') }}">
+                            <a class="nav-link" href="{{ url_for('auth.login') }}">
                                 <i class="fas fa-sign-in-alt me-2"></i>{{ _('Login') }}
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link btn btn-outline-primary ms-2" href="{{ url_for('register') }}">
+                            <a class="nav-link btn btn-outline-primary ms-2" href="{{ url_for('auth.register') }}">
                                 <i class="fas fa-user-plus me-2"></i>{{ _('Sign Up') }}
                             </a>
                         </li>
@@ -172,7 +172,7 @@
         {% if messages %}
             <div class="container mt-3">
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ 'danger' if category == 'error' else 'warning' if category == 'warning' else 'success' }} alert-dismissible fade show" role="alert">
+                    <div class="alert alert-{{ 'danger' if category == 'error' else 'warning' if category == 'warning' else 'info' if category == 'info' else 'success' }} alert-dismissible fade show" role="alert">
                         {{ message }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>

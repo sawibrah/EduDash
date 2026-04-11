@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+*.so
+.venv/
+venv/
+myenv/
+.env
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Local database (do not commit)
+instance/*.db
+instance/*.db-journal
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Tests / coverage
+.pytest_cache/
+.coverage
+htmlcov/

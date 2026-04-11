@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Page Not Found - EduPortal{% endblock %}
+{% block title %}{{ _('Page Not Found') }} - {{ _('EduPortal') }}{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -13,17 +13,17 @@
                         <text x="100" y="120" text-anchor="middle" font-size="48" font-weight="bold" fill="currentColor">404</text>
                     </svg>
                 </div>
-                <h1 class="display-4 text-primary mb-3">Page Not Found</h1>
-                <h3 class="mb-3">Oops! This page doesn't exist</h3>
+                <h1 class="display-4 text-primary mb-3">{{ _('Page Not Found') }}</h1>
+                <h3 class="mb-3">{{ _("Oops! This page doesn't exist") }}</h3>
                 <p class="text-muted mb-4">
-                    The page you're looking for might have been moved, deleted, or you entered the wrong URL.
+                    {{ _("The page you're looking for might have been moved, deleted, or you entered the wrong URL.") }}
                 </p>
                 <div class="d-grid gap-2 d-md-block">
-                    <a href="{{ url_for('index') }}" class="btn btn-primary">
-                        <i class="fas fa-home me-2"></i>Go Home
+                    <a href="{{ url_for('main.index') }}" class="btn btn-primary">
+                        <i class="fas fa-home me-2"></i>{{ _('Go Home') }}
                     </a>
                     <a href="javascript:history.back()" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left me-2"></i>Go Back
+                        <i class="fas fa-arrow-left me-2"></i>{{ _('Go Back') }}
                     </a>
                 </div>
             </div>

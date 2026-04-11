@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}User Management - Admin{% endblock %}
+{% block title %}{{ _('User Management') }} - {{ _('Admin') }}{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
@@ -15,8 +15,8 @@
             <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createUserModal">
                 <i class="fas fa-user-plus me-1"></i>{{ _('Create New User') }}
             </button>
-            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+            <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>{{ _('Back to Dashboard') }}
             </a>
         </div>
     </div>
@@ -42,13 +42,13 @@
                 <table class="table table-hover" id="usersTable">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Username</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Registered</th>
-                            <th>Actions</th>
+                            <th>{{ _('ID') }}</th>
+                            <th>{{ _('Username') }}</th>
+                            <th>{{ _('Name') }}</th>
+                            <th>{{ _('Email') }}</th>
+                            <th>{{ _('Role') }}</th>
+                            <th>{{ _('Registered') }}</th>
+                            <th>{{ _('Actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -60,20 +60,20 @@
                             <td>{{ user.email }}</td>
                             <td>
                                 {% if user.role == 'admin' %}
-                                    <span class="badge bg-danger">Admin</span>
+                                    <span class="badge bg-danger">{{ _('Admin') }}</span>
                                     {% if user.teacher_profile %}
-                                        <span class="badge bg-success ms-1" title="Has teacher access">
-                                            <i class="fas fa-chalkboard-teacher"></i> Teacher
+                                        <span class="badge bg-success ms-1" title="{{ _('Has teacher access') }}">
+                                            <i class="fas fa-chalkboard-teacher"></i> {{ _('Teacher') }}
                                         </span>
                                     {% endif %}
                                 {% elif user.role == 'teacher' %}
-                                    <span class="badge bg-success">Teacher</span>
+                                    <span class="badge bg-success">{{ _('Teacher') }}</span>
                                 {% else %}
-                                    <span class="badge bg-info">Student</span>
+                                    <span class="badge bg-info">{{ _('Student') }}</span>
                                 {% endif %}
                             </td>
                             <td>
-                                <small class="text-muted">{{ user.created_at.strftime('%Y-%m-%d %H:%M') if user.created_at else 'N/A' }}</small>
+                                <small class="text-muted">{{ user.created_at.strftime('%Y-%m-%d %H:%M') if user.created_at else _('N/A') }}</small>
                             </td>
                             <td>
                                 {% if user.id != current_user.id %}
@@ -85,33 +85,33 @@
                                     <ul class="dropdown-menu">
                                         {% if user.role != 'student' %}
                                         <li>
-                                            <form method="POST" action="{{ url_for('promote_user', user_id=user.id) }}" style="display: inline;">
+                                            <form method="POST" action="{{ url_for('admin.promote_user', user_id=user.id) }}" style="display: inline;">
                                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                                 <input type="hidden" name="new_role" value="student"/>
                                                 <button type="submit" class="dropdown-item">
-                                                    <i class="fas fa-user-graduate me-2"></i>Set as Student
+                                                    <i class="fas fa-user-graduate me-2"></i>{{ _('Set as Student') }}
                                                 </button>
                                             </form>
                                         </li>
                                         {% endif %}
                                         {% if user.role != 'teacher' %}
                                         <li>
-                                            <form method="POST" action="{{ url_for('promote_user', user_id=user.id) }}" style="display: inline;">
+                                            <form method="POST" action="{{ url_for('admin.promote_user', user_id=user.id) }}" style="display: inline;">
                                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                                 <input type="hidden" name="new_role" value="teacher"/>
                                                 <button type="submit" class="dropdown-item">
-                                                    <i class="fas fa-chalkboard-teacher me-2"></i>Set as Teacher
+                                                    <i class="fas fa-chalkboard-teacher me-2"></i>{{ _('Set as Teacher') }}
                                                 </button>
                                             </form>
                                         </li>
                                         {% endif %}
                                         {% if user.role != 'admin' %}
                                         <li>
-                                            <form method="POST" action="{{ url_for('promote_user', user_id=user.id) }}" style="display: inline;">
+                                            <form method="POST" action="{{ url_for('admin.promote_user', user_id=user.id) }}" style="display: inline;">
                                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                                 <input type="hidden" name="new_role" value="admin"/>
                                                 <button type="submit" class="dropdown-item">
-                                                    <i class="fas fa-user-shield me-2"></i>Set as Admin
+                                                    <i class="fas fa-user-shield me-2"></i>{{ _('Set as Admin') }}
                                                 </button>
                                             </form>
                                         </li>
@@ -120,16 +120,16 @@
                                         <li><hr class="dropdown-divider"></li>
                                         {% if user.teacher_profile %}
                                         <li>
-                                            <form method="POST" action="{{ url_for('admin_toggle_teacher_capability', user_id=user.id) }}" style="display: inline;">
+                                            <form method="POST" action="{{ url_for('admin.admin_toggle_teacher_capability', user_id=user.id) }}" style="display: inline;">
                                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                                 <button type="submit" class="dropdown-item text-warning">
-                                                    <i class="fas fa-times-circle me-2"></i>Remove Teacher Access
+                                                    <i class="fas fa-times-circle me-2"></i>{{ _('Remove Teacher Access') }}
                                                 </button>
                                             </form>
                                         </li>
                                         {% else %}
                                         <li>
-                                            <form method="POST" action="{{ url_for('admin_toggle_teacher_capability', user_id=user.id) }}" style="display: inline;">
+                                            <form method="POST" action="{{ url_for('admin.admin_toggle_teacher_capability', user_id=user.id) }}" style="display: inline;">
                                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                                 <button type="submit" class="dropdown-item text-success">
                                                     <i class="fas fa-plus-circle me-2"></i>Grant Teacher Access
@@ -147,14 +147,14 @@
                                         data-username="{{ user.username }}">
                                     <i class="fas fa-key"></i>
                                 </button>
-                                <form method="POST" action="{{ url_for('admin_delete_user', user_id=user.id) }}" style="display: inline;" onsubmit="return confirmDeleteUser();">
+                                <form method="POST" action="{{ url_for('admin.admin_delete_user', user_id=user.id) }}" style="display: inline;" onsubmit="return confirmDeleteUser();">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                     <button type="submit" class="btn btn-sm btn-outline-danger ms-1">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
                                 {% else %}
-                                <span class="badge bg-secondary">You</span>
+                                <span class="badge bg-secondary">{{ _('You') }}</span>
                                 {% endif %}
                             </td>
                         </tr>
@@ -172,49 +172,49 @@
         <div class="modal-content">
             <div class="modal-header bg-success text-white">
                 <h5 class="modal-title">
-                    <i class="fas fa-user-plus me-2"></i>Create New User
+                    <i class="fas fa-user-plus me-2"></i>{{ _('Create New User') }}
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <form method="POST" action="{{ url_for('admin_create_user') }}">
+            <form method="POST" action="{{ url_for('admin.admin_create_user') }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="username" class="form-label">Username *</label>
+                        <label for="username" class="form-label">{{ _('Username') }} *</label>
                         <input type="text" class="form-control" name="username" required>
                     </div>
                     <div class="mb-3">
-                        <label for="email" class="form-label">Email *</label>
+                        <label for="email" class="form-label">{{ _('Email') }} *</label>
                         <input type="email" class="form-control" name="email" required>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="first_name" class="form-label">First Name *</label>
+                            <label for="first_name" class="form-label">{{ _('First Name') }} *</label>
                             <input type="text" class="form-control" name="first_name" required>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="last_name" class="form-label">Last Name *</label>
+                            <label for="last_name" class="form-label">{{ _('Last Name') }} *</label>
                             <input type="text" class="form-control" name="last_name" required>
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="password" class="form-label">Password *</label>
+                        <label for="password" class="form-label">{{ _('Password') }} *</label>
                         <input type="password" class="form-control" name="password" minlength="6" required>
-                        <small class="text-muted">Minimum 6 characters</small>
+                        <small class="text-muted">{{ _('Minimum 6 characters') }}</small>
                     </div>
                     <div class="mb-3">
-                        <label for="role" class="form-label">Role *</label>
+                        <label for="role" class="form-label">{{ _('Role') }} *</label>
                         <select class="form-select" name="role" required>
-                            <option value="student">Student</option>
-                            <option value="teacher">Teacher</option>
-                            <option value="admin">Admin</option>
+                            <option value="student">{{ _('Student') }}</option>
+                            <option value="teacher">{{ _('Teacher') }}</option>
+                            <option value="admin">{{ _('Admin') }}</option>
                         </select>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _('Cancel') }}</button>
                     <button type="submit" class="btn btn-success">
-                        <i class="fas fa-user-plus me-1"></i>Create User
+                        <i class="fas fa-user-plus me-1"></i>{{ _('Create User') }}
                     </button>
                 </div>
             </form>
@@ -228,7 +228,7 @@
         <div class="modal-content">
             <div class="modal-header bg-warning text-dark">
                 <h5 class="modal-title">
-                    <i class="fas fa-key me-2"></i>Reset Password
+                    <i class="fas fa-key me-2"></i>{{ _('Reset Password') }}
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
@@ -237,18 +237,18 @@
                 <div class="modal-body">
                     <div class="alert alert-warning">
                         <i class="fas fa-exclamation-triangle me-2"></i>
-                        <strong>Warning:</strong> This will reset the password for user <strong id="resetUsername"></strong>
+                        <strong>{{ _('Warning') }}:</strong> {{ _('This will reset the password for user') }} <strong id="resetUsername"></strong>
                     </div>
                     <div class="mb-3">
-                        <label for="new_password" class="form-label">New Password *</label>
+                        <label for="new_password" class="form-label">{{ _('New Password') }} *</label>
                         <input type="text" class="form-control" name="new_password" minlength="6" required>
-                        <small class="text-muted">Minimum 6 characters. Make sure to save this password!</small>
+                        <small class="text-muted">{{ _('Minimum 6 characters. Make sure to save this password!') }}</small>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _('Cancel') }}</button>
                     <button type="submit" class="btn btn-warning">
-                        <i class="fas fa-key me-1"></i>Reset Password
+                        <i class="fas fa-key me-1"></i>{{ _('Reset Password') }}
                     </button>
                 </div>
             </form>

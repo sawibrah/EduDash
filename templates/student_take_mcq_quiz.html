@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ quiz.title }} - Multiple Choice Quiz{% endblock %}
+{% block title %}{{ quiz.title }} - {{ _('Multiple Choice Quiz') }}{% endblock %}
 
 {% block head %}
 <style>
@@ -53,7 +53,7 @@
 {% if quiz.time_limit %}
 <div class="quiz-timer">
     <i class="fas fa-clock me-1"></i>
-    Time Left: <span id="quiz-timer">{{ quiz.time_limit }}:00</span>
+    {{ _('Time Left:') }} <span id="quiz-timer">{{ quiz.time_limit }}:00</span>
 </div>
 {% endif %}
 
@@ -75,22 +75,22 @@
                             {% endif %}
                             <p class="text-muted mb-0">
                                 <i class="fas fa-info-circle me-1"></i>
-                                Answer all questions and click "Submit Quiz" when you're done.
+                                {{ _("Answer all questions and click \"Submit Quiz\" when you're done.") }}
                             </p>
                         </div>
                         <div class="col-md-4 text-md-end">
                             <div class="mb-2">
-                                <strong>Max Score:</strong> 
-                                <span class="badge bg-success">{{ quiz.max_score }} points</span>
+                                <strong>{{ _('Max Score:') }}</strong> 
+                                <span class="badge bg-success">{{ quiz.max_score }} {{ _('points') }}</span>
                             </div>
                             {% if quiz.due_date %}
                                 <div class="mb-2">
-                                    <strong>Due:</strong> 
+                                    <strong>{{ _('Due:') }}</strong> 
                                     <small class="text-muted">{{ quiz.due_date.strftime('%Y-%m-%d %H:%M') }}</small>
                                 </div>
                             {% endif %}
                             <div id="progress-text" class="text-primary">
-                                <strong>Progress: <span id="answered-count">0</span>/<span id="total-count">0</span></strong>
+                                <strong>{{ _('Progress:') }} <span id="answered-count">0</span>/<span id="total-count">0</span></strong>
                             </div>
                         </div>
                     </div>
@@ -110,11 +110,11 @@
                 <div class="card mt-3">
                     <div class="card-body text-center">
                         <button type="submit" class="btn btn-primary btn-lg" id="submit-btn">
-                            <i class="fas fa-paper-plane me-2"></i>Submit Quiz
+                            <i class="fas fa-paper-plane me-2"></i>{{ _('Submit Quiz') }}
                         </button>
                         <p class="text-muted mt-2 mb-0">
                             <i class="fas fa-exclamation-triangle me-1"></i>
-                            You cannot change your answers after submission.
+                            {{ _('You cannot change your answers after submission.') }}
                         </p>
                     </div>
                 </div>
@@ -127,6 +127,19 @@
 const quizId = {{ quiz.id }};
 const questions = {{ quiz.questions_json | safe }};
 const timeLimit = {{ quiz.time_limit if quiz.time_limit else 0 }};
+const quizMaxScore = {{ quiz.max_score }};
+const MSG_NO_QUESTIONS = {{ _('This quiz has no questions yet.')|tojson }};
+const MSG_Q_PREFIX = {{ _('Question')|tojson }};
+const MSG_TIME_UP = {{ _('Time is up! Your quiz will be automatically submitted.')|tojson }};
+const MSG_UNANSWERED_PREFIX = {{ _('You have')|tojson }};
+const MSG_UNANSWERED_SUFFIX = {{ _('unanswered question(s). Submit anyway?')|tojson }};
+const MSG_CONFIRM_SUBMIT = {{ _('Are you sure you want to submit your quiz? You cannot change your answers after submission.')|tojson }};
+const MSG_SUBMITTING = {{ _('Submitting...')|tojson }};
+const MSG_SUBMIT_OK_PREFIX = {{ _('Quiz submitted successfully! Your score:')|tojson }};
+const MSG_NA = {{ _('N/A')|tojson }};
+const MSG_SUBMIT_ERR_PREFIX = {{ _('Error submitting quiz:')|tojson }};
+const MSG_SUBMIT_RETRY = {{ _('Error submitting quiz. Please try again.')|tojson }};
+const MSG_LEAVE_WARN = {{ _('Are you sure you want to leave? Your quiz progress may be lost.')|tojson }};
 let answers = {};
 let quizTimer = null;
 
@@ -148,7 +161,7 @@ function loadQuestions() {
         container.innerHTML = `
             <div class="alert alert-warning">
                 <i class="fas fa-exclamation-triangle me-2"></i>
-                This quiz has no questions yet.
+                ${MSG_NO_QUESTIONS}
             </div>
         `;
         document.getElementById('submit-btn').disabled = true;
@@ -195,7 +208,7 @@ function loadQuestions() {
         const questionHtml = `
             <div class="card question-card mb-3">
                 <div class="card-header bg-light">
-                    <h5 class="mb-0">Question ${index + 1}</h5>
+                    <h5 class="mb-0">${MSG_Q_PREFIX} ${index + 1}</h5>
                 </div>
                 <div class="card-body">
                     ${questionContent}
@@ -267,7 +280,7 @@ function startQuizTimer(minutes) {
         
         if (timeLeft <= 0) {
             clearInterval(quizTimer);
-            alert('Time is up! Your quiz will be automatically submitted.');
+            alert(MSG_TIME_UP);
             submitQuiz();
         }
         
@@ -284,11 +297,11 @@ document.getElementById('quiz-form').addEventListener('submit', function(e) {
     
     if (answeredCount < totalQuestions) {
         const unanswered = totalQuestions - answeredCount;
-        if (!confirm(`You have ${unanswered} unanswered question(s). Submit anyway?`)) {
+        if (!confirm(MSG_UNANSWERED_PREFIX + ' ' + unanswered + ' ' + MSG_UNANSWERED_SUFFIX)) {
             return;
         }
     } else {
-        if (!confirm('Are you sure you want to submit your quiz? You cannot change your answers after submission.')) {
+        if (!confirm(MSG_CONFIRM_SUBMIT)) {
             return;
         }
     }
@@ -300,7 +313,7 @@ function submitQuiz() {
     // Disable submit button
     const submitBtn = document.getElementById('submit-btn');
     submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Submitting...';
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>' + MSG_SUBMITTING;
     
     // Clear timer if running
     if (quizTimer) {
@@ -323,27 +336,27 @@ function submitQuiz() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            const score = data.score !== undefined ? data.score : 'N/A';
-            alert(`Quiz submitted successfully! Your score: ${score}/{{ quiz.max_score }}`);
+            const score = data.score !== undefined ? data.score : MSG_NA;
+            alert(MSG_SUBMIT_OK_PREFIX + ' ' + score + '/' + quizMaxScore);
             window.location.href = '/student/dashboard';
         } else {
-            alert('Error submitting quiz: ' + data.error);
+            alert(MSG_SUBMIT_ERR_PREFIX + ' ' + data.error);
             submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Submit Quiz';
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>{{ _('Submit Quiz') }}';
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error submitting quiz. Please try again.');
+        alert(MSG_SUBMIT_RETRY);
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Submit Quiz';
+        submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>{{ _('Submit Quiz') }}';
     });
 }
 
 // Warn before leaving page
 window.addEventListener('beforeunload', function(e) {
     if (Object.keys(answers).length > 0) {
-        const message = 'Are you sure you want to leave? Your quiz progress may be lost.';
+        const message = MSG_LEAVE_WARN;
         e.returnValue = message;
         return message;
     }

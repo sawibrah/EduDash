@@ -38,6 +38,8 @@ Teachers must retain slide view access to preview and adjust content for student
 ### Security Measures
 - **Global CSRF Protection** (Flask-WTF).
 - **XSS Prevention** via Bleach for Markdown sanitization.
+- **Production:** set a strong, unique `SESSION_SECRET` environment variable. The app falls back to a development default only when `SESSION_SECRET` is unset; never deploy with that default.
+- **Google OAuth (optional):** if `GOOGLE_OAUTH_CLIENT_ID` and `GOOGLE_OAUTH_CLIENT_SECRET` are set, the Google blueprint is mounted under `/oauth/google/`. Register the authorized redirect URI Google shows (for example `http://127.0.0.1:5000/oauth/google/google/authorized`) in the Google Cloud Console.
 - **File Upload Security** with size/extension validation.
 - **Mandatory SESSION_SECRET** and environment variable configuration.
 - **Input Validation** and strong password enforcement.

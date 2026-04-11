@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Access Denied - EduPortal{% endblock %}
+{% block title %}{{ _('Access Denied') }} - {{ _('EduPortal') }}{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -15,22 +15,21 @@
                     </svg>
                 </div>
                 <h1 class="display-4 text-danger mb-3">403</h1>
-                <h3 class="mb-3">Access Denied</h3>
+                <h3 class="mb-3">{{ _('Access Denied') }}</h3>
                 <p class="text-muted mb-4">
-                    You don't have permission to access this resource. 
-                    Please check your role or contact an administrator.
+                    {{ _("You don't have permission to access this resource. Please check your role or contact an administrator.") }}
                 </p>
                 <div class="d-grid gap-2 d-md-block">
-                    <a href="{{ url_for('index') }}" class="btn btn-primary">
-                        <i class="fas fa-home me-2"></i>Go Home
+                    <a href="{{ url_for('main.index') }}" class="btn btn-primary">
+                        <i class="fas fa-home me-2"></i>{{ _('Go Home') }}
                     </a>
                     {% if current_user.is_authenticated %}
-                        <a href="{{ url_for('logout') }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                        <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-sign-out-alt me-2"></i>{{ _('Logout') }}
                         </a>
                     {% else %}
-                        <a href="{{ url_for('login') }}" class="btn btn-outline-primary">
-                            <i class="fas fa-sign-in-alt me-2"></i>Login
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-sign-in-alt me-2"></i>{{ _('Login') }}
                         </a>
                     {% endif %}
                 </div>

@@ -1,33 +1,31 @@
 {% extends "base.html" %}
 
-{% block title %}{{ course.title }} - Exams{% endblock %}
+{% block title %}{{ course.title }} - {{ _('Exams') }}{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="row">
         <div class="col-12">
-            <!-- Header -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h2>
-                        <i class="fas fa-file-alt me-2"></i>Exams
+                        <i class="fas fa-file-alt me-2"></i>{{ _('Exams') }}
                     </h2>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ url_for('teacher_dashboard') }}">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a href="{{ url_for('view_course', course_id=course.id) }}">{{ course.title }}</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Exams</li>
+                            <li class="breadcrumb-item"><a href="{{ url_for('teacher.teacher_dashboard') }}">{{ _('Dashboard') }}</a></li>
+                            <li class="breadcrumb-item"><a href="{{ url_for('teacher.view_course', course_id=course.id) }}">{{ course.title }}</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">{{ _('Exams') }}</li>
                         </ol>
                     </nav>
                 </div>
                 <div>
-                    <a href="{{ url_for('show_create_exam', course_id=course.id) }}" class="btn btn-success">
-                        <i class="fas fa-plus me-1"></i>Create Exam
+                    <a href="{{ url_for('teacher.show_create_exam', course_id=course.id) }}" class="btn btn-success">
+                        <i class="fas fa-plus me-1"></i>{{ _('Create Exam') }}
                     </a>
                 </div>
             </div>
 
-            <!-- Course Info Card -->
             <div class="card mb-4">
                 <div class="card-body">
                     <h5 class="card-title">{{ course.title }}</h5>
@@ -42,18 +40,17 @@
                         </div>
                         <div class="col-md-6 text-end">
                             <small class="text-muted">
-                                <i class="fas fa-users me-1"></i>{{ course.enrollments|length }} students enrolled
+                                <i class="fas fa-users me-1"></i>{{ _('%(count)s students enrolled', count=course.enrollments|length) }}
                             </small>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Exams List -->
             <div class="card">
                 <div class="card-header">
                     <h5 class="mb-0">
-                        <i class="fas fa-list me-2"></i>Exams ({{ exams|length }})
+                        <i class="fas fa-list me-2"></i>{{ _('Exams') }} ({{ exams|length }})
                     </h5>
                 </div>
                 <div class="card-body">
@@ -72,14 +69,14 @@
                                                             onclick="toggleExamStatus({{ exam.id }}, {{ 'true' if exam.is_active else 'false' }})"
                                                             onmouseover="this.style.opacity='0.8'" 
                                                             onmouseout="this.style.opacity='1'">
-                                                        {% if exam.is_active %}Active{% else %}Inactive{% endif %}
+                                                        {% if exam.is_active %}{{ _('Active') }}{% else %}{{ _('Inactive') }}{% endif %}
                                                     </button>
                                                 </div>
                                             </div>
                                             
                                             <div class="mb-2">
-                                                <span class="badge bg-secondary me-1">{{ exam.max_score }} pts</span>
-                                                <span class="badge bg-secondary">{{ exam.time_limit }}min</span>
+                                                <span class="badge bg-secondary me-1">{{ exam.max_score }} {{ _('pts') }}</span>
+                                                <span class="badge bg-secondary">{{ exam.time_limit }}{{ _('min') }}</span>
                                             </div>
                                             
                                             {% if exam.description %}
@@ -90,23 +87,23 @@
                                             
                                             <div class="d-flex justify-content-between align-items-center mb-3">
                                                 <small class="text-muted">
-                                                    <i class="fas fa-paper-plane me-1"></i>{{ exam.submissions|length }} submissions
+                                                    <i class="fas fa-paper-plane me-1"></i>{{ exam.submissions|length }} {{ _('submissions') }}
                                                     {% if exam.due_date %}
-                                                        <br><i class="fas fa-clock me-1"></i>Due: {{ exam.due_date.strftime('%Y-%m-%d %H:%M') }}
+                                                        <br><i class="fas fa-clock me-1"></i>{{ _('Due:') }} {{ exam.due_date.strftime('%Y-%m-%d %H:%M') }}
                                                     {% endif %}
                                                 </small>
                                             </div>
                                             
                                             <div class="btn-group w-100 mb-2">
-                                                <a href="{{ url_for('show_edit_exam', exam_id=exam.id) }}" class="btn btn-sm btn-outline-primary">
-                                                    <i class="fas fa-edit me-1"></i>Edit
+                                                <a href="{{ url_for('teacher.show_edit_exam', exam_id=exam.id) }}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-edit me-1"></i>{{ _('Edit') }}
                                                 </a>
                                                 <button type="button" class="btn btn-sm btn-outline-danger" 
                                                         data-bs-toggle="modal" 
                                                         data-bs-target="#deleteExamModal"
                                                         data-exam-id="{{ exam.id }}"
                                                         data-exam-title="{{ exam.title }}">
-                                                    <i class="fas fa-trash me-1"></i>Delete
+                                                    <i class="fas fa-trash me-1"></i>{{ _('Delete') }}
                                                 </button>
                                             </div>
                                             {% if exam.submissions|length > 0 %}
@@ -116,7 +113,7 @@
                                                     data-exam-id="{{ exam.id }}"
                                                     data-exam-title="{{ exam.title }}"
                                                     data-submission-count="{{ exam.submissions|length }}">
-                                                <i class="fas fa-redo me-1"></i>Reset All Submissions ({{ exam.submissions|length }})
+                                                <i class="fas fa-redo me-1"></i>{{ _('Reset All Submissions (%(n)s)', n=exam.submissions|length) }}
                                             </button>
                                             {% endif %}
                                         </div>
@@ -127,10 +124,10 @@
                     {% else %}
                         <div class="text-center py-4">
                             <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
-                            <h6 class="text-muted">No exams created yet</h6>
-                            <p class="text-muted small">Create your first exam to assess student knowledge!</p>
-                            <a href="{{ url_for('show_create_exam', course_id=course.id) }}" class="btn btn-success">
-                                <i class="fas fa-plus me-1"></i>Create First Exam
+                            <h6 class="text-muted">{{ _('No exams created yet') }}</h6>
+                            <p class="text-muted small">{{ _('Create your first exam to assess student knowledge!') }}</p>
+                            <a href="{{ url_for('teacher.show_create_exam', course_id=course.id) }}" class="btn btn-success">
+                                <i class="fas fa-plus me-1"></i>{{ _('Create First Exam') }}
                             </a>
                         </div>
                     {% endif %}
@@ -140,35 +137,34 @@
     </div>
 </div>
 
-<!-- Delete Exam Modal -->
 <div class="modal fade" id="deleteExamModal" tabindex="-1" aria-labelledby="deleteExamModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title" id="deleteExamModalLabel">
-                    <i class="fas fa-exclamation-triangle me-2"></i>Delete Exam
+                    <i class="fas fa-exclamation-triangle me-2"></i>{{ _('Delete Exam') }}
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="{{ _('Close') }}"></button>
             </div>
             <div class="modal-body">
                 <div class="alert alert-warning">
                     <i class="fas fa-warning me-2"></i>
-                    <strong>Warning:</strong> This action cannot be undone!
+                    <strong>{{ _('Warning') }}:</strong> {{ _('This action cannot be undone!') }}
                 </div>
-                <p>Are you sure you want to delete the exam <strong id="examToDelete"></strong>?</p>
-                <p class="text-muted small">This will permanently delete:</p>
+                <p>{{ _('Are you sure you want to delete the exam') }} <strong id="examToDelete"></strong>?</p>
+                <p class="text-muted small">{{ _('This will permanently delete:') }}</p>
                 <ul class="text-muted small">
-                    <li>The exam and all its questions</li>
-                    <li>All student submissions</li>
-                    <li>All grades and scores</li>
+                    <li>{{ _('The exam and all its questions') }}</li>
+                    <li>{{ _('All student submissions') }}</li>
+                    <li>{{ _('All grades and scores') }}</li>
                 </ul>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _('Cancel') }}</button>
                 <form id="deleteExamForm" method="POST" style="display: inline;">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash me-1"></i>Yes, Delete Exam
+                        <i class="fas fa-trash me-1"></i>{{ _('Yes, Delete Exam') }}
                     </button>
                 </form>
             </div>
@@ -176,30 +172,29 @@
     </div>
 </div>
 
-<!-- Reset Exam Submissions Modal -->
 <div class="modal fade" id="resetExamModal" tabindex="-1" aria-labelledby="resetExamModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-warning text-dark">
                 <h5 class="modal-title" id="resetExamModalLabel">
-                    <i class="fas fa-redo me-2"></i>Reset All Submissions
+                    <i class="fas fa-redo me-2"></i>{{ _('Reset All Submissions') }}
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _('Close') }}"></button>
             </div>
             <div class="modal-body">
                 <div class="alert alert-warning">
                     <i class="fas fa-exclamation-triangle me-2"></i>
-                    <strong>Warning:</strong> This action cannot be undone!
+                    <strong>{{ _('Warning') }}:</strong> {{ _('This action cannot be undone!') }}
                 </div>
-                <p>Are you sure you want to reset all submissions for <strong id="examToReset"></strong>?</p>
-                <p class="text-danger">This will delete <strong id="submissionCount"></strong> submission(s) and allow students to retake this exam.</p>
+                <p>{{ _('Are you sure you want to reset all submissions for') }} <strong id="examToReset"></strong>?</p>
+                <p class="text-danger">{{ _('This will delete') }} <strong id="submissionCount"></strong> {{ _('submission(s) and allow students to retake this exam.') }}</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _('Cancel') }}</button>
                 <form id="resetExamForm" method="POST" style="display: inline;">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <button type="submit" class="btn btn-warning">
-                        <i class="fas fa-redo me-1"></i>Yes, Reset Submissions
+                        <i class="fas fa-redo me-1"></i>{{ _('Yes, Reset Submissions') }}
                     </button>
                 </form>
             </div>
@@ -208,7 +203,9 @@
 </div>
 
 <script>
-// Handle delete exam modal
+const EXAM_LABEL_ACTIVE = {{ _('Active')|tojson }};
+const EXAM_LABEL_INACTIVE = {{ _('Inactive')|tojson }};
+
 document.addEventListener('DOMContentLoaded', function() {
     const deleteExamModal = document.getElementById('deleteExamModal');
     if (deleteExamModal) {
@@ -216,13 +213,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const button = event.relatedTarget;
             const examId = button.getAttribute('data-exam-id');
             const examTitle = button.getAttribute('data-exam-title');
-            
             document.getElementById('examToDelete').textContent = examTitle;
             document.getElementById('deleteExamForm').action = `/teacher/exam/${examId}/delete`;
         });
     }
-    
-    // Handle reset exam modal
     const resetExamModal = document.getElementById('resetExamModal');
     if (resetExamModal) {
         resetExamModal.addEventListener('show.bs.modal', function(event) {
@@ -230,7 +224,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const examId = button.getAttribute('data-exam-id');
             const examTitle = button.getAttribute('data-exam-title');
             const submissionCount = button.getAttribute('data-submission-count');
-            
             document.getElementById('examToReset').textContent = examTitle;
             document.getElementById('submissionCount').textContent = submissionCount;
             document.getElementById('resetExamForm').action = `/teacher/exam/${examId}/reset-submissions`;
@@ -238,11 +231,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Toggle exam status without page reload
 function toggleExamStatus(examId, isActive) {
     const badge = document.querySelector('.status-badge-' + examId);
     const card = badge.closest('.card');
-    
     fetch(`/teacher/exam/${examId}/toggle-status`, {
         method: 'POST',
         headers: {
@@ -252,15 +243,10 @@ function toggleExamStatus(examId, isActive) {
     })
     .then(response => {
         if (response.ok) {
-            // Toggle the status
             const newStatus = !isActive;
-            
-            // Update badge
             badge.className = `badge border-0 status-badge-${examId} bg-${newStatus ? 'success' : 'warning'}${newStatus ? '' : ' text-dark'}`;
-            badge.textContent = newStatus ? 'Active' : 'Inactive';
+            badge.textContent = newStatus ? EXAM_LABEL_ACTIVE : EXAM_LABEL_INACTIVE;
             badge.setAttribute('onclick', `toggleExamStatus(${examId}, ${newStatus})`);
-            
-            // Update card border
             card.className = `card border-start border-${newStatus ? 'success' : 'warning'} border-4`;
         }
     })

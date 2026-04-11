@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ session.get('language', 'fr') }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ course.title }} - Slides</title>
+    <title>{{ course.title }} - {{ _('Slides') }}</title>
     
     <!-- Bootstrap CSS for uploaded file display mode -->
     {% if course.content_display_type == 'uploaded_file' %}
@@ -266,13 +266,13 @@
                         <small>{{ course.uploaded_file_name }}</small>
                     </div>
                     <div>
-                        <a href="{{ url_for('download_course_slides', course_id=course.id) }}" 
+                        <a href="{{ url_for('courses.download_course_slides', course_id=course.id) }}" 
                            class="btn btn-light btn-sm me-2">
-                            <i class="fas fa-download me-1"></i>Download
+                            <i class="fas fa-download me-1"></i>{{ _('Download') }}
                         </a>
-                        <a href="{{ url_for('student_dashboard') if current_user.is_student() else url_for('teacher_dashboard') }}" 
+                        <a href="{{ url_for('teacher.teacher_dashboard') if course.teacher_id == current_user.id else (url_for('student.student_dashboard') if current_user.is_student() else url_for('main.index')) }}" 
                            class="btn btn-outline-light btn-sm">
-                            <i class="fas fa-arrow-left me-1"></i>Back
+                            <i class="fas fa-arrow-left me-1"></i>{{ _('Back') }}
                         </a>
                     </div>
                 </div>
@@ -284,17 +284,17 @@
             <div class="col-12 p-0">
                 {% if course.uploaded_file_type == 'pdf' %}
                     <!-- PDF Viewer -->
-                    <iframe src="{{ url_for('view_course_file', course_id=course.id) }}" 
+                    <iframe src="{{ url_for('courses.view_course_file', course_id=course.id) }}" 
                             width="100%" height="100%" 
                             style="border: none; background: white;">
                         <div class="d-flex align-items-center justify-content-center h-100">
                             <div class="text-center">
                                 <i class="fas fa-file-pdf fa-5x text-danger mb-3"></i>
-                                <h4>PDF Viewer Not Supported</h4>
-                                <p class="text-muted">Your browser doesn't support PDF viewing.</p>
-                                <a href="{{ url_for('download_course_slides', course_id=course.id) }}" 
+                                <h4>{{ _('PDF Viewer Not Supported') }}</h4>
+                                <p class="text-muted">{{ _('Your browser does not support PDF viewing.') }}</p>
+                                <a href="{{ url_for('courses.download_course_slides', course_id=course.id) }}" 
                                    class="btn btn-primary">
-                                    <i class="fas fa-download me-2"></i>Download PDF
+                                    <i class="fas fa-download me-2"></i>{{ _('Download PDF') }}
                                 </a>
                             </div>
                         </div>
@@ -306,13 +306,13 @@
                             <i class="fas fa-file-powerpoint fa-5x text-warning mb-4"></i>
                             <h4>{{ course.uploaded_file_name }}</h4>
                             <p class="text-muted mb-4">
-                                PowerPoint presentations cannot be viewed directly in the browser.<br>
-                                Please download the file to view the slides.
+                                {{ _('PowerPoint presentations cannot be viewed directly in the browser.') }}<br>
+                                {{ _('Please download the file to view the slides.') }}
                             </p>
-                            <a href="{{ url_for('download_course_slides', course_id=course.id) }}" 
+                            <a href="{{ url_for('courses.download_course_slides', course_id=course.id) }}" 
                                class="btn btn-primary btn-lg">
                                 <i class="fas fa-download me-2"></i>
-                                Download {{ course.uploaded_file_type.upper() }} File
+                                {{ _('Download') }} {{ course.uploaded_file_type.upper() }} {{ _('File') }}
                             </a>
                         </div>
                     </div>
@@ -323,12 +323,12 @@
     {% else %}
     <!-- Markdown Slides Mode -->
     <!-- Controls -->
-    <button class="theme-toggle" onclick="toggleTheme()">🌙 Dark</button>
-    <a href="{{ url_for('view_course', course_id=course.id) if current_user.is_authenticated and current_user.role == 'teacher' else (url_for('student_dashboard') if current_user.is_authenticated else url_for('index')) }}" class="back-link">
-        ← Back
+    <button type="button" class="theme-toggle" onclick="toggleTheme()">{{ _('🌙 Dark') }}</button>
+    <a href="{% if current_user.is_authenticated %}{% if course.teacher_id == current_user.id %}{{ url_for('teacher.view_course', course_id=course.id) }}{% elif current_user.is_student() %}{{ url_for('student.student_dashboard') }}{% else %}{{ url_for('main.index') }}{% endif %}{% else %}{{ url_for('main.index') }}{% endif %}" class="back-link">
+        ← {{ _('Back') }}
     </a>
     <div class="slide-navigation">
-        Use arrow keys or click to navigate
+        {{ _('Use arrow keys or click to navigate') }}
     </div>
     
     <div class="reveal">
@@ -337,7 +337,7 @@
             <section>
                 <div class="course-header">
                     <h1>{{ course.title }}</h1>
-                    <p>{{ course.description or 'Interactive Programming Course' }}</p>
+                    <p>{{ course.description or _('Interactive Programming Course') }}</p>
                     <div class="course-info">
                         {% if course.programming_language %}
                             <span class="info-badge">
@@ -351,13 +351,13 @@
                         {% endif %}
                         {% if course.estimated_hours %}
                             <span class="info-badge">
-                                ⏱️ {{ course.estimated_hours }} hours
+                                ⏱️ {{ course.estimated_hours }} {{ _('hours') }}
                             </span>
                         {% endif %}
                     </div>
                 </div>
                 <div style="text-align: center; margin-top: 2em;">
-                    <p><em>Press → to start the course</em></p>
+                    <p><em>{{ _('Press → to start the course') }}</em></p>
                 </div>
             </section>
             
@@ -366,7 +366,7 @@
     </div>
     
     <div class="navigation-controls">
-        ESC: Overview | F: Fullscreen | S: Speaker Notes
+        {{ _('ESC: Overview | F: Fullscreen | S: Speaker Notes') }}
     </div>
 
     <!-- Reveal.js JavaScript -->
@@ -378,6 +378,13 @@
     <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.3.1/plugin/zoom/zoom.js"></script>
 
     <script>
+        const SL_ACCESS_DENIED = {{ _('Access Denied')|tojson }};
+        const SL_NO_PERMISSION = {{ _("You don't have permission to view this course.")|tojson }};
+        const SL_ERR_LOAD_TITLE = {{ _('Error Loading Content')|tojson }};
+        const SL_ERR_LOAD_BODY = {{ _('Unable to load course slides. Please try again.')|tojson }};
+        const THEME_DARK_LABEL = {{ _('🌙 Dark')|tojson }};
+        const THEME_LIGHT_LABEL = {{ _('☀️ Light')|tojson }};
+
         // Initialize Reveal.js
         Reveal.initialize({
             hash: true,
@@ -425,8 +432,8 @@
                 if (data.error) {
                     document.getElementById('slides-container').innerHTML = `
                         <section>
-                            <h1>Access Denied</h1>
-                            <p>You don't have permission to view this course.</p>
+                            <h1>${SL_ACCESS_DENIED}</h1>
+                            <p>${SL_NO_PERMISSION}</p>
                         </section>
                     `;
                     return;
@@ -446,8 +453,8 @@
                 console.error('Error loading course content:', error);
                 document.getElementById('slides-container').innerHTML += `
                     <section>
-                        <h1>Error Loading Content</h1>
-                        <p>Unable to load course slides. Please try again.</p>
+                        <h1>${SL_ERR_LOAD_TITLE}</h1>
+                        <p>${SL_ERR_LOAD_BODY}</p>
                     </section>
                 `;
             }
@@ -461,11 +468,11 @@
             
             if (isDarkTheme) {
                 themeLink.href = 'https://cdn.jsdelivr.net/npm/reveal.js@4.3.1/dist/theme/white.css';
-                toggleButton.innerHTML = '🌙 Dark';
+                toggleButton.innerHTML = THEME_DARK_LABEL;
                 isDarkTheme = false;
             } else {
                 themeLink.href = 'https://cdn.jsdelivr.net/npm/reveal.js@4.3.1/dist/theme/black.css';
-                toggleButton.innerHTML = '☀️ Light';
+                toggleButton.innerHTML = THEME_LIGHT_LABEL;
                 isDarkTheme = true;
             }
         }
