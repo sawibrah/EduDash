@@ -13,9 +13,9 @@
                     </h4>
                     <nav aria-label="breadcrumb" class="mt-2">
                         <ol class="breadcrumb breadcrumb-light mb-0">
-                            <li class="breadcrumb-item"><a href="{{ url_for('teacher_dashboard') }}" class="text-white-50">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a href="{{ url_for('view_course', course_id=course.id) }}" class="text-white-50">{{ course.title }}</a></li>
-                            <li class="breadcrumb-item"><a href="{{ url_for('view_course_quizzes', course_id=course.id) }}" class="text-white-50">Quizzes</a></li>
+                            <li class="breadcrumb-item"><a href="{{ url_for('teacher.teacher_dashboard') }}" class="text-white-50">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="{{ url_for('teacher.view_course', course_id=course.id) }}" class="text-white-50">{{ course.title }}</a></li>
+                            <li class="breadcrumb-item"><a href="{{ url_for('teacher.view_course_quizzes', course_id=course.id) }}" class="text-white-50">Quizzes</a></li>
                             <li class="breadcrumb-item active text-white">Edit Quiz</li>
                         </ol>
                     </nav>
@@ -103,7 +103,7 @@
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-save me-1"></i>Update Quiz
                                 </button>
-                                <a href="{{ url_for('view_course_quizzes', course_id=course.id) }}" class="btn btn-secondary">
+                                <a href="{{ url_for('teacher.view_course_quizzes', course_id=course.id) }}" class="btn btn-secondary">
                                     <i class="fas fa-times me-1"></i>Cancel
                                 </a>
                             </div>

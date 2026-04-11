@@ -1,0 +1,138 @@
+# -*- coding: utf-8 -*-
+"""Replace incorrect fuzzy French translations and clear fuzzy flags."""
+import polib
+
+# Exact msgid -> correct French msgstr (fixes wrong fuzzy matches from Babel merge)
+FUZZY_CORRECTIONS = {
+    "Registration successful! Welcome, %(name)s!": "Inscription réussie ! Bienvenue, %(name)s !",
+    "User %(username)s created successfully as %(role)s!": "Utilisateur %(username)s créé avec succès en tant que %(role)s !",
+    'Course "%(title)s" published.': 'Le cours « %(title)s » a été publié.',
+    'Course slide file "%(filename)s" uploaded successfully!': 'Fichier de diapositives « %(filename)s » téléversé avec succès !',
+    "Programming course created successfully!": "Cours de programmation créé avec succès !",
+    'Course "%(title)s" deleted successfully!': 'Le cours « %(title)s » a été supprimé avec succès !',
+    "Exam title is required.": "Le titre de l'examen est requis.",
+    "Course ID is required.": "L'identifiant du cours est requis.",
+    "Exam updated successfully!": "Examen mis à jour avec succès !",
+    "Not enrolled in this course": "Non inscrit à ce cours",
+    "Student": "Étudiant",
+    'Exam "%(title)s" deleted successfully!': "L'examen « %(title)s » a été supprimé avec succès !",
+    "Multiple choice quiz created successfully!": "Quiz à choix multiples créé avec succès !",
+    "MCQ Quiz updated successfully!": "Quiz à choix multiples mis à jour avec succès !",
+    "Submission graded successfully!": "Envoi noté avec succès !",
+    "Not enrolled in course": "Non inscrit au cours",
+    "Quiz submitted successfully": "Quiz envoyé avec succès",
+    'Quiz "%(title)s" deleted successfully!': 'Le quiz « %(title)s » a été supprimé avec succès !',
+    "User '%(username)s' deleted successfully!": "Utilisateur « %(username)s » supprimé avec succès !",
+    "Access Denied": "Accès refusé",
+    "Course Management": "Gestion des cours",
+    "Admin": "Administrateur",
+    "Manage all platform courses": "Gérer tous les cours de la plateforme",
+    "Back to Dashboard": "Retour au tableau de bord",
+    "Course Title": "Titre du cours",
+    "Teacher": "Enseignant",
+    "Administrator": "Administrateur",
+    "No courses yet": "Aucun cours pour le moment",
+    "enrolled in": "inscrit(s) à",
+    "No enrollments yet": "Aucune inscription pour le moment",
+    "Recent Users": "Utilisateurs récents",
+    "Name": "Nom",
+    "Registered": "Inscrit le",
+    "Set as Student": "Définir comme étudiant",
+    "Set as Teacher": "Définir comme enseignant",
+    "Create User": "Créer un utilisateur",
+    "Reset Password": "Réinitialiser le mot de passe",
+    "New Password": "Nouveau mot de passe",
+    "Are you sure you want to delete this user?": "Voulez-vous vraiment supprimer cet utilisateur ?",
+    "User": "Utilisateur",
+    "Change Password": "Changer le mot de passe",
+    "Enter your current password": "Entrez votre mot de passe actuel",
+    "Enter your new password": "Entrez votre nouveau mot de passe",
+    "Confirm your new password": "Confirmez votre nouveau mot de passe",
+    "hours": "heures",
+    "Welcome": "Bienvenue",
+    "For Students": "Pour les étudiants",
+    "For Teachers": "Pour les enseignants",
+    "Ready to Get Started?": "Prêt à commencer ?",
+    "Demo Accounts": "Comptes de démonstration",
+    "Username:": "Nom d'utilisateur :",
+    "Password:": "Mot de passe :",
+    "Create Your Account": "Créez votre compte",
+    "Join EduPortal and start your learning journey today!": "Rejoignez EduPortal et commencez votre parcours d'apprentissage dès aujourd'hui !",
+    "Already have an account?": "Vous avez déjà un compte ?",
+    "Student ID:": "Numéro étudiant :",
+    "Enroll in your first course to get started!": "Inscrivez-vous à votre premier cours pour commencer !",
+    "No quizzes available": "Aucun quiz disponible",
+    "Take Exam": "Passer l'examen",
+    "Enroll": "S'inscrire",
+    "Submission": "Envoi",
+    "Quiz Submitted Successfully!": "Quiz envoyé avec succès !",
+    "Pending": "En attente",
+    "Exam submitted successfully! Your score:": "Examen envoyé avec succès ! Votre note :",
+    "Are you sure you want to leave? Your exam progress may be lost.": "Quitter la page ? Votre progression sur l'examen pourrait être perdue.",
+    "Are you sure you want to leave? Your quiz progress may be lost.": "Quitter la page ? Votre progression sur le quiz pourrait être perdue.",
+    "%(count)s students enrolled": "%(count)s étudiants inscrits",
+    "min": "min",
+    "Create your first exam to assess student knowledge!": "Créez votre premier examen pour évaluer les connaissances des étudiants !",
+    "Create First Exam": "Créer un premier examen",
+    "Delete Exam": "Supprimer l'examen",
+    "Are you sure you want to delete the exam": "Voulez-vous vraiment supprimer l'examen",
+    "All student submissions": "Tous les envois des étudiants",
+    "Yes, Delete Exam": "Oui, supprimer l'examen",
+    "Reset All Submissions": "Réinitialiser tous les envois",
+    "Are you sure you want to reset all submissions for": "Voulez-vous vraiment réinitialiser tous les envois pour",
+    "This will delete": "Cela supprimera",
+    "Yes, Reset Submissions": "Oui, réinitialiser les envois",
+    "Submissions": "Envois",
+    "Create your first quiz to test student knowledge!": "Créez votre premier quiz pour tester les connaissances des étudiants !",
+    "Create First Quiz": "Créer un premier quiz",
+    "Delete Quiz": "Supprimer le quiz",
+    "Are you sure you want to delete the quiz": "Voulez-vous vraiment supprimer le quiz",
+    "Yes, Delete Quiz": "Oui, supprimer le quiz",
+    "Create New Programming Course": "Créer un nouveau cours de programmation",
+    "Select Language": "Choisir le langage",
+    "Beginner": "Débutant",
+    "Estimated Hours": "Heures estimées",
+    "Course Details": "Détails du cours",
+    "Short Description": "Brève description",
+    "Description": "Description",
+    "Questions": "Questions",
+    "Option": "Option",
+    "Create Multiple Choice Quiz": "Créer un quiz à choix multiples",
+    "Archived": "Archivé",
+    "students": "étudiants",
+    "Select Course": "Choisir un cours",
+    "Delete Course": "Supprimer le cours",
+    "All student enrollments": "Toutes les inscriptions",
+    "No description": "Pas de description",
+    "Quiz Submissions": "Envois du quiz",
+    "Total Submissions": "Total des envois",
+    "Student Submissions": "Envois des étudiants",
+    "Score": "Note",
+    "No submissions yet": "Aucun envoi pour le moment",
+    "Code Submission": "Envoi de code",
+    "Test Login": "Connexion test",
+    "Login as Student": "Se connecter en tant qu'étudiant",
+    "Current Data Available:": "Données de démonstration :",
+    "Courses": "Cours",
+    "Assignments": "Devoirs",
+    "Enrollments": "Inscriptions",
+}
+
+
+def main():
+    path = "translations/fr/LC_MESSAGES/messages.po"
+    po = polib.pofile(path)
+    fixed = 0
+    for entry in po:
+        if "fuzzy" not in entry.flags or not entry.msgid:
+            continue
+        if entry.msgid in FUZZY_CORRECTIONS:
+            entry.msgstr = FUZZY_CORRECTIONS[entry.msgid]
+            entry.flags = [f for f in entry.flags if f != "fuzzy"]
+            fixed += 1
+    po.save(path)
+    print(f"Cleared fuzzy and fixed {fixed} entries in {path}")
+
+
+if __name__ == "__main__":
+    main()

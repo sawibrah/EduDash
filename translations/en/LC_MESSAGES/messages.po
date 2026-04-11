@@ -5,403 +5,2408 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: EduPortal 1.0\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-04-11 01:59+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: en <LL@li.org>\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Generated-By: Babel 2.11.0\n"
 
-msgid "EduPortal"
-msgstr "EduPortal"
+#: auth.py:20 auth.py:31
+msgid "Please log in to access this page."
+msgstr ""
 
-msgid "Dashboard"
-msgstr "Dashboard"
+#: auth.py:44
+msgid "Access denied. This page requires admin privileges."
+msgstr ""
 
-msgid "Login"
-msgstr "Login"
+#: auth.py:47
+#, python-format
+msgid "Access denied. This page requires %(role)s privileges."
+msgstr ""
 
-msgid "Register"
-msgstr "Register"
+#: gmail_auth.py:48
+msgid "Failed to log in with Google."
+msgstr ""
 
-msgid "Sign Up"
-msgstr "Sign Up"
+#: gmail_auth.py:59
+msgid "Could not get email from Google account."
+msgstr ""
 
-msgid "Logout"
-msgstr "Logout"
+#: gmail_auth.py:78
+#, python-format
+msgid "Welcome! Account created for %(email)s"
+msgstr ""
 
-msgid "Sign In"
-msgstr "Sign In"
-
-msgid "Welcome Back"
-msgstr "Welcome Back"
-
-msgid "Sign in to continue your learning journey"
-msgstr "Sign in to continue your learning journey"
-
-msgid "Username"
-msgstr "Username"
-
-msgid "Enter your username"
-msgstr "Enter your username"
-
-msgid "Password"
-msgstr "Password"
-
-msgid "Enter your password"
-msgstr "Enter your password"
-
-msgid "Don't have an account?"
-msgstr "Don't have an account?"
-
-msgid "Create Account"
-msgstr "Create Account"
-
-msgid "Admin Dashboard"
-msgstr "Admin Dashboard"
-
-msgid "Teacher Dashboard"
-msgstr "Teacher Dashboard"
-
-msgid "Empowering education through technology."
-msgstr "Empowering education through technology."
-
-# Dashboard translations
-msgid "Welcome to your dashboard"
-msgstr "Welcome to your dashboard"
-
-msgid "Total Courses"
-msgstr "Total Courses"
-
-msgid "Active Exams"
-msgstr "Active Exams"
-
-msgid "Pending Assignments"
-msgstr "Pending Assignments"
-
-msgid "Recent Activity"
-msgstr "Recent Activity"
-
-msgid "Quick Actions"
-msgstr "Quick Actions"
-
-msgid "View All Courses"
-msgstr "View All Courses"
-
-msgid "Create New Course"
-msgstr "Create New Course"
-
-msgid "Manage Students"
-msgstr "Manage Students"
-
-msgid "View Reports"
-msgstr "View Reports"
-
-msgid "Total Students"
-msgstr "Total Students"
-
-msgid "Total Teachers"
-msgstr "Total Teachers"
-
-msgid "Total Administrators"
-msgstr "Total Administrators"
-
-msgid "Total Exams"
-msgstr "Total Exams"
-
-msgid "Total Quizzes"
-msgstr "Total Quizzes"
-
-msgid "Total Enrollments"
-msgstr "Total Enrollments"
-
-msgid "Total Exam Submissions"
-msgstr "Total Exam Submissions"
-
-msgid "Total Quiz Submissions"
-msgstr "Total Quiz Submissions"
-
-msgid "Active Courses"
-msgstr "Active Courses"
-
-msgid "Recent Courses"
-msgstr "Recent Courses"
-
-msgid "Recent Enrollments"
-msgstr "Recent Enrollments"
-
+#: gmail_auth.py:84 routes.py:98 templates/admin_dashboard.html:13
+#: templates/student_dashboard.html:13 templates/teacher_dashboard.html:13
+#, python-format
 msgid "Welcome back, %(name)s!"
 msgstr "Welcome back, %(name)s!"
 
-msgid "Total Users"
-msgstr "Total Users"
+#: gmail_auth.py:96
+#, python-format
+msgid "Error during Google authentication: %(err)s"
+msgstr ""
 
-msgid "Platform accounts"
-msgstr "Platform accounts"
-
-msgid "Students"
-msgstr "Students"
-
-msgid "enrollments"
-msgstr "enrollments"
-
-msgid "Teachers"
-msgstr "Teachers"
-
-msgid "courses"
-msgstr "courses"
-
-msgid "Active Courses"
-msgstr "Active Courses"
-
-msgid "of %(total)s total"
-msgstr "of %(total)s total"
-
-msgid "Exams"
-msgstr "Exams"
-
-msgid "submissions"
-msgstr "submissions"
-
-msgid "Quizzes"
-msgstr "Quizzes"
-
-msgid "Administrators"
-msgstr "Administrators"
-
-msgid "Platform admins"
-msgstr "Platform admins"
-
-msgid "Recent Courses"
-msgstr "Recent Courses"
-
-# Student Dashboard translations
-msgid "Student Dashboard"
-msgstr "Student Dashboard"
-
-msgid "Enrolled Courses"
-msgstr "Enrolled Courses"
-
-msgid "Pending Exams"
-msgstr "Pending Exams"
-
-msgid "Available Quizzes"
-msgstr "Available Quizzes"
-
-msgid "My Courses"
-msgstr "My Courses"
-
-msgid "Enroll in Course"
-msgstr "Enroll in Course"
-
-# User Management translations
-msgid "User Management"
-msgstr "User Management"
-
-msgid "Manage all platform users"
-msgstr "Manage all platform users"
-
-msgid "Create New User"
-msgstr "Create New User"
-
-msgid "All Users"
-msgstr "All Users"
-
-msgid "All"
-msgstr "All"
-
-msgid "Students"
-msgstr "Students"
-
-msgid "Admins"
-msgstr "Admins"
-
-msgid "Test User Login"
-msgstr "Test User Login"
-
-msgid "Quick access for development testing"
-msgstr "Quick access for development testing"
-
-msgid "Teacher Account"
-msgstr "Teacher Account"
-
-msgid "Login as Teacher"
-msgstr "Login as Teacher"
-
+#: routes.py:41 routes.py:94 templates/change_password.html:19
 msgid "You must change your password before continuing."
 msgstr "You must change your password before continuing."
 
-msgid "Registration successful! Welcome, %(user.first_name)s!"
-msgstr "Registration successful! Welcome, %(user.first_name)s!"
+#: routes.py:74
+#, python-format
+msgid "Registration successful! Welcome, %(name)s!"
+msgstr "Registration successful! Welcome, %(name)s!"
 
+#: routes.py:109
 msgid "Invalid username or password."
 msgstr "Invalid username or password."
 
+#: routes.py:118
+#, python-format
+msgid "You have been logged out, %(name)s. See you next time!"
+msgstr ""
+
+#: routes.py:130
+msgid "Current password is incorrect."
+msgstr ""
+
+#: routes.py:138
 msgid "Password changed successfully!"
 msgstr "Password changed successfully!"
 
+#: routes.py:308
+msgid "Invalid role specified."
+msgstr ""
+
+#: routes.py:325
+#, python-format
+msgid ""
+"User %(username)s promoted from %(old_role)s to %(new_role)s successfully!"
+msgstr ""
+
+#: routes.py:335 routes.py:361
+msgid "Password must be at least 6 characters long."
+msgstr ""
+
+#: routes.py:342
+#, python-format
+msgid ""
+"Password reset successfully for %(username)s. New password: "
+"%(new_password)s. User must change password on next login."
+msgstr ""
+
+#: routes.py:357
+msgid "All fields are required."
+msgstr ""
+
+#: routes.py:366
+msgid "Username already exists."
+msgstr ""
+
+#: routes.py:370
+msgid "Email already exists."
+msgstr ""
+
+#: routes.py:401
+#, python-format
+msgid "User %(username)s created successfully as %(role)s!"
+msgstr "User %(username)s created successfully as %(role)s!"
+
+#: routes.py:411
+msgid "Can only toggle teacher capability for admin users."
+msgstr ""
+
+#: routes.py:421
+#, python-format
+msgid "Teacher access removed from %(username)s."
+msgstr ""
+
+#: routes.py:430
+#, python-format
+msgid ""
+"Teacher access granted to %(username)s. They can now create and manage "
+"courses."
+msgstr ""
+
+#: routes.py:442
+#, python-format
+msgid "Course \"%(title)s\" set to draft."
+msgstr ""
+
+#: routes.py:445
+#, python-format
+msgid "Course \"%(title)s\" published."
+msgstr "Course \"%(title)s\" published."
+
+#: routes.py:623
 msgid "Course title is required."
 msgstr "Course title is required."
 
+#: routes.py:662 routes.py:760
+#, python-format
+msgid "Course slide file \"%(filename)s\" uploaded successfully!"
+msgstr "Course slide file \"%(filename)s\" uploaded successfully!"
+
+#: routes.py:665 routes.py:763
+#, python-format
+msgid "Error uploading file: %(err)s"
+msgstr ""
+
+#: routes.py:670
+msgid "Programming course created successfully!"
+msgstr "Programming course created successfully!"
+
+#: routes.py:766
 msgid "Course updated successfully!"
 msgstr "Course updated successfully!"
 
+#: routes.py:800
+#, python-format
+msgid "Course \"%(title)s\" deleted successfully!"
+msgstr "Course \"%(title)s\" deleted successfully!"
+
+#: routes.py:804
+#, python-format
+msgid "Error deleting course: %(err)s"
+msgstr ""
+
+#: routes.py:818 routes.py:844 routes.py:945 routes.py:1025 routes.py:1687
+msgid "You are not enrolled in this course."
+msgstr ""
+
+#: routes.py:822 routes.py:848 routes.py:1029
 msgid "Access denied."
 msgstr "Access denied."
 
+#: routes.py:826 routes.py:852
 msgid "No slide file available for this course."
 msgstr "No slide file available for this course."
 
+#: routes.py:920
 msgid "PDF generated successfully!"
 msgstr "PDF generated successfully!"
 
+#: routes.py:924 routes.py:1011
+#, python-format
+msgid "Error generating PDF: %(err)s"
+msgstr ""
+
+#: routes.py:933
+msgid "PDF not available. Please generate it first."
+msgstr ""
+
+#: routes.py:1102 routes.py:1394
+msgid "Exam title is required."
+msgstr "Exam title is required."
+
+#: routes.py:1106 routes.py:1218
+msgid "Course ID is required."
+msgstr "Course ID is required."
+
+#: routes.py:1112 routes.py:1401
+msgid "Invalid course selected."
+msgstr ""
+
+#: routes.py:1123 routes.py:1178 routes.py:1418
+msgid "Invalid due date format."
+msgstr ""
+
+#: routes.py:1138
 msgid "Exam created successfully!"
 msgstr "Exam created successfully!"
 
-msgid "Browse Courses"
-msgstr "Browse Courses"
+#: routes.py:1148
+msgid "You do not have permission to edit this exam."
+msgstr ""
 
-msgid "By Course ID"
-msgstr "By Course ID"
+#: routes.py:1160
+msgid "You do not have permission to update this exam."
+msgstr ""
 
-msgid "Course ID"
-msgstr "Course ID"
+#: routes.py:1184 routes.py:1423
+msgid "Exam updated successfully!"
+msgstr "Exam updated successfully!"
 
-msgid "Ask your teacher for the course ID to enroll directly."
-msgstr "Ask your teacher for the course ID to enroll directly."
+#: routes.py:1209
+#, python-format
+msgid ""
+"Reset complete! %(count)s submission(s) cleared. Students can now retake "
+"this exam."
+msgstr ""
 
-msgid "Enter course ID provided by your teacher"
-msgstr "Enter course ID provided by your teacher"
+#: routes.py:1224
+msgid "Course not found."
+msgstr ""
 
-msgid "Cancel"
-msgstr "Cancel"
+#: routes.py:1234
+msgid "You are already enrolled in this course."
+msgstr ""
 
-msgid "Enroll Now"
-msgstr "Enroll Now"
+#: routes.py:1243
+#, python-format
+msgid "Successfully enrolled in %(title)s!"
+msgstr ""
 
-msgid "Search courses by title, language, or difficulty..."
-msgstr "Search courses by title, language, or difficulty..."
+#: routes.py:1258
+msgid "You must be enrolled in this course to take the exam."
+msgstr ""
 
-msgid "No courses available"
-msgstr "No courses available"
+#: routes.py:1263
+msgid "This exam is not currently active."
+msgstr ""
 
-msgid "No courses enrolled yet"
-msgstr "No courses enrolled yet"
+#: routes.py:1273
+msgid "You have already submitted this exam."
+msgstr ""
 
-msgid "Check back later for new courses!"
-msgstr "Check back later for new courses!"
+#: routes.py:1291
+msgid "Not enrolled in this course"
+msgstr "Not enrolled in this course"
 
-msgid "No exams available"
-msgstr "No exams available"
+#: routes.py:1300 routes.py:1734
+msgid "Already submitted"
+msgstr ""
 
-msgid "No description available"
-msgstr "No description available"
+#: routes.py:1305
+msgid "No data provided"
+msgstr ""
 
-msgid "Type in the content area to see live preview..."
-msgstr "Type in the content area to see live preview..."
+#: routes.py:1343
+#, python-format
+msgid "Exam submitted successfully! You scored %(score)s/%(total)s"
+msgstr ""
 
-msgid "Your Course Title"
-msgstr "Your Course Title"
+#: routes.py:1359
+msgid "Student is not enrolled in this course."
+msgstr ""
 
-msgid "Type content to see slide breakdown..."
-msgstr "Type content to see slide breakdown..."
+#: routes.py:1366 templates/admin_dashboard.html:263
+#: templates/admin_users.html:72 templates/admin_users.html:208
+#: templates/register_role.html:41 templates/student_dashboard.html:13
+#: templates/switch_role.html:31 templates/teacher_quiz_submissions.html:78
+#: templates/teacher_quiz_submissions.html:91
+msgid "Student"
+msgstr "Student"
 
-msgid "File size exceeds 50MB limit. Please choose a smaller file."
-msgstr "File size exceeds 50MB limit. Please choose a smaller file."
+#: routes.py:1373
+#, python-format
+msgid "Successfully removed %(student)s from %(course)s."
+msgstr ""
 
-msgid "Switch to Admin"
-msgstr "Switch to Admin"
+#: routes.py:1384
+msgid ""
+"You do not have permission to edit this exam. Only the teacher who created "
+"the course can manage its exams."
+msgstr ""
 
-msgid "Create Exam"
-msgstr "Create Exam"
+#: routes.py:1434
+msgid ""
+"You do not have permission to delete this exam. Only the teacher who created"
+" the course can manage its exams."
+msgstr ""
 
-msgid "Create Quiz"
-msgstr "Create Quiz"
+#: routes.py:1442
+#, python-format
+msgid "Exam \"%(title)s\" deleted successfully!"
+msgstr "Exam \"%(title)s\" deleted successfully!"
 
-msgid "No courses created yet"
-msgstr "No courses created yet"
+#: routes.py:1492
+msgid "Invalid test user selected."
+msgstr ""
 
-msgid "Create your first course to get started!"
-msgstr "Create your first course to get started!"
+#: routes.py:1497
+#, python-format
+msgid "Logged in as %(first)s %(last)s (%(role)s)"
+msgstr ""
 
-msgid "Create Course"
-msgstr "Create Course"
+#: routes.py:1505
+msgid "Test user not found."
+msgstr ""
 
-msgid "Recent Exams"
-msgstr "Recent Exams"
+#: routes.py:1550
+msgid "Multiple choice quiz created successfully!"
+msgstr "Multiple choice quiz created successfully!"
 
-msgid "Exam"
-msgstr "Exam"
+#: routes.py:1607
+msgid "MCQ Quiz updated successfully!"
+msgstr "MCQ Quiz updated successfully!"
 
-msgid "Inactive"
-msgstr "Inactive"
+#: routes.py:1646
+msgid "Submission graded successfully!"
+msgstr "Submission graded successfully!"
 
-msgid "View"
-msgstr "View"
+#: routes.py:1659
+#, python-format
+msgid ""
+"Reset complete! %(count)s submission(s) cleared. Students can now retake "
+"this quiz."
+msgstr ""
 
-msgid "Edit"
-msgstr "Edit"
+#: routes.py:1692
+msgid "This quiz is not currently active."
+msgstr ""
 
-msgid "No exams created yet"
-msgstr "No exams created yet"
+#: routes.py:1696
+msgid "This quiz is past its due date."
+msgstr ""
 
-msgid "Create exams for your courses to engage students!"
-msgstr "Create exams for your courses to engage students!"
+#: routes.py:1725
+msgid "Not enrolled in course"
+msgstr "Not enrolled in course"
 
-msgid "Recent Quizzes"
-msgstr "Recent Quizzes"
+#: routes.py:1780
+msgid "Quiz submitted successfully"
+msgstr "Quiz submitted successfully"
 
-msgid "Quiz"
-msgstr "Quiz"
+#: routes.py:1800
+#, python-format
+msgid "Quiz \"%(title)s\" deleted successfully!"
+msgstr "Quiz \"%(title)s\" deleted successfully!"
 
-msgid "Course"
-msgstr "Course"
+#: routes.py:1804
+#, python-format
+msgid "Error deleting quiz: %(err)s"
+msgstr ""
 
+#: routes.py:1849
+#, python-format
+msgid "User '%(username)s' deleted successfully!"
+msgstr "User '%(username)s' deleted successfully!"
+
+#: routes.py:1852
+#, python-format
+msgid "Error deleting user: %(err)s"
+msgstr ""
+
+#: templates/403.html:3 templates/403.html:18 templates/course_slides.html:381
+msgid "Access Denied"
+msgstr "Access Denied"
+
+#: templates/403.html:3 templates/404.html:3 templates/admin_dashboard.html:3
+#: templates/base.html:8 templates/base.html:91 templates/base.html:192
+#: templates/change_password.html:3 templates/index.html:3
+#: templates/login.html:3 templates/register.html:3
+#: templates/register_role.html:3 templates/student_dashboard.html:3
+#: templates/switch_role.html:3 templates/test_login.html:3
+msgid "EduPortal"
+msgstr "EduPortal"
+
+#: templates/403.html:20
+msgid ""
+"You don't have permission to access this resource. Please check your role or"
+" contact an administrator."
+msgstr ""
+
+#: templates/403.html:24 templates/404.html:23
+msgid "Go Home"
+msgstr ""
+
+#: templates/403.html:28 templates/base.html:149
+msgid "Logout"
+msgstr "Logout"
+
+#: templates/403.html:32 templates/base.html:156
+msgid "Login"
+msgstr "Login"
+
+#: templates/404.html:3 templates/404.html:16
+msgid "Page Not Found"
+msgstr ""
+
+#: templates/404.html:17
+msgid "Oops! This page doesn't exist"
+msgstr ""
+
+#: templates/404.html:19
+msgid ""
+"The page you're looking for might have been moved, deleted, or you entered "
+"the wrong URL."
+msgstr ""
+
+#: templates/404.html:26
+msgid "Go Back"
+msgstr ""
+
+# User Management translations
+#: templates/admin_courses.html:3 templates/admin_courses.html:10
+msgid "Course Management"
+msgstr "Course Management"
+
+#: templates/admin_courses.html:3 templates/admin_dashboard.html:259
+#: templates/admin_users.html:3 templates/admin_users.html:63
+#: templates/admin_users.html:210
+msgid "Admin"
+msgstr "Admin"
+
+#: templates/admin_courses.html:12
+msgid "Manage all platform courses"
+msgstr "Manage all platform courses"
+
+# Dashboard translations
+#: templates/admin_courses.html:15 templates/admin_users.html:19
+#: templates/student_quiz_submitted.html:133 templates/switch_role.html:81
+msgid "Back to Dashboard"
+msgstr "Back to Dashboard"
+
+#: templates/admin_courses.html:23 templates/admin_dashboard.html:25
+msgid "All Courses"
+msgstr "All Courses"
+
+#: templates/admin_courses.html:27 templates/admin_users.html:32
+msgid "All"
+msgstr "All"
+
+#: templates/admin_courses.html:28 templates/admin_courses.html:81
+#: templates/admin_dashboard.html:177 templates/teacher_create_course.html:69
+#: templates/teacher_dashboard.html:122
+msgid "Published"
+msgstr ""
+
+#: templates/admin_courses.html:29 templates/admin_courses.html:83
+#: templates/admin_dashboard.html:179 templates/teacher_create_course.html:68
+#: templates/teacher_dashboard.html:122
+msgid "Draft"
+msgstr ""
+
+#: templates/admin_courses.html:40 templates/admin_users.html:45
+msgid "ID"
+msgstr ""
+
+#: templates/admin_courses.html:41 templates/teacher_create_course.html:23
+msgid "Course Title"
+msgstr "Course Title"
+
+#: templates/admin_courses.html:42 templates/admin_dashboard.html:261
+#: templates/admin_users.html:66 templates/admin_users.html:70
+#: templates/admin_users.html:209 templates/register_role.html:54
+#: templates/switch_role.html:44 templates/teacher_dashboard.html:13
+msgid "Teacher"
+msgstr "Teacher"
+
+#: templates/admin_courses.html:43 templates/student_quiz_submitted.html:30
+#: templates/teacher_quiz_submissions.html:80
+msgid "Language"
+msgstr ""
+
+#: templates/admin_courses.html:44
+msgid "Difficulty"
+msgstr ""
+
+#: templates/admin_courses.html:45 templates/admin_dashboard.html:54
+#: templates/admin_users.html:33
+msgid "Students"
+msgstr "Students"
+
+#: templates/admin_courses.html:46 templates/student_quiz_submitted.html:35
+#: templates/teacher_create_course.html:66
+#: templates/teacher_dashboard.html:199 templates/teacher_dashboard.html:266
+#: templates/teacher_quiz_submissions.html:81
 msgid "Status"
 msgstr "Status"
 
+#: templates/admin_courses.html:47
+msgid "Created"
+msgstr ""
+
+#: templates/admin_courses.html:48 templates/admin_dashboard.html:248
+#: templates/admin_users.html:51 templates/teacher_dashboard.html:201
+#: templates/teacher_dashboard.html:268
+#: templates/teacher_quiz_submissions.html:83
 msgid "Actions"
 msgstr "Actions"
 
+#: templates/admin_courses.html:87 templates/admin_dashboard.html:267
+#: templates/admin_users.html:76 templates/student_take_exam.html:226
+#: templates/student_take_mcq_quiz.html:139
+msgid "N/A"
+msgstr ""
+
+#: templates/admin_courses.html:93
+msgid "Set to Draft"
+msgstr ""
+
+#: templates/admin_courses.html:97
+msgid "Publish"
+msgstr ""
+
+#: templates/admin_courses.html:111 templates/teacher_dashboard.html:170
+msgid "No courses created yet"
+msgstr "No courses created yet"
+
+#: templates/admin_dashboard.html:3 templates/admin_dashboard.html:11
+#: templates/base.html:129 templates/base.html:136
+msgid "Admin Dashboard"
+msgstr "Admin Dashboard"
+
+#: templates/admin_dashboard.html:13
+msgid "Administrator"
+msgstr "Administrator"
+
+#: templates/admin_dashboard.html:18
+msgid "Switch to Teacher"
+msgstr ""
+
+#: templates/admin_dashboard.html:22 templates/admin_users.html:28
+msgid "All Users"
+msgstr "All Users"
+
+#: templates/admin_dashboard.html:37
+msgid "Total Users"
+msgstr "Total Users"
+
+#: templates/admin_dashboard.html:39
+msgid "Platform accounts"
+msgstr "Platform accounts"
+
+#: templates/admin_dashboard.html:56
+msgid "enrollments"
+msgstr "enrollments"
+
+#: templates/admin_dashboard.html:71 templates/admin_users.html:34
+msgid "Teachers"
+msgstr "Teachers"
+
+#: templates/admin_dashboard.html:73
+msgid "courses"
+msgstr "courses"
+
+#: templates/admin_dashboard.html:88
+msgid "Active Courses"
+msgstr "Active Courses"
+
+#: templates/admin_dashboard.html:90
+#, python-format
+msgid "of %(total)s total"
+msgstr "of %(total)s total"
+
+#: templates/admin_dashboard.html:108 templates/student_dashboard.html:205
+#: templates/teacher_course_exams.html:3
+#: templates/teacher_course_exams.html:12
+#: templates/teacher_course_exams.html:18
+#: templates/teacher_course_exams.html:53
+#: templates/teacher_create_exam.html:19 templates/teacher_dashboard.html:156
+msgid "Exams"
+msgstr "Exams"
+
+#: templates/admin_dashboard.html:110 templates/admin_dashboard.html:127
+#: templates/teacher_course_exams.html:90
+#: templates/teacher_course_quizzes.html:93
+msgid "submissions"
+msgstr "submissions"
+
+#: templates/admin_dashboard.html:125 templates/teacher_course_quizzes.html:3
+#: templates/teacher_course_quizzes.html:12
+#: templates/teacher_course_quizzes.html:18
+#: templates/teacher_course_quizzes.html:53
+#: templates/teacher_create_mcq_quiz.html:19
+#: templates/teacher_dashboard.html:67 templates/teacher_dashboard.html:153
+#: templates/teacher_quiz_submissions.html:18
+msgid "Quizzes"
+msgstr "Quizzes"
+
+#: templates/admin_dashboard.html:142
+msgid "Administrators"
+msgstr "Administrators"
+
+#: templates/admin_dashboard.html:144
+msgid "Platform admins"
+msgstr "Platform admins"
+
+#: templates/admin_dashboard.html:161
+msgid "Recent Courses"
+msgstr "Recent Courses"
+
+#: templates/admin_dashboard.html:173
+#, python-format
+msgid "by %(first)s %(last)s"
+msgstr ""
+
+#: templates/admin_dashboard.html:192
+msgid "No courses yet"
+msgstr "No courses yet"
+
+#: templates/admin_dashboard.html:202
+msgid "Recent Enrollments"
+msgstr "Recent Enrollments"
+
+#: templates/admin_dashboard.html:214
+msgid "enrolled in"
+msgstr "enrolled in"
+
+#: templates/admin_dashboard.html:223
+msgid "No enrollments yet"
+msgstr "No enrollments yet"
+
+#: templates/admin_dashboard.html:234
+msgid "Recent Users"
+msgstr "Recent Users"
+
+#: templates/admin_dashboard.html:236
+msgid "View All"
+msgstr ""
+
+#: templates/admin_dashboard.html:243 templates/admin_users.html:46
+#: templates/admin_users.html:183 templates/login.html:24
+msgid "Username"
+msgstr "Username"
+
+#: templates/admin_dashboard.html:244 templates/admin_users.html:47
+msgid "Name"
+msgstr "Name"
+
+#: templates/admin_dashboard.html:245 templates/admin_users.html:48
+#: templates/admin_users.html:187
+msgid "Email"
+msgstr ""
+
+#: templates/admin_dashboard.html:246 templates/admin_users.html:49
+#: templates/admin_users.html:206
+msgid "Role"
+msgstr ""
+
+#: templates/admin_dashboard.html:247 templates/admin_users.html:50
+msgid "Registered"
+msgstr "Registered"
+
+#: templates/admin_dashboard.html:283 templates/admin_users.html:92
+msgid "Set as Student"
+msgstr "Set as Student"
+
+#: templates/admin_dashboard.html:294 templates/admin_users.html:103
+msgid "Set as Teacher"
+msgstr "Set as Teacher"
+
+#: templates/admin_dashboard.html:305 templates/admin_users.html:114
+msgid "Set as Admin"
+msgstr ""
+
+#: templates/admin_dashboard.html:313 templates/admin_users.html:157
+msgid "You"
+msgstr ""
+
+# User Management translations
+#: templates/admin_users.html:3 templates/admin_users.html:10
+msgid "User Management"
+msgstr "User Management"
+
+#: templates/admin_users.html:12
+msgid "Manage all platform users"
+msgstr "Manage all platform users"
+
+#: templates/admin_users.html:16 templates/admin_users.html:175
+msgid "Create New User"
+msgstr "Create New User"
+
+#: templates/admin_users.html:35
+msgid "Admins"
+msgstr "Admins"
+
+#: templates/admin_users.html:65
+msgid "Has teacher access"
+msgstr ""
+
+#: templates/admin_users.html:126
+msgid "Remove Teacher Access"
+msgstr ""
+
+#: templates/admin_users.html:192
+msgid "First Name"
+msgstr ""
+
+#: templates/admin_users.html:196
+msgid "Last Name"
+msgstr ""
+
+#: templates/admin_users.html:201 templates/login.html:36
+msgid "Password"
+msgstr "Password"
+
+#: templates/admin_users.html:203 templates/change_password.html:52
+msgid "Minimum 6 characters"
+msgstr ""
+
+#: templates/admin_users.html:215 templates/admin_users.html:249
+#: templates/change_password.html:70 templates/student_dashboard.html:283
+#: templates/teacher_course_exams.html:163
+#: templates/teacher_course_exams.html:193
+#: templates/teacher_course_quizzes.html:159
+#: templates/teacher_create_course.html:230
+#: templates/teacher_create_exam.html:110
+#: templates/teacher_create_mcq_quiz.html:110
+#: templates/teacher_dashboard.html:341 templates/teacher_dashboard.html:387
+msgid "Cancel"
+msgstr "Cancel"
+
+#: templates/admin_users.html:217
+msgid "Create User"
+msgstr "Create User"
+
+#: templates/admin_users.html:231 templates/admin_users.html:251
+msgid "Reset Password"
+msgstr "Reset Password"
+
+#: templates/admin_users.html:240 templates/teacher_course_exams.html:152
+#: templates/teacher_course_exams.html:187
+#: templates/teacher_course_quizzes.html:148
+#: templates/teacher_dashboard.html:375
+msgid "Warning"
+msgstr ""
+
+#: templates/admin_users.html:240
+msgid "This will reset the password for user"
+msgstr ""
+
+#: templates/admin_users.html:243
+msgid "New Password"
+msgstr "New Password"
+
+#: templates/admin_users.html:245
+msgid "Minimum 6 characters. Make sure to save this password!"
+msgstr ""
+
+#: templates/admin_users.html:272
+msgid "Are you sure you want to delete this user?"
+msgstr "Are you sure you want to delete this user?"
+
+#: templates/base.html:120
+msgid "Profile"
+msgstr ""
+
+#: templates/base.html:124
+msgid "User"
+msgstr "User"
+
+#: templates/base.html:132 templates/teacher_dashboard.html:3
+#: templates/teacher_dashboard.html:11
+msgid "Teacher Dashboard"
+msgstr "Teacher Dashboard"
+
+#: templates/base.html:140 templates/base.html:144
+#: templates/teacher_course_exams.html:16
+#: templates/teacher_course_quizzes.html:16
+#: templates/teacher_create_exam.html:17
+#: templates/teacher_create_mcq_quiz.html:17
+#: templates/teacher_quiz_submissions.html:16
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#: templates/base.html:161 templates/index.html:15 templates/login.html:64
+msgid "Sign Up"
+msgstr "Sign Up"
+
+#: templates/base.html:192
+msgid "Empowering education through technology."
+msgstr "Empowering education through technology."
+
+#: templates/change_password.html:3 templates/change_password.html:12
+msgid "Change Password"
+msgstr "Change Password"
+
+#: templates/change_password.html:19
+msgid "Password Change Required:"
+msgstr ""
+
+#: templates/change_password.html:23
+msgid "Update your password to keep your account secure"
+msgstr ""
+
+#: templates/change_password.html:32
+msgid "Enter your current password"
+msgstr "Enter your current password"
+
+#: templates/change_password.html:44
+msgid "Enter your new password"
+msgstr "Enter your new password"
+
+#: templates/change_password.html:57
+msgid "Confirm your new password"
+msgstr "Confirm your new password"
+
+#: templates/change_password.html:79
+msgid ""
+"This is a security requirement. You cannot access other pages until you "
+"change your password."
+msgstr ""
+
+#: templates/change_password.html:94
+msgid "Password Requirements"
+msgstr ""
+
+#: templates/change_password.html:98
+msgid "Must be at least 6 characters long"
+msgstr ""
+
+#: templates/change_password.html:99
+msgid "Should be different from your previous password"
+msgstr ""
+
+#: templates/change_password.html:100
+msgid "Choose a strong password that you haven't used elsewhere"
+msgstr ""
+
+#: templates/course_slides.html:6 templates/student_dashboard.html:121
+#: templates/teacher_create_course.html:200
+msgid "Slides"
+msgstr ""
+
+#: templates/course_slides.html:271 templates/course_slides.html:315
+msgid "Download"
+msgstr ""
+
+#: templates/course_slides.html:275 templates/course_slides.html:328
+msgid "Back"
+msgstr ""
+
+#: templates/course_slides.html:293
+msgid "PDF Viewer Not Supported"
+msgstr ""
+
+#: templates/course_slides.html:294
+msgid "Your browser does not support PDF viewing."
+msgstr ""
+
+#: templates/course_slides.html:297
+msgid "Download PDF"
+msgstr ""
+
+#: templates/course_slides.html:309
+msgid "PowerPoint presentations cannot be viewed directly in the browser."
+msgstr ""
+
+#: templates/course_slides.html:310
+msgid "Please download the file to view the slides."
+msgstr ""
+
+#: templates/course_slides.html:315
+msgid "File"
+msgstr ""
+
+#: templates/course_slides.html:326 templates/course_slides.html:385
+msgid "🌙 Dark"
+msgstr ""
+
+#: templates/course_slides.html:331
+msgid "Use arrow keys or click to navigate"
+msgstr ""
+
+#: templates/course_slides.html:340
+msgid "Interactive Programming Course"
+msgstr ""
+
+#: templates/course_slides.html:354
+msgid "hours"
+msgstr "hours"
+
+#: templates/course_slides.html:360
+msgid "Press → to start the course"
+msgstr ""
+
+#: templates/course_slides.html:369
+msgid "ESC: Overview | F: Fullscreen | S: Speaker Notes"
+msgstr ""
+
+#: templates/course_slides.html:382
+msgid "You don't have permission to view this course."
+msgstr ""
+
+#: templates/course_slides.html:383
+msgid "Error Loading Content"
+msgstr ""
+
+#: templates/course_slides.html:384
+msgid "Unable to load course slides. Please try again."
+msgstr ""
+
+#: templates/course_slides.html:386
+msgid "☀️ Light"
+msgstr ""
+
+#: templates/index.html:3
+msgid "Welcome"
+msgstr "Welcome"
+
+#: templates/index.html:10
+msgid "Welcome to EduPortal"
+msgstr ""
+
+#: templates/index.html:11
+msgid ""
+"A comprehensive learning management system designed for students and "
+"teachers to collaborate, learn, and grow together. Create your account and "
+"start learning today!"
+msgstr ""
+
+#: templates/index.html:18 templates/login.html:3 templates/login.html:49
+#: templates/register.html:115
+msgid "Sign In"
+msgstr "Sign In"
+
+#: templates/index.html:53
+msgid "For Students"
+msgstr "For Students"
+
+#: templates/index.html:54
+msgid ""
+"Access your courses, assignments, and track your academic progress in one "
+"convenient location."
+msgstr ""
+
+#: templates/index.html:65
+msgid "For Teachers"
+msgstr "For Teachers"
+
+#: templates/index.html:66
+msgid ""
+"Create courses, manage assignments, and monitor student progress with "
+"powerful teaching tools."
+msgstr ""
+
+#: templates/index.html:77
+msgid "Collaboration"
+msgstr ""
+
+#: templates/index.html:78
+msgid ""
+"Foster meaningful connections between students and teachers in a secure, "
+"organized environment."
+msgstr ""
+
+#: templates/index.html:86
+msgid "Ready to Get Started?"
+msgstr "Ready to Get Started?"
+
+#: templates/index.html:87
+msgid "Join thousands of students and teachers already using EduPortal"
+msgstr ""
+
+#: templates/index.html:89
+msgid "Sign In Now"
+msgstr ""
+
+#: templates/login.html:12
+msgid "Welcome Back"
+msgstr "Welcome Back"
+
+#: templates/login.html:17
+msgid "Sign in to continue your learning journey"
+msgstr "Sign in to continue your learning journey"
+
+#: templates/login.html:25
+msgid "Enter your username"
+msgstr "Enter your username"
+
+#: templates/login.html:37
+msgid "Enter your password"
+msgstr "Enter your password"
+
+#: templates/login.html:63
+msgid "Don't have an account?"
+msgstr "Don't have an account?"
+
+#: templates/login.html:78
+msgid "Demo Accounts"
+msgstr "Demo Accounts"
+
+#: templates/login.html:81
+msgid "For testing purposes, you can use these demo accounts:"
+msgstr ""
+
+#: templates/login.html:84 templates/test_login.html:49
+msgid "Student Account"
+msgstr ""
+
+#: templates/login.html:86 templates/login.html:93
+msgid "Username:"
+msgstr "Username:"
+
+#: templates/login.html:87 templates/login.html:94
+msgid "Password:"
+msgstr "Password:"
+
+#: templates/login.html:91 templates/test_login.html:31
+msgid "Teacher Account"
+msgstr "Teacher Account"
+
+#: templates/register.html:3
+msgid "Create Account"
+msgstr "Create Account"
+
+#: templates/register.html:12
+msgid "Create Your Account"
+msgstr "Create Your Account"
+
+#: templates/register.html:17
+msgid "Join EduPortal and start your learning journey today!"
+msgstr "Join EduPortal and start your learning journey today!"
+
+#: templates/register.html:50
+msgid "Choose a unique username"
+msgstr ""
+
+#: templates/register.html:62
+msgid "your.email@example.com"
+msgstr ""
+
+#: templates/register.html:99
+msgid ""
+"All new accounts are created as <strong>Student</strong> accounts. If you "
+"need teacher access, please contact an administrator after registration."
+msgstr ""
+
+#: templates/register.html:114
+msgid "Already have an account?"
+msgstr "Already have an account?"
+
+#: templates/register_role.html:3 templates/register_role.html:15
+msgid "Choose Your Role"
+msgstr ""
+
+#: templates/register_role.html:13
+msgid "Change Your Role"
+msgstr ""
+
+#: templates/register_role.html:23 templates/switch_role.html:18
+msgid "Current Role:"
+msgstr ""
+
+#: templates/register_role.html:24
+msgid "You can switch to a different role if needed."
+msgstr ""
+
+#: templates/register_role.html:28
+msgid ""
+"Your role has been automatically assigned based on your email. You can "
+"change it if needed."
+msgstr ""
+
+#: templates/register_role.html:42 templates/switch_role.html:32
+msgid "Access courses, assignments, and track your academic progress."
+msgstr ""
+
+#: templates/register_role.html:55 templates/switch_role.html:45
+msgid "Create courses, manage assignments, and monitor student progress."
+msgstr ""
+
+#: templates/register_role.html:63 templates/switch_role.html:53
+msgid "Grade Level"
+msgstr ""
+
+#: templates/register_role.html:65 templates/switch_role.html:55
+msgid "9th Grade"
+msgstr ""
+
+#: templates/register_role.html:66 templates/switch_role.html:56
+msgid "10th Grade"
+msgstr ""
+
+#: templates/register_role.html:67 templates/switch_role.html:57
+msgid "11th Grade"
+msgstr ""
+
+#: templates/register_role.html:68 templates/switch_role.html:58
+msgid "12th Grade"
+msgstr ""
+
+#: templates/register_role.html:69
+msgid "College Freshman"
+msgstr ""
+
+#: templates/register_role.html:70
+msgid "College Sophomore"
+msgstr ""
+
+#: templates/register_role.html:71
+msgid "College Junior"
+msgstr ""
+
+#: templates/register_role.html:72
+msgid "College Senior"
+msgstr ""
+
+#: templates/register_role.html:79 templates/switch_role.html:67
+msgid "Department"
+msgstr ""
+
+#: templates/register_role.html:81
+msgid "Mathematics"
+msgstr ""
+
+#: templates/register_role.html:82
+msgid "Science"
+msgstr ""
+
+#: templates/register_role.html:83
+msgid "English"
+msgstr ""
+
+#: templates/register_role.html:84
+msgid "History"
+msgstr ""
+
+#: templates/register_role.html:85
+msgid "Computer Science"
+msgstr ""
+
+#: templates/register_role.html:86
+msgid "Arts"
+msgstr ""
+
+#: templates/register_role.html:87
+msgid "Physical Education"
+msgstr ""
+
+#: templates/register_role.html:88
+msgid "Other"
+msgstr ""
+
+#: templates/register_role.html:95
+msgid "Complete Registration"
+msgstr ""
+
+# Student Dashboard translations
+#: templates/student_dashboard.html:3 templates/student_dashboard.html:11
+msgid "Student Dashboard"
+msgstr "Student Dashboard"
+
+#: templates/student_dashboard.html:17
+msgid "Student ID:"
+msgstr "Student ID:"
+
+#: templates/student_dashboard.html:29
+msgid "Enrolled Courses"
+msgstr "Enrolled Courses"
+
+#: templates/student_dashboard.html:45
+msgid "Pending Exams"
+msgstr "Pending Exams"
+
+#: templates/student_dashboard.html:61 templates/student_dashboard.html:149
+msgid "Available Quizzes"
+msgstr "Available Quizzes"
+
+#: templates/student_dashboard.html:79 templates/teacher_dashboard.html:35
+#: templates/teacher_dashboard.html:109
+msgid "My Courses"
+msgstr "My Courses"
+
+#: templates/student_dashboard.html:82 templates/student_dashboard.html:248
+msgid "Enroll in Course"
+msgstr "Enroll in Course"
+
+#: templates/student_dashboard.html:103 templates/teacher_dashboard.html:136
+msgid "No description available"
+msgstr "No description available"
+
+#: templates/student_dashboard.html:114
+msgid "View Slides"
+msgstr ""
+
+#: templates/student_dashboard.html:117
+msgid "PDF"
+msgstr ""
+
+#: templates/student_dashboard.html:133
+msgid "No courses enrolled yet"
+msgstr "No courses enrolled yet"
+
+#: templates/student_dashboard.html:134
+msgid "Enroll in your first course to get started!"
+msgstr "Enroll in your first course to get started!"
+
+#: templates/student_dashboard.html:136 templates/student_dashboard.html:285
+msgid "Enroll Now"
+msgstr "Enroll Now"
+
+#: templates/student_dashboard.html:171 templates/student_dashboard.html:219
+#: templates/student_take_exam.html:172
+#: templates/student_take_mcq_quiz.html:88
+#: templates/teacher_course_exams.html:92
+#: templates/teacher_course_quizzes.html:95
+msgid "Due:"
+msgstr ""
+
+#: templates/student_dashboard.html:175
+msgid "No due date"
+msgstr ""
+
+#: templates/student_dashboard.html:181
+msgid "Start"
+msgstr ""
+
+#: templates/student_dashboard.html:191
+msgid "No quizzes available"
+msgstr "No quizzes available"
+
+#: templates/student_dashboard.html:224
+msgid "Take Exam"
+msgstr "Take Exam"
+
+#: templates/student_dashboard.html:233
+msgid "No exams available"
+msgstr "No exams available"
+
+#: templates/student_dashboard.html:257
+msgid "By Course ID"
+msgstr "By Course ID"
+
+#: templates/student_dashboard.html:262
+msgid "Browse Courses"
+msgstr "Browse Courses"
+
+#: templates/student_dashboard.html:274
+msgid "Course ID"
+msgstr "Course ID"
+
+#: templates/student_dashboard.html:276
+msgid "Enter course ID provided by your teacher"
+msgstr "Enter course ID provided by your teacher"
+
+#: templates/student_dashboard.html:279
+msgid "Ask your teacher for the course ID to enroll directly."
+msgstr "Ask your teacher for the course ID to enroll directly."
+
+#: templates/student_dashboard.html:296
+msgid "Search courses by title, language, or difficulty..."
+msgstr "Search courses by title, language, or difficulty..."
+
+#: templates/student_dashboard.html:302
+msgid "Loading..."
+msgstr ""
+
+#: templates/student_dashboard.html:304
+msgid "Loading available courses..."
+msgstr ""
+
+#: templates/student_dashboard.html:349 templates/teacher_dashboard.html:457
+msgid "No courses available"
+msgstr "No courses available"
+
+#: templates/student_dashboard.html:350
+msgid "Check back later for new courses!"
+msgstr "Check back later for new courses!"
+
+#: templates/student_dashboard.html:380
+msgid "Enroll"
+msgstr "Enroll"
+
+#: templates/student_dashboard.html:396
+msgid "Error loading courses"
+msgstr ""
+
+#: templates/student_dashboard.html:397
+msgid "Please try again later."
+msgstr ""
+
+#: templates/student_quiz_submitted.html:3
+msgid "Submission"
+msgstr "Submission"
+
+#: templates/student_quiz_submitted.html:12
+msgid "Quiz Submitted Successfully!"
+msgstr "Quiz Submitted Successfully!"
+
+#: templates/student_quiz_submitted.html:24
+#: templates/teacher_quiz_submissions.html:79
+msgid "Submitted"
+msgstr ""
+
+#: templates/student_quiz_submitted.html:38
+msgid "Graded"
+msgstr ""
+
+#: templates/student_quiz_submitted.html:40
+msgid "Reviewed"
+msgstr ""
+
+#: templates/student_quiz_submitted.html:42
+msgid "Pending"
+msgstr "Pending"
+
+#: templates/student_quiz_submitted.html:56
+msgid "Grade & Feedback"
+msgstr ""
+
+#: templates/student_quiz_submitted.html:62
+msgid "Your Score:"
+msgstr ""
+
+#: templates/student_quiz_submitted.html:71
+msgid "Graded On:"
+msgstr ""
+
+#: templates/student_quiz_submitted.html:72
+msgid "Not yet"
+msgstr ""
+
+#: templates/student_quiz_submitted.html:78
+msgid "Teacher Feedback:"
+msgstr ""
+
+#: templates/student_quiz_submitted.html:92
+msgid "Awaiting Grade"
+msgstr ""
+
+#: templates/student_quiz_submitted.html:93
+msgid "Your teacher will review and grade your submission soon."
+msgstr ""
+
+#: templates/student_quiz_submitted.html:103
+msgid "Your Submitted Code"
+msgstr ""
+
+#: templates/student_quiz_submitted.html:109
+msgid "Language:"
+msgstr ""
+
+#: templates/student_quiz_submitted.html:111
+msgid "Execution Time:"
+msgstr ""
+
+#: templates/student_quiz_submitted.html:122
+msgid "Output:"
+msgstr ""
+
+#: templates/student_quiz_submitted.html:137
+msgid "View course slides"
+msgstr ""
+
+#: templates/student_take_exam.html:3 templates/teacher_dashboard.html:197
+msgid "Exam"
+msgstr "Exam"
+
+#: templates/student_take_exam.html:140
+#: templates/student_take_mcq_quiz.html:56
+msgid "Time Left:"
+msgstr ""
+
+#: templates/student_take_exam.html:162
+msgid "Answer all questions carefully and click \"Submit Exam\" when you're done."
+msgstr ""
+
+#: templates/student_take_exam.html:167
+#: templates/student_take_mcq_quiz.html:83
+msgid "Max Score:"
+msgstr ""
+
+#: templates/student_take_exam.html:168
+#: templates/student_take_mcq_quiz.html:84
+msgid "points"
+msgstr ""
+
+#: templates/student_take_exam.html:177
+#: templates/student_take_mcq_quiz.html:93
+msgid "Progress:"
+msgstr ""
+
+#: templates/student_take_exam.html:197 templates/student_take_exam.html:468
+#: templates/student_take_exam.html:475
+msgid "Submit Exam"
+msgstr ""
+
+#: templates/student_take_exam.html:201
+#: templates/student_take_mcq_quiz.html:117
+msgid "You cannot change your answers after submission."
+msgstr ""
+
+#: templates/student_take_exam.html:216
+msgid "This exam has no questions yet."
+msgstr ""
+
+#: templates/student_take_exam.html:217
+#: templates/student_take_mcq_quiz.html:132
+#: templates/teacher_create_exam.html:255
+#: templates/teacher_create_mcq_quiz.html:236
+msgid "Question"
+msgstr ""
+
+#: templates/student_take_exam.html:218
+msgid "Question image"
+msgstr ""
+
+#: templates/student_take_exam.html:219
+msgid "Option image"
+msgstr ""
+
+#: templates/student_take_exam.html:220
+msgid "Time is up! Your exam will be automatically submitted."
+msgstr ""
+
+#: templates/student_take_exam.html:221
+#: templates/student_take_mcq_quiz.html:134
+msgid "You have"
+msgstr ""
+
+#: templates/student_take_exam.html:222
+#: templates/student_take_mcq_quiz.html:135
+msgid "unanswered question(s). Submit anyway?"
+msgstr ""
+
+#: templates/student_take_exam.html:223
+msgid ""
+"Are you sure you want to submit your exam? You cannot change your answers "
+"after submission."
+msgstr ""
+
+#: templates/student_take_exam.html:224
+#: templates/student_take_mcq_quiz.html:137
+msgid "Submitting..."
+msgstr ""
+
+#: templates/student_take_exam.html:225
+msgid "Exam submitted successfully! Your score:"
+msgstr "Exam submitted successfully! Your score:"
+
+#: templates/student_take_exam.html:227
+msgid "Error submitting exam:"
+msgstr ""
+
+#: templates/student_take_exam.html:228
+msgid "Unknown error"
+msgstr ""
+
+#: templates/student_take_exam.html:229
+msgid "Error submitting exam. Please try again."
+msgstr ""
+
+#: templates/student_take_exam.html:230
+msgid "Are you sure you want to leave? Your exam progress may be lost."
+msgstr "Are you sure you want to leave? Your exam progress may be lost."
+
+#: templates/student_take_mcq_quiz.html:3
+msgid "Multiple Choice Quiz"
+msgstr ""
+
+#: templates/student_take_mcq_quiz.html:78
+msgid "Answer all questions and click \"Submit Quiz\" when you're done."
+msgstr ""
+
+#: templates/student_take_mcq_quiz.html:113
+#: templates/student_take_mcq_quiz.html:345
+#: templates/student_take_mcq_quiz.html:352
+msgid "Submit Quiz"
+msgstr ""
+
+#: templates/student_take_mcq_quiz.html:131
+msgid "This quiz has no questions yet."
+msgstr ""
+
+#: templates/student_take_mcq_quiz.html:133
+msgid "Time is up! Your quiz will be automatically submitted."
+msgstr ""
+
+#: templates/student_take_mcq_quiz.html:136
+msgid ""
+"Are you sure you want to submit your quiz? You cannot change your answers "
+"after submission."
+msgstr ""
+
+#: templates/student_take_mcq_quiz.html:138
+msgid "Quiz submitted successfully! Your score:"
+msgstr ""
+
+#: templates/student_take_mcq_quiz.html:140
+msgid "Error submitting quiz:"
+msgstr ""
+
+#: templates/student_take_mcq_quiz.html:141
+msgid "Error submitting quiz. Please try again."
+msgstr ""
+
+#: templates/student_take_mcq_quiz.html:142
+msgid "Are you sure you want to leave? Your quiz progress may be lost."
+msgstr "Are you sure you want to leave? Your quiz progress may be lost."
+
+#: templates/switch_role.html:3 templates/switch_role.html:74
+msgid "Switch Role"
+msgstr ""
+
+#: templates/switch_role.html:12
+msgid "Switch Your Role"
+msgstr ""
+
+#: templates/switch_role.html:19
+msgid ""
+"You can switch to a different role if needed. This will change your "
+"dashboard and available features."
+msgstr ""
+
+#: templates/switch_role.html:59
+msgid "College"
+msgstr ""
+
+#: templates/switch_role.html:60
+msgid "Graduate"
+msgstr ""
+
+#: templates/switch_role.html:68
+msgid "e.g., Computer Science, Mathematics"
+msgstr ""
+
+#: templates/teacher_course_exams.html:24 templates/teacher_create_exam.html:3
+#: templates/teacher_create_exam.html:12 templates/teacher_create_exam.html:20
+#: templates/teacher_create_exam.html:107 templates/teacher_dashboard.html:94
+msgid "Create Exam"
+msgstr "Create Exam"
+
+#: templates/teacher_course_exams.html:43
+#: templates/teacher_course_quizzes.html:43
+#, python-format
+msgid "%(count)s students enrolled"
+msgstr "%(count)s students enrolled"
+
+#: templates/teacher_course_exams.html:72
+#: templates/teacher_course_exams.html:206
+#: templates/teacher_course_quizzes.html:72
+#: templates/teacher_course_quizzes.html:172
+#: templates/teacher_dashboard.html:216 templates/teacher_dashboard.html:283
 msgid "Active"
 msgstr "Active"
 
-msgid "No quizzes created yet"
-msgstr "No quizzes created yet"
+#: templates/teacher_course_exams.html:72
+#: templates/teacher_course_exams.html:207
+#: templates/teacher_course_quizzes.html:72
+#: templates/teacher_course_quizzes.html:173
+#: templates/teacher_dashboard.html:218 templates/teacher_dashboard.html:285
+msgid "Inactive"
+msgstr "Inactive"
 
-msgid "Create quizzes to test student knowledge!"
-msgstr "Create quizzes to test student knowledge!"
+#: templates/teacher_course_exams.html:78
+#: templates/teacher_course_quizzes.html:81
+msgid "pts"
+msgstr ""
 
-msgid "Select Course for New Exam"
-msgstr "Select Course for New Exam"
+#: templates/teacher_course_exams.html:79
+#: templates/teacher_course_quizzes.html:82
+msgid "min"
+msgstr "min"
 
-msgid "Select a course"
-msgstr "Select a course"
+#: templates/teacher_course_exams.html:99
+#: templates/teacher_course_quizzes.html:105
+#: templates/teacher_dashboard.html:159 templates/teacher_dashboard.html:230
+#: templates/teacher_dashboard.html:297
+msgid "Edit"
+msgstr "Edit"
 
-msgid "Continue"
-msgstr "Continue"
+#: templates/teacher_course_exams.html:106
+#: templates/teacher_course_quizzes.html:112
+msgid "Delete"
+msgstr ""
 
-msgid "Please select a course"
-msgstr "Please select a course"
+#: templates/teacher_course_exams.html:116
+#, python-format
+msgid "Reset All Submissions (%(n)s)"
+msgstr ""
 
+#: templates/teacher_course_exams.html:127
+#: templates/teacher_dashboard.html:242
+msgid "No exams created yet"
+msgstr "No exams created yet"
+
+#: templates/teacher_course_exams.html:128
+msgid "Create your first exam to assess student knowledge!"
+msgstr "Create your first exam to assess student knowledge!"
+
+#: templates/teacher_course_exams.html:130
+msgid "Create First Exam"
+msgstr "Create First Exam"
+
+#: templates/teacher_course_exams.html:145
+msgid "Delete Exam"
+msgstr "Delete Exam"
+
+#: templates/teacher_course_exams.html:147
+#: templates/teacher_course_exams.html:182
+#: templates/teacher_course_quizzes.html:143
+#: templates/teacher_dashboard.html:466
+#: templates/teacher_quiz_submissions.html:156
+msgid "Close"
+msgstr "Close"
+
+#: templates/teacher_course_exams.html:152
+#: templates/teacher_course_exams.html:187
+#: templates/teacher_course_quizzes.html:148
+#: templates/teacher_dashboard.html:375
 msgid "This action cannot be undone!"
 msgstr "This action cannot be undone!"
 
-msgid "Are you sure you want to delete the course"
-msgstr "Are you sure you want to delete the course"
+#: templates/teacher_course_exams.html:154
+msgid "Are you sure you want to delete the exam"
+msgstr "Are you sure you want to delete the exam"
 
+#: templates/teacher_course_exams.html:155
+#: templates/teacher_course_quizzes.html:151
+#: templates/teacher_dashboard.html:378
 msgid "This will permanently delete:"
 msgstr "This will permanently delete:"
 
+#: templates/teacher_course_exams.html:157
+msgid "The exam and all its questions"
+msgstr ""
+
+#: templates/teacher_course_exams.html:158
+#: templates/teacher_course_quizzes.html:154
+msgid "All student submissions"
+msgstr "All student submissions"
+
+#: templates/teacher_course_exams.html:159
+msgid "All grades and scores"
+msgstr ""
+
+#: templates/teacher_course_exams.html:167
+msgid "Yes, Delete Exam"
+msgstr "Yes, Delete Exam"
+
+#: templates/teacher_course_exams.html:180
+#: templates/teacher_quiz_submissions.html:29
+msgid "Reset All Submissions"
+msgstr "Reset All Submissions"
+
+#: templates/teacher_course_exams.html:189
+msgid "Are you sure you want to reset all submissions for"
+msgstr "Are you sure you want to reset all submissions for"
+
+#: templates/teacher_course_exams.html:190
+msgid "This will delete"
+msgstr "This will delete"
+
+#: templates/teacher_course_exams.html:190
+msgid "submission(s) and allow students to retake this exam."
+msgstr ""
+
+#: templates/teacher_course_exams.html:197
+msgid "Yes, Reset Submissions"
+msgstr "Yes, Reset Submissions"
+
+#: templates/teacher_course_quizzes.html:24
+#: templates/teacher_create_mcq_quiz.html:20
+#: templates/teacher_create_mcq_quiz.html:107
+#: templates/teacher_dashboard.html:97 templates/teacher_dashboard.html:423
+msgid "Create Quiz"
+msgstr "Create Quiz"
+
+#: templates/teacher_course_quizzes.html:102
+#: templates/teacher_dashboard.html:200 templates/teacher_dashboard.html:267
+#: templates/teacher_quiz_submissions.html:3
+msgid "Submissions"
+msgstr "Submissions"
+
+#: templates/teacher_course_quizzes.html:123
+#: templates/teacher_dashboard.html:309
+msgid "No quizzes created yet"
+msgstr "No quizzes created yet"
+
+#: templates/teacher_course_quizzes.html:124
+msgid "Create your first quiz to test student knowledge!"
+msgstr "Create your first quiz to test student knowledge!"
+
+#: templates/teacher_course_quizzes.html:126
+msgid "Create First Quiz"
+msgstr "Create First Quiz"
+
+#: templates/teacher_course_quizzes.html:141
+msgid "Delete Quiz"
+msgstr "Delete Quiz"
+
+#: templates/teacher_course_quizzes.html:150
+msgid "Are you sure you want to delete the quiz"
+msgstr "Are you sure you want to delete the quiz"
+
+#: templates/teacher_course_quizzes.html:153
+msgid "The quiz and all its settings"
+msgstr ""
+
+#: templates/teacher_course_quizzes.html:155
+msgid "All grades and feedback"
+msgstr ""
+
+#: templates/teacher_course_quizzes.html:163
+msgid "Yes, Delete Quiz"
+msgstr "Yes, Delete Quiz"
+
+#: templates/teacher_create_course.html:3
+msgid "Create Programming Course"
+msgstr ""
+
+#: templates/teacher_create_course.html:12
+msgid "Create New Programming Course"
+msgstr "Create New Programming Course"
+
+#: templates/teacher_create_course.html:21
+#: templates/teacher_create_exam.html:32
+#: templates/teacher_create_mcq_quiz.html:32
+msgid "Basic Information"
+msgstr ""
+
+#: templates/teacher_create_course.html:25
+msgid "e.g., Advanced Python for Data Science"
+msgstr ""
+
+#: templates/teacher_create_course.html:30
+msgid "Programming Language"
+msgstr ""
+
+#: templates/teacher_create_course.html:32
+msgid "Select Language"
+msgstr "Select Language"
+
+#: templates/teacher_create_course.html:50
+msgid "Difficulty Level"
+msgstr ""
+
+#: templates/teacher_create_course.html:52
+msgid "Select Level"
+msgstr ""
+
+#: templates/teacher_create_course.html:53
+msgid "Beginner"
+msgstr "Beginner"
+
+#: templates/teacher_create_course.html:54
+msgid "Intermediate"
+msgstr ""
+
+#: templates/teacher_create_course.html:55
+msgid "Advanced"
+msgstr ""
+
+#: templates/teacher_create_course.html:60
+msgid "Estimated Hours"
+msgstr "Estimated Hours"
+
+#: templates/teacher_create_course.html:62
+msgid "e.g., 40"
+msgstr ""
+
+#: templates/teacher_create_course.html:76
+msgid "Course Details"
+msgstr "Course Details"
+
+#: templates/teacher_create_course.html:78
+msgid "Short Description"
+msgstr "Short Description"
+
+#: templates/teacher_create_course.html:80
+msgid "Brief description of the course..."
+msgstr ""
+
+#: templates/teacher_create_course.html:84
+msgid "Prerequisites"
+msgstr ""
+
+#: templates/teacher_create_course.html:86
+msgid "List any required knowledge or prior courses..."
+msgstr ""
+
+#: templates/teacher_create_course.html:90
+msgid "Learning Objectives"
+msgstr ""
+
+#: templates/teacher_create_course.html:92
+msgid "What will students learn? List key objectives..."
+msgstr ""
+
+#: templates/teacher_create_course.html:99
+msgid "Content Display Settings"
+msgstr ""
+
+#: templates/teacher_create_course.html:101
+msgid "What should students see when viewing slides?"
+msgstr ""
+
+#: templates/teacher_create_course.html:106
+#: templates/teacher_create_course.html:162
+msgid "Markdown Content"
+msgstr ""
+
+#: templates/teacher_create_course.html:106
+msgid "Convert markdown text to interactive slides"
+msgstr ""
+
+#: templates/teacher_create_course.html:113
+msgid "Uploaded Slides"
+msgstr ""
+
+#: templates/teacher_create_course.html:113
+msgid "Show uploaded PDF/PPTX file for download"
+msgstr ""
+
+#: templates/teacher_create_course.html:121
+msgid "Course Slides Upload"
+msgstr ""
+
+#: templates/teacher_create_course.html:123
+msgid "Upload Course Slides (PDF or PPTX)"
+msgstr ""
+
+#: templates/teacher_create_course.html:129
+msgid ""
+"Upload your course presentation slides. Supported formats: PDF, PowerPoint "
+"(PPTX). Max size: 50MB."
+msgstr ""
+
+#: templates/teacher_create_course.html:143
+msgid "Course Content (Markdown)"
+msgstr ""
+
+#: templates/teacher_create_course.html:151
+msgid "Quick Start:"
+msgstr ""
+
+#: templates/teacher_create_course.html:151
+msgid "Generate a professional 5-slide template to get started faster"
+msgstr ""
+
+#: templates/teacher_create_course.html:154
+msgid "Generate 5-Slide Template"
+msgstr ""
+
+#: templates/teacher_create_course.html:164
+msgid "Course Introduction"
+msgstr ""
+
+#: templates/teacher_create_course.html:166
+msgid "Welcome to this programming course!"
+msgstr ""
+
+#: templates/teacher_create_course.html:168
+msgid "Module 1: Getting Started"
+msgstr ""
+
+#: templates/teacher_create_course.html:170
+msgid "What you'll learn:"
+msgstr ""
+
+#: templates/teacher_create_course.html:171
+msgid "Basic concepts"
+msgstr ""
+
+#: templates/teacher_create_course.html:172
+msgid "Setting up environment"
+msgstr ""
+
+#: templates/teacher_create_course.html:173
+msgid "First program"
+msgstr ""
+
+#: templates/teacher_create_course.html:182
+msgid "Module 2: Advanced Topics"
+msgstr ""
+
+#: templates/teacher_create_course.html:187
+msgid "Markdown Tips:"
+msgstr ""
+
+#: templates/teacher_create_course.html:187
+msgid ""
+"Use # for headings, ``` for code blocks, \n"
+"                                            ** for bold, * for italic, - for lists."
+msgstr ""
+
+#: templates/teacher_create_course.html:194
+msgid "Live Preview"
+msgstr ""
+
+#: templates/teacher_create_course.html:197
+msgid "Preview"
+msgstr ""
+
+#: templates/teacher_create_course.html:207
+#: templates/teacher_create_course.html:254
+msgid "Type in the content area to see live preview..."
+msgstr "Type in the content area to see live preview..."
+
+#: templates/teacher_create_course.html:214
+msgid "Slides Preview"
+msgstr ""
+
+#: templates/teacher_create_course.html:215
+msgid "Shows how content will appear as presentation slides"
+msgstr ""
+
+#: templates/teacher_create_course.html:217
+#: templates/teacher_create_course.html:256
+msgid "Type content to see slide breakdown..."
+msgstr "Type content to see slide breakdown..."
+
+#: templates/teacher_create_course.html:233
+#: templates/teacher_dashboard.html:91 templates/teacher_dashboard.html:173
+#: templates/teacher_dashboard.html:460
+msgid "Create Course"
+msgstr "Create Course"
+
+#: templates/teacher_create_course.html:255
+msgid "Your Course Title"
+msgstr "Your Course Title"
+
+#: templates/teacher_create_course.html:257
+msgid "File size exceeds 50MB limit. Please choose a smaller file."
+msgstr "File size exceeds 50MB limit. Please choose a smaller file."
+
+#: templates/teacher_create_course.html:390
+msgid "will be generated"
+msgstr ""
+
+#: templates/teacher_create_course.html:394
+msgid "Slide"
+msgstr ""
+
+#: templates/teacher_create_course.html:401
+msgid "lines"
+msgstr ""
+
+#: templates/teacher_create_course.html:451
+msgid "Selected:"
+msgstr ""
+
+#: templates/teacher_create_exam.html:34
+msgid "Exam Title"
+msgstr ""
+
+#: templates/teacher_create_exam.html:36
+msgid "e.g., Mid-Term Exam - Python Programming"
+msgstr ""
+
+#: templates/teacher_create_exam.html:40
+#: templates/teacher_create_mcq_quiz.html:40
+msgid "Description"
+msgstr "Description"
+
+#: templates/teacher_create_exam.html:42
+msgid "Brief description of exam topics..."
+msgstr ""
+
+#: templates/teacher_create_exam.html:48
+msgid "Exam Settings"
+msgstr ""
+
+#: templates/teacher_create_exam.html:50
+#: templates/teacher_create_mcq_quiz.html:50
+msgid "Maximum Score"
+msgstr ""
+
+#: templates/teacher_create_exam.html:56
+#: templates/teacher_create_mcq_quiz.html:56
+msgid "Time Limit (minutes)"
+msgstr ""
+
+#: templates/teacher_create_exam.html:62
+#: templates/teacher_create_mcq_quiz.html:62
+msgid "Due Date (Optional)"
+msgstr ""
+
+#: templates/teacher_create_exam.html:70
+msgid "Exam is Active"
+msgstr ""
+
+#: templates/teacher_create_exam.html:71
+msgid "Students can access and submit this exam"
+msgstr ""
+
+#: templates/teacher_create_exam.html:81
+#: templates/teacher_create_mcq_quiz.html:81
+msgid "Questions"
+msgstr "Questions"
+
+#: templates/teacher_create_exam.html:86
+msgid "Rich Content Support:"
+msgstr ""
+
+#: templates/teacher_create_exam.html:86
+#: templates/teacher_create_mcq_quiz.html:86
+msgid "You can add text, images, and code blocks to questions and options."
+msgstr ""
+
+#: templates/teacher_create_exam.html:88
+#: templates/teacher_create_mcq_quiz.html:88
+msgid "Load Template"
+msgstr ""
+
+#: templates/teacher_create_exam.html:98
+#: templates/teacher_create_mcq_quiz.html:98
+msgid "Add Question"
+msgstr ""
+
+#: templates/teacher_create_exam.html:263
+#: templates/teacher_create_mcq_quiz.html:244
+msgid "Question Text"
+msgstr ""
+
+#: templates/teacher_create_exam.html:271
+#: templates/teacher_create_mcq_quiz.html:252
+msgid "Add Image URL"
+msgstr ""
+
+#: templates/teacher_create_exam.html:274
+#: templates/teacher_create_mcq_quiz.html:255
+msgid "Add Code Block"
+msgstr ""
+
+#: templates/teacher_create_exam.html:279
+#: templates/teacher_create_exam.html:327
+#: templates/teacher_create_mcq_quiz.html:260
+#: templates/teacher_create_mcq_quiz.html:308
+msgid "Image URL"
+msgstr ""
+
+#: templates/teacher_create_exam.html:293
+msgid "Code snippet..."
+msgstr ""
+
+#: templates/teacher_create_exam.html:298
+#: templates/teacher_create_mcq_quiz.html:279
+msgid "Answer Options"
+msgstr ""
+
+#: templates/teacher_create_exam.html:310
+#: templates/teacher_create_mcq_quiz.html:291
+msgid "Mark as correct answer"
+msgstr ""
+
+#: templates/teacher_create_exam.html:313
+#: templates/teacher_create_mcq_quiz.html:294
+msgid "Option"
+msgstr "Option"
+
+#: templates/teacher_create_exam.html:347
+#: templates/teacher_create_mcq_quiz.html:328
+msgid "Explanation"
+msgstr ""
+
+#: templates/teacher_create_exam.html:347
+#: templates/teacher_create_mcq_quiz.html:328
+msgid "Optional"
+msgstr ""
+
+#: templates/teacher_create_exam.html:350
+#: templates/teacher_create_mcq_quiz.html:331
+msgid "Explain why this answer is correct..."
+msgstr ""
+
+#: templates/teacher_create_mcq_quiz.html:3
+#: templates/teacher_create_mcq_quiz.html:12
+msgid "Create Multiple Choice Quiz"
+msgstr "Create Multiple Choice Quiz"
+
+#: templates/teacher_create_mcq_quiz.html:34
+msgid "Quiz Title"
+msgstr ""
+
+#: templates/teacher_create_mcq_quiz.html:42
+msgid "Brief description of quiz topics..."
+msgstr ""
+
+#: templates/teacher_create_mcq_quiz.html:48
+msgid "Quiz Settings"
+msgstr ""
+
+#: templates/teacher_create_mcq_quiz.html:70
+msgid "Quiz is Active"
+msgstr ""
+
+#: templates/teacher_create_mcq_quiz.html:71
+msgid "Students can access and submit this quiz"
+msgstr ""
+
+#: templates/teacher_create_mcq_quiz.html:86
+msgid "Rich Content Support"
+msgstr ""
+
+#: templates/teacher_create_mcq_quiz.html:274
+msgid "Code snippet"
+msgstr ""
+
+#: templates/teacher_dashboard.html:18
+msgid "Switch to Admin"
+msgstr "Switch to Admin"
+
+#: templates/teacher_dashboard.html:23
+#, python-format
+msgid "Employee ID: %(id)s"
+msgstr ""
+
+#: templates/teacher_dashboard.html:51
+msgid "Total Students"
+msgstr "Total Students"
+
+#: templates/teacher_dashboard.html:85
+msgid "Quick Actions"
+msgstr "Quick Actions"
+
+#: templates/teacher_dashboard.html:122
+msgid "Archived"
+msgstr "Archived"
+
+#: templates/teacher_dashboard.html:141
+msgid "students"
+msgstr "students"
+
+#: templates/teacher_dashboard.html:150 templates/teacher_dashboard.html:227
+#: templates/teacher_dashboard.html:294
+msgid "View"
+msgstr "View"
+
+#: templates/teacher_dashboard.html:171
+msgid "Create your first course to get started!"
+msgstr "Create your first course to get started!"
+
+#: templates/teacher_dashboard.html:188
+msgid "Recent Exams"
+msgstr "Recent Exams"
+
+#: templates/teacher_dashboard.html:198 templates/teacher_dashboard.html:265
+msgid "Course"
+msgstr "Course"
+
+#: templates/teacher_dashboard.html:243
+msgid "Create exams for your courses to engage students!"
+msgstr "Create exams for your courses to engage students!"
+
+#: templates/teacher_dashboard.html:255
+msgid "Recent Quizzes"
+msgstr "Recent Quizzes"
+
+#: templates/teacher_dashboard.html:264
+msgid "Quiz"
+msgstr "Quiz"
+
+#: templates/teacher_dashboard.html:310
+msgid "Create quizzes to test student knowledge!"
+msgstr "Create quizzes to test student knowledge!"
+
+#: templates/teacher_dashboard.html:326
+msgid "Select Course for New Exam"
+msgstr "Select Course for New Exam"
+
+#: templates/teacher_dashboard.html:331
+msgid "Select Course"
+msgstr "Select Course"
+
+#: templates/teacher_dashboard.html:333
+msgid "Select a course"
+msgstr "Select a course"
+
+#: templates/teacher_dashboard.html:343
+msgid "Continue"
+msgstr "Continue"
+
+#: templates/teacher_dashboard.html:354
+msgid "Please select a course"
+msgstr "Please select a course"
+
+#: templates/teacher_dashboard.html:368
+msgid "Delete Course"
+msgstr "Delete Course"
+
+#: templates/teacher_dashboard.html:377
+msgid "Are you sure you want to delete the course"
+msgstr "Are you sure you want to delete the course"
+
+#: templates/teacher_dashboard.html:380
+msgid "The course and all its content"
+msgstr ""
+
+#: templates/teacher_dashboard.html:381
+msgid "All exams in this course"
+msgstr ""
+
+#: templates/teacher_dashboard.html:382
+msgid "All student enrollments"
+msgstr "All student enrollments"
+
+#: templates/teacher_dashboard.html:383
+msgid "Any uploaded files and generated PDFs"
+msgstr ""
+
+#: templates/teacher_dashboard.html:391
 msgid "Yes, Delete Course"
 msgstr "Yes, Delete Course"
 
+#: templates/teacher_dashboard.html:430
 msgid "Select a course to start creating a multiple-choice quiz"
 msgstr "Select a course to start creating a multiple-choice quiz"
 
+#: templates/teacher_dashboard.html:444
+#: templates/teacher_quiz_submissions.html:41
+msgid "No description"
+msgstr "No description"
+
+#: templates/teacher_dashboard.html:447
 msgid "Create Quiz for this Course"
 msgstr "Create Quiz for this Course"
 
+#: templates/teacher_dashboard.html:458
 msgid "Create a course first before adding quizzes"
 msgstr "Create a course first before adding quizzes"
 
-msgid "Close"
-msgstr "Close"
+#: templates/teacher_quiz_submissions.html:12
+msgid "Quiz Submissions"
+msgstr "Quiz Submissions"
+
+#: templates/teacher_quiz_submissions.html:46
+msgid "Total Submissions"
+msgstr "Total Submissions"
+
+#: templates/teacher_quiz_submissions.html:50
+msgid "Average Score"
+msgstr ""
+
+#: templates/teacher_quiz_submissions.html:69
+msgid "Student Submissions"
+msgstr "Student Submissions"
+
+#: templates/teacher_quiz_submissions.html:82
+msgid "Score"
+msgstr "Score"
+
+#: templates/teacher_quiz_submissions.html:91
+msgid "Unknown"
+msgstr ""
+
+#: templates/teacher_quiz_submissions.html:114
+msgid "Not graded"
+msgstr ""
+
+#: templates/teacher_quiz_submissions.html:128
+msgid "View & Grade"
+msgstr ""
+
+#: templates/teacher_quiz_submissions.html:139
+msgid "No submissions yet"
+msgstr "No submissions yet"
+
+#: templates/teacher_quiz_submissions.html:140
+msgid ""
+"Students will need to complete the quiz for submissions to appear here."
+msgstr ""
+
+#: templates/teacher_quiz_submissions.html:154
+msgid "Code Submission"
+msgstr "Code Submission"
+
+#: templates/teacher_quiz_submissions.html:161
+msgid "Submitted Code:"
+msgstr ""
+
+#: templates/teacher_quiz_submissions.html:167
+msgid "Program Output:"
+msgstr ""
+
+#: templates/teacher_quiz_submissions.html:177
+#, python-format
+msgid "Score (out of %(max)s)"
+msgstr ""
+
+#: templates/teacher_quiz_submissions.html:183
+msgid "Feedback for Student"
+msgstr ""
+
+#: templates/teacher_quiz_submissions.html:185
+msgid "Provide constructive feedback on the student code..."
+msgstr ""
+
+#: templates/teacher_quiz_submissions.html:190
+msgid "Save Grade & Feedback"
+msgstr ""
+
+#: templates/teacher_quiz_submissions.html:202
+#, python-format
+msgid ""
+"This will delete ALL %(n)s submission(s) and allow students to retake this "
+"quiz. This cannot be undone. Continue?"
+msgstr ""
+
+#: templates/test_login.html:3
+msgid "Test Login"
+msgstr "Test Login"
+
+#: templates/test_login.html:12
+msgid "Test User Login"
+msgstr "Test User Login"
+
+#: templates/test_login.html:14
+msgid "Quick access for development testing"
+msgstr "Quick access for development testing"
+
+#: templates/test_login.html:19
+msgid "Development Mode:"
+msgstr ""
+
+#: templates/test_login.html:19
+msgid ""
+"Use these test accounts to quickly switch between teacher and student views."
+msgstr ""
+
+#: templates/test_login.html:32
+msgid "Computer Science Dept."
+msgstr ""
+
+#: templates/test_login.html:34
+msgid "Login as Teacher"
+msgstr "Login as Teacher"
+
+#: templates/test_login.html:50
+msgid "12th Grade Student"
+msgstr ""
+
+#: templates/test_login.html:52
+msgid "Login as Student"
+msgstr "Login as Student"
+
+#: templates/test_login.html:63
+msgid "Current Data Available:"
+msgstr "Current Data Available:"
+
+#: templates/test_login.html:67
+msgid "Courses"
+msgstr "Courses"
+
+#: templates/test_login.html:71
+msgid "Assignments"
+msgstr "Assignments"
+
+#: templates/test_login.html:75
+msgid "Enrollments"
+msgstr "Enrollments"
+
+#: templates/test_login.html:82
+msgid "Back to Home"
+msgstr ""
+
+#~ msgid "Total Courses"
+#~ msgstr "Total Courses"
+
+#~ msgid "Active Exams"
+#~ msgstr "Active Exams"
+
+#~ msgid "Recent Activity"
+#~ msgstr "Recent Activity"
+
+#~ msgid "View All Courses"
+#~ msgstr "View All Courses"
+
+#~ msgid "Manage Students"
+#~ msgstr "Manage Students"
+
+#~ msgid "View Reports"
+#~ msgstr "View Reports"
+
+#~ msgid "Total Teachers"
+#~ msgstr "Total Teachers"
+
+#~ msgid "Total Administrators"
+#~ msgstr "Total Administrators"
+
+#~ msgid "Total Quizzes"
+#~ msgstr "Total Quizzes"
+
+#~ msgid "Total Enrollments"
+#~ msgstr "Total Enrollments"
+
+#~ msgid "Total Exam Submissions"
+#~ msgstr "Total Exam Submissions"

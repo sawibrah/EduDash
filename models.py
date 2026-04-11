@@ -4,7 +4,8 @@ from flask_dance.consumer.storage.sqla import OAuthConsumerMixin
 from flask_login import UserMixin
 from sqlalchemy import UniqueConstraint
 
-# User model updated for form-based authentication
+# FIX: User model - core authentication model for the application
+# This model stores user information and handles password verification
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)

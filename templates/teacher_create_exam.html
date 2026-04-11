@@ -14,14 +14,14 @@
                 </div>
                 <nav aria-label="breadcrumb" class="mt-2">
                     <ol class="breadcrumb breadcrumb-light mb-0">
-                        <li class="breadcrumb-item"><a href="{{ url_for('teacher_dashboard') }}" class="text-white-50">{{ _('Dashboard') }}</a></li>
-                        <li class="breadcrumb-item"><a href="{{ url_for('view_course', course_id=course.id) }}" class="text-white-50">{{ course.title }}</a></li>
-                        <li class="breadcrumb-item"><a href="{{ url_for('view_course_exams', course_id=course.id) }}" class="text-white-50">{{ _('Exams') }}</a></li>
+                        <li class="breadcrumb-item"><a href="{{ url_for('teacher.teacher_dashboard') }}" class="text-white-50">{{ _('Dashboard') }}</a></li>
+                        <li class="breadcrumb-item"><a href="{{ url_for('teacher.view_course', course_id=course.id) }}" class="text-white-50">{{ course.title }}</a></li>
+                        <li class="breadcrumb-item"><a href="{{ url_for('teacher.view_course_exams', course_id=course.id) }}" class="text-white-50">{{ _('Exams') }}</a></li>
                         <li class="breadcrumb-item active text-white">{{ _('Create Exam') }}</li>
                     </ol>
                 </nav>
                 <div class="card-body">
-                    <form method="POST" action="{{ url_for('create_exam') }}" id="exam-form">
+                    <form method="POST" action="{{ url_for('teacher.create_exam') }}" id="exam-form">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                         <input type="hidden" name="course_id" value="{{ course.id }}"/>
                         <input type="hidden" name="questions_json" id="questions_json">
@@ -106,7 +106,7 @@
                                 <button type="submit" class="btn btn-success">
                                     <i class="fas fa-save me-1"></i>{{ _('Create Exam') }}
                                 </button>
-                                <a href="{{ url_for('view_course_exams', course_id=course.id) }}" class="btn btn-secondary">
+                                <a href="{{ url_for('teacher.view_course_exams', course_id=course.id) }}" class="btn btn-secondary">
                                     <i class="fas fa-times me-1"></i>{{ _('Cancel') }}
                                 </a>
                             </div>

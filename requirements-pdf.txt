@@ -1,0 +1,10 @@
+# Optional: PDF generation (WeasyPrint). Install on top of requirements.txt:
+#   pip install -r requirements-pdf.txt
+#
+# WeasyPrint relies on native libraries (Pango, Cairo, GDK-Pixbuf). Install OS packages first:
+#   - Debian/Ubuntu: https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#debian-ubuntu
+#   - Fedora: same doc — Fedora section
+#   - macOS: brew install pango cairo gdk-pixbuf libffi
+#   - Windows: use current WeasyPrint docs for supported Python builds and GTK/runtime deps.
+
+weasyprint>=62.3
