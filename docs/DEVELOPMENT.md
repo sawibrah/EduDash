@@ -86,6 +86,13 @@ pybabel update -i messages.pot -d translations
 pybabel compile -d translations
 ```
 
+**French gap check** (lists `messages.po` entries where `msgstr` is empty or still identical to `msgid`, plus any fuzzy flags):
+
+```powershell
+python scripts/fr_translation_audit.py
+python scripts/fr_translation_audit.py --write translations/audit_fr_last_run.txt
+```
+
 ---
 
 ## 6. Optional PDF generation (WeasyPrint)
@@ -135,3 +142,4 @@ See **[docs/USERS_AND_ROLES.md](USERS_AND_ROLES.md)** for what each role can do,
 | WTForms | `forms.py` |
 | Blueprint registration | `blueprints/__init__.py` |
 | Fix history (narrative) | [FIXES_SUMMARY.md](../FIXES_SUMMARY.md) |
+| Demo users (`demo_student` / `demo_teacher`) | `scripts/seed_demo_users.py` |

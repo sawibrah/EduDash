@@ -1,5 +1,5 @@
 from app import db
-from models import StudentProfile, User
+from models import StudentProfile, TeacherProfile, User
 
 
 def test_login_page_ok(client):
@@ -31,3 +31,29 @@ def test_login_success_redirects_student_dashboard(client):
     )
     assert r.status_code in (302, 303)
     assert "/student/dashboard" in r.headers.get("Location", "")
+
+
+def test_login_success_redirects_teacher_dashboard(client):
+    with client.application.app_context():
+        u = User(
+            username="teachlogin",
+            email="teachlogin@example.com",
+            first_name="T",
+            last_name="L",
+            role="teacher",
+        )
+        u.set_password("secret12")
+        db.session.add(u)
+        db.session.flush()
+        db.session.add(
+            TeacherProfile(user_id=u.id, employee_id=f"EMP{u.id:08d}", department="CS")
+        )
+        db.session.commit()
+
+    r = client.post(
+        "/login",
+        data={"username": "teachlogin", "password": "secret12", "submit": "Sign In"},
+        follow_redirects=False,
+    )
+    assert r.status_code in (302, 303)
+    assert "/teacher/dashboard" in r.headers.get("Location", "")

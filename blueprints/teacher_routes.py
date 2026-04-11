@@ -17,6 +17,7 @@ from flask import (
 )
 from flask_babel import gettext
 from flask_login import current_user
+from sqlalchemy import func
 from sqlalchemy.orm import joinedload
 from werkzeug.utils import secure_filename
 
@@ -31,6 +32,52 @@ from blueprints.utils import UPLOAD_FOLDER, allowed_file, generate_5_slide_templ
 from models import CodeSubmission, Course, Enrollment, Exam, ExamSubmission, Quiz, User
 
 teacher_bp = Blueprint("teacher", __name__, url_prefix="/teacher")
+
+
+@teacher_bp.route("/dashboard")
+@require_role("teacher")
+def teacher_dashboard():
+    courses = (
+        Course.query.options(joinedload(Course.enrollments))
+        .filter_by(teacher_id=current_user.id)
+        .order_by(Course.updated_at.desc())
+        .all()
+    )
+    course_ids = [c.id for c in courses]
+    if course_ids:
+        total_students = (
+            db.session.query(func.count(func.distinct(Enrollment.student_id)))
+            .filter(Enrollment.course_id.in_(course_ids))
+            .scalar()
+            or 0
+        )
+        exams = (
+            Exam.query.options(joinedload(Exam.course), joinedload(Exam.submissions))
+            .filter(Exam.course_id.in_(course_ids))
+            .order_by(Exam.updated_at.desc())
+            .limit(10)
+            .all()
+        )
+        quizzes = (
+            Quiz.query.options(joinedload(Quiz.course), joinedload(Quiz.submissions))
+            .filter(Quiz.course_id.in_(course_ids))
+            .order_by(Quiz.updated_at.desc())
+            .limit(10)
+            .all()
+        )
+    else:
+        total_students = 0
+        exams = []
+        quizzes = []
+
+    return render_template(
+        "teacher_dashboard.html",
+        courses=courses,
+        total_students=total_students,
+        exams=exams,
+        quizzes=quizzes,
+    )
+
 
 @teacher_bp.route('/create-course', methods=['GET', 'POST'])
 @require_role('teacher')

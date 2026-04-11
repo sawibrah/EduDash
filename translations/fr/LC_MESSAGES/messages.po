@@ -494,7 +494,7 @@ msgstr "Brouillon"
 
 #: templates/admin_courses.html:40 templates/admin_users.html:45
 msgid "ID"
-msgstr "ID"
+msgstr "Identifiant"
 
 #: templates/admin_courses.html:41 templates/teacher_create_course.html:23
 msgid "Course Title"
@@ -526,7 +526,7 @@ msgstr "Étudiants"
 #: templates/teacher_dashboard.html:199 templates/teacher_dashboard.html:266
 #: templates/teacher_quiz_submissions.html:81
 msgid "Status"
-msgstr "Status"
+msgstr "Statut"
 
 #: templates/admin_courses.html:47
 msgid "Created"
@@ -996,7 +996,7 @@ msgstr ""
 
 #: templates/index.html:77
 msgid "Collaboration"
-msgstr "Collaboration"
+msgstr "Travail collaboratif"
 
 #: templates/index.html:78
 msgid ""
@@ -1190,7 +1190,7 @@ msgstr "Informatique"
 
 #: templates/register_role.html:86
 msgid "Arts"
-msgstr "Arts"
+msgstr "Arts plastiques"
 
 #: templates/register_role.html:87
 msgid "Physical Education"
@@ -1248,7 +1248,7 @@ msgstr "PDF"
 
 #: templates/student_dashboard.html:133
 msgid "No courses enrolled yet"
-msgstr "Aucun cours inscrit le moment"
+msgstr "Aucun cours inscrit pour le moment"
 
 #: templates/student_dashboard.html:134
 msgid "Enroll in your first course to get started!"
@@ -1256,7 +1256,7 @@ msgstr "Inscrivez-vous à votre premier cours pour commencer !"
 
 #: templates/student_dashboard.html:136 templates/student_dashboard.html:285
 msgid "Enroll Now"
-msgstr "Inscrivez-vous maintenat"
+msgstr "Inscrivez-vous maintenant"
 
 #: templates/student_dashboard.html:171 templates/student_dashboard.html:219
 #: templates/student_take_exam.html:172
@@ -1284,7 +1284,7 @@ msgstr "Passer l'examen"
 
 #: templates/student_dashboard.html:233
 msgid "No exams available"
-msgstr "Pas d'examens disponible"
+msgstr "Pas d'examens disponibles"
 
 #: templates/student_dashboard.html:257
 msgid "By Course ID"
@@ -1321,11 +1321,11 @@ msgstr "Chargement des cours disponibles..."
 
 #: templates/student_dashboard.html:349 templates/teacher_dashboard.html:457
 msgid "No courses available"
-msgstr "Pas cours disponible pour le moment"
+msgstr "Aucun cours disponible pour le moment"
 
 #: templates/student_dashboard.html:350
 msgid "Check back later for new courses!"
-msgstr "Revenez plut tard pour découvrir de nouveaux cours!"
+msgstr "Revenez plus tard pour découvrir de nouveaux cours !"
 
 #: templates/student_dashboard.html:380
 msgid "Enroll"
@@ -1611,7 +1611,7 @@ msgstr "%(count)s étudiants inscrits"
 #: templates/teacher_course_quizzes.html:172
 #: templates/teacher_dashboard.html:216 templates/teacher_dashboard.html:283
 msgid "Active"
-msgstr "Active"
+msgstr "Actif"
 
 #: templates/teacher_course_exams.html:72
 #: templates/teacher_course_exams.html:207
@@ -1672,14 +1672,14 @@ msgstr "Supprimer l'examen"
 #: templates/teacher_dashboard.html:466
 #: templates/teacher_quiz_submissions.html:156
 msgid "Close"
-msgstr "Close"
+msgstr "Fermer"
 
 #: templates/teacher_course_exams.html:152
 #: templates/teacher_course_exams.html:187
 #: templates/teacher_course_quizzes.html:148
 #: templates/teacher_dashboard.html:375
 msgid "This action cannot be undone!"
-msgstr "This action cannot be undone!"
+msgstr "Cette action est irréversible !"
 
 #: templates/teacher_course_exams.html:154
 msgid "Are you sure you want to delete the exam"
@@ -1689,7 +1689,7 @@ msgstr "Voulez-vous vraiment supprimer l'examen"
 #: templates/teacher_course_quizzes.html:151
 #: templates/teacher_dashboard.html:378
 msgid "This will permanently delete:"
-msgstr "This will permanently delete:"
+msgstr "Cela supprimera définitivement :"
 
 #: templates/teacher_course_exams.html:157
 msgid "The exam and all its questions"
@@ -1745,7 +1745,7 @@ msgstr "Envois"
 #: templates/teacher_course_quizzes.html:123
 #: templates/teacher_dashboard.html:309
 msgid "No quizzes created yet"
-msgstr "No quizzes created yet"
+msgstr "Aucun quiz créé pour le moment"
 
 #: templates/teacher_course_quizzes.html:124
 msgid "Create your first quiz to test student knowledge!"
@@ -2199,11 +2199,11 @@ msgstr "étudiants"
 #: templates/teacher_dashboard.html:150 templates/teacher_dashboard.html:227
 #: templates/teacher_dashboard.html:294
 msgid "View"
-msgstr "Vue"
+msgstr "Voir"
 
 #: templates/teacher_dashboard.html:171
 msgid "Create your first course to get started!"
-msgstr "Créez votre premier cour pour commencer!"
+msgstr "Créez votre premier cours pour commencer !"
 
 #: templates/teacher_dashboard.html:188
 msgid "Recent Exams"
@@ -2211,15 +2211,15 @@ msgstr "Examens récents"
 
 #: templates/teacher_dashboard.html:198 templates/teacher_dashboard.html:265
 msgid "Course"
-msgstr "Course"
+msgstr "Cours"
 
 #: templates/teacher_dashboard.html:243
 msgid "Create exams for your courses to engage students!"
-msgstr "Create exams for your courses to engage students!"
+msgstr "Créez des examens pour vos cours pour impliquer les étudiants !"
 
 #: templates/teacher_dashboard.html:255
 msgid "Recent Quizzes"
-msgstr "Recent Quizzes"
+msgstr "Quiz récents"
 
 #: templates/teacher_dashboard.html:264
 msgid "Quiz"
@@ -2227,11 +2227,11 @@ msgstr "Quiz"
 
 #: templates/teacher_dashboard.html:310
 msgid "Create quizzes to test student knowledge!"
-msgstr "Create quizzes to test student knowledge!"
+msgstr "Créez des quiz pour tester les connaissances des étudiants !"
 
 #: templates/teacher_dashboard.html:326
 msgid "Select Course for New Exam"
-msgstr "Select Course for New Exam"
+msgstr "Choisir le cours pour le nouvel examen"
 
 #: templates/teacher_dashboard.html:331
 msgid "Select Course"
@@ -2239,15 +2239,15 @@ msgstr "Choisir un cours"
 
 #: templates/teacher_dashboard.html:333
 msgid "Select a course"
-msgstr "Select a course"
+msgstr "Sélectionnez un cours"
 
 #: templates/teacher_dashboard.html:343
 msgid "Continue"
-msgstr "Continue"
+msgstr "Continuer"
 
 #: templates/teacher_dashboard.html:354
 msgid "Please select a course"
-msgstr "Please select a course"
+msgstr "Veuillez sélectionner un cours"
 
 #: templates/teacher_dashboard.html:368
 msgid "Delete Course"
@@ -2255,7 +2255,7 @@ msgstr "Supprimer le cours"
 
 #: templates/teacher_dashboard.html:377
 msgid "Are you sure you want to delete the course"
-msgstr "Are you sure you want to delete the course"
+msgstr "Voulez-vous vraiment supprimer le cours"
 
 #: templates/teacher_dashboard.html:380
 msgid "The course and all its content"
@@ -2275,11 +2275,12 @@ msgstr "Fichiers téléversés et PDF générés"
 
 #: templates/teacher_dashboard.html:391
 msgid "Yes, Delete Course"
-msgstr "Yes, Delete Course"
+msgstr "Oui, supprimer le cours"
 
 #: templates/teacher_dashboard.html:430
 msgid "Select a course to start creating a multiple-choice quiz"
-msgstr "Select a course to start creating a multiple-choice quiz"
+msgstr ""
+"Sélectionnez un cours pour commencer à créer un quiz à choix multiples"
 
 #: templates/teacher_dashboard.html:444
 #: templates/teacher_quiz_submissions.html:41
@@ -2288,11 +2289,11 @@ msgstr "Pas de description"
 
 #: templates/teacher_dashboard.html:447
 msgid "Create Quiz for this Course"
-msgstr "Create Quiz for this Course"
+msgstr "Créer un quiz pour ce cours"
 
 #: templates/teacher_dashboard.html:458
 msgid "Create a course first before adding quizzes"
-msgstr "Create a course first before adding quizzes"
+msgstr "Créez d'abord un cours avant d'ajouter des quiz"
 
 #: templates/teacher_quiz_submissions.html:12
 msgid "Quiz Submissions"

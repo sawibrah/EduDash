@@ -34,6 +34,14 @@ Open your browser and go to: **http://localhost:5000**
 
 ## Demo Credentials
 
+These accounts are **not created automatically**. After a fresh clone or new database, run once from the project root:
+
+```powershell
+python scripts\seed_demo_users.py
+```
+
+Then you can sign in:
+
 ### Student Account
 - **Username:** demo_student
 - **Password:** password123

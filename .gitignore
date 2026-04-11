@@ -23,6 +23,9 @@ instance/*.db-journal
 *.swp
 .DS_Store
 
+# i18n audit output (regenerate with scripts/fr_translation_audit.py --write …)
+translations/audit_fr_*.txt
+
 # Tests / coverage
 .pytest_cache/
 .coverage

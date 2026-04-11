@@ -10,14 +10,20 @@ EduPortal uses **three primary roles**: **student**, **teacher**, and **admin**.
 - **Login** (`/login`): email/username + password. If an admin has forced a password reset, the user is redirected to **change password** first.
 - **Logout** (`/logout`): ends the session.
 
-**Demo accounts** (if present in your database — see [QUICK_START.md](../QUICK_START.md)):
+**Demo accounts** (optional local testing):
 
 | Role    | Username       | Password     |
 |---------|----------------|--------------|
 | Student | `demo_student` | `password123` |
 | Teacher | `demo_teacher` | `password123` |
 
-If these users do not exist yet, use **Register** or ask an **admin** to create accounts from the admin panel.
+They are **not** inserted by the app on startup. To create them (and fix “Invalid username or password” for demos), run from the repo root:
+
+```powershell
+python scripts/seed_demo_users.py
+```
+
+Otherwise use **Register** (student) or ask an **admin** to create users.
 
 ---
 
